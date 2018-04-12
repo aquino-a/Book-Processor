@@ -5,6 +5,7 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.OCLC.OCLCChecker;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
@@ -12,6 +13,8 @@ import com.aquino.webParser.filters.CheckFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -76,7 +79,10 @@ public class JWPUserInterface extends JPanel {
         file.add(new JMenuItem(openAction));
         file.add(new JMenuItem(saveAction));
         file.add(new JMenuItem(saveAsAction));
+        JMenu tools = new JMenu("Tools");
+        tools.add(new JMenuItem(ScrapeOclc));
         menuBar.add(file);
+        menuBar.add(tools);
         
         //panel
         mainPanel.add(textArea);
@@ -102,6 +108,10 @@ public class JWPUserInterface extends JPanel {
     }
     private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
         getAddWorker().execute();
+    });
+    
+    private final Action ScrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
+        getOclcWorker().execute();
     });
     
     private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
@@ -212,6 +222,28 @@ public class JWPUserInterface extends JPanel {
                     disableActions();
                     writer.writeBooks(Book.retrieveBookArray(textArea.getText()));
                 } catch (Exception e ) {
+                }
+                return null;
+            }
+            @Override
+            public void done() {
+                state.setText("Added!");
+                timer.start();
+                enableActions();
+            }
+        };
+    }
+    
+    private SwingWorker getOclcWorker() {
+        return new SwingWorker<Void,Void>() {
+            @Override
+            public Void doInBackground() {
+                try {
+                    disableActions();
+                    OCLCChecker checker = new OCLCChecker();
+                    checker.getHitsAndWrite(1, 50, mainPanel);
+                } catch (Exception e ) {
+                    Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
                 }
                 return null;
             }
