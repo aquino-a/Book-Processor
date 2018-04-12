@@ -80,7 +80,7 @@ public class JWPUserInterface extends JPanel {
         file.add(new JMenuItem(saveAction));
         file.add(new JMenuItem(saveAsAction));
         JMenu tools = new JMenu("Tools");
-        tools.add(new JMenuItem(ScrapeOclc));
+        tools.add(new JMenuItem(scrapeOclc));
         menuBar.add(file);
         menuBar.add(tools);
         
@@ -110,7 +110,7 @@ public class JWPUserInterface extends JPanel {
         getAddWorker().execute();
     });
     
-    private final Action ScrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
+    private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
         getOclcWorker().execute();
     });
     
@@ -187,6 +187,7 @@ public class JWPUserInterface extends JPanel {
         frame.setVisible(true);
     }
     private void enableActions() {
+        scrapeOclc.setEnabled(true);
         saveAction.setEnabled(true);
         saveAsAction.setEnabled(true);
         openAction.setEnabled(true);
@@ -207,6 +208,7 @@ public class JWPUserInterface extends JPanel {
         this.state.setText(state);
     }
     private void disableActions() {
+        scrapeOclc.setEnabled(false);
         saveAction.setEnabled(false);
         saveAsAction.setEnabled(false);
         openAction.setEnabled(false);
