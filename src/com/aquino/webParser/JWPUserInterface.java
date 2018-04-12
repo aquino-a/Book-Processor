@@ -24,6 +24,9 @@ import javax.swing.text.AbstractDocument;
  * @author alex
  */
 public class JWPUserInterface extends JPanel {
+    
+    private static final Logger logger = Logger.getLogger(JWPUserInterface.class.getName());
+    
     private static JFrame frame;
     private JButton addButton, saveButton;
     private JPanel mainPanel,buttonPanel,checkPanel;
@@ -244,14 +247,16 @@ public class JWPUserInterface extends JPanel {
                     disableActions();
                     OCLCChecker checker = new OCLCChecker();
                     checker.getHitsAndWrite(1, 50, mainPanel);
+                    logger.log(Level.INFO, "Done scraping for OCLC numbers.");
                 } catch (Exception e ) {
                     Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
+                    e.printStackTrace();
                 }
                 return null;
             }
             @Override
             public void done() {
-                state.setText("Added!");
+                state.setText("Done scraping!");
                 timer.start();
                 enableActions();
             }

@@ -273,8 +273,8 @@ public class Book {
             String next = st.nextToken();
             if(next.contains("(지은이)")) parseAuthor2(next, count);
                 
-            if(next.contains("(옮긴이)")) {
-                this.translator = next.replace("(옮긴이)", "").trim();
+            if(next.contains("(역자)")) {
+                this.translator = next.replace("(역자)", "").trim();
                 //continue;
             }
             if(next.contains("원제"))

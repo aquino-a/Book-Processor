@@ -10,6 +10,8 @@ import com.aquino.webParser.romanization.Romanizer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.*;
@@ -19,6 +21,9 @@ import org.apache.poi.xssf.usermodel.*;
  * @author alex
  */
 public class ExcelWriter {
+    
+    private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
+    
     private final XSSFWorkbook workbook;
     private int startRow;
     //private final File saveFile;
@@ -35,7 +40,7 @@ public class ExcelWriter {
             
             if ( sheet.getRow(i) == null || 
                     sheet.getRow(i).getCell(1) == null) {
-                System.out.printf("row %d is null%n", i);
+                logger.log(Level.INFO, "Row {0} is null.", i);
                 startRow = i;
                 return;
             }
@@ -97,6 +102,7 @@ public class ExcelWriter {
     }
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
+            logger.log(Level.INFO, "Saving file");
             workbook.write(fos);
         }catch (IOException e) {
             System.out.println(e.getMessage());

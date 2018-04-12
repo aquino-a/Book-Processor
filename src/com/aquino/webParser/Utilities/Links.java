@@ -7,6 +7,8 @@ package com.aquino.webParser.Utilities;
 
 import java.io.IOException;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,11 +18,14 @@ import org.jsoup.select.Elements;
  * @author alex
  */
 public class Links {
+    
+    private static final Logger logger = Logger.getLogger(Links.class.getName());
+    
     private static String buildOCLCURL(String pageNumber) {
         return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
     }
     public static String getPageofLinks(int pageNumber) throws IOException {
-        System.out.println(pageNumber);
+        logger.log(Level.INFO, "Starting page {0}", pageNumber);
         return pageOfLinks(getSearchElements(pageNumber));
     }
     private static String pageOfLinks(Elements elements) {
@@ -30,7 +35,7 @@ public class Links {
 //        }
         elements.stream().map(e -> e.attr("href"))       
            .forEach(e-> joiner.add(e));
-        System.out.println("got a page");
+        logger.log(Level.INFO, "Got the Links");
 //        String links = joiner.toString();
         
         return joiner.toString();

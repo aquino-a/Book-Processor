@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,6 +27,8 @@ import javax.swing.JPanel;
  * @author alex
  */
 public class OCLCChecker {
+    
+    private static final Logger logger = Logger.getLogger(OCLCChecker.class.getName());
     ExcelWriter writer;
 //    Links link;
     int hits;
@@ -43,22 +47,27 @@ public class OCLCChecker {
             checkAndWriteOnePage(i);
             }
         } catch (IOException e) {
-            System.out.println("No more pages");
-        }       
-        writer.saveFile(save);
+            logger.log(Level.INFO, "Reached end of pages");
+        }  
+        finally{
+            writer.saveFile(save);
+        }
     }
     
     private void checkAndWriteOnePage(int pageNumber) throws IOException {
         Book[] books = null;
         try {
-             books = setHits(getOnePageCheckedBooks(pageNumber));
-            
+            books = setHits(getOnePageCheckedBooks(pageNumber));
+            if(books != null && books.length > 0) {
+                logger.log(Level.INFO, "Books found: {0}", books.length);
+                writer.writeBooks(books);
+            }
         } catch (IOException e) {
             throw e;
-        } finally {
-            if(books != null && books.length > 0)
-                writer.writeBooks(books);
-        }   
+        } 
+//        finally {
+//            
+//        }   
     }
     private Book[] getOnePageCheckedBooks(int pageNumber) throws IOException {
         return checkBooks(getBooks(pageNumber));
