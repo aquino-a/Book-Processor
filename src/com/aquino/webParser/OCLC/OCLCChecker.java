@@ -65,9 +65,6 @@ public class OCLCChecker {
         } catch (IOException e) {
             throw e;
         } 
-//        finally {
-//            
-//        }   
     }
     private Book[] getOnePageCheckedBooks(int pageNumber) throws IOException {
         return checkBooks(getBooks(pageNumber));
