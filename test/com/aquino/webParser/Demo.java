@@ -12,12 +12,12 @@ package com.aquino.webParser;
 public class Demo {
     public static void main(String[] args) {
         
-//        Book[] books = { new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
-//        };  
+        Book[] books = { new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
+                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
+                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
+                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
+                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
+        };  
 //        ExcelWriter writer = new ExcelWriter(
 //                Connect.newWorkbookFromTemplate());
 //        JFrame frame = new JFrame("JWPdemo");
@@ -114,21 +114,14 @@ public class Demo {
         
         
 ////
-//        for (Book book: books) {
-////            System.out.println(book.getPublishDate());
-//            System.out.println(book.getOriginalPrice());
-////            System.out.println(book.getISBN());
-////            System.out.println(book.getTitle());
-////            System.out.println(book.getType());
-////            System.out.println(book.getPages());
-////            //System.out.println(book.getBookSize());
-////            System.out.println(book.getBookSizeFormatted());
-////            System.out.println(book.getPublishDateFortmatted());
-////            System.out.println(book.getImageUrl());
-//            System.out.println(book.getOriginalPriceFormatted());
-//            System.out.println(book.getOriginalPriceNumber());
-////            System.out.println();
-//        }
+        for (Book book: books) {
+            System.out.println(book.getISBN());
+            System.out.println(book.getDescription());
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("NEWLINE");
+        }
 //        System.out.println(book.doc.getElementsByClass("p_goodstd03").text());
 //        StringTokenizer st = new StringTokenizer(book.doc.getElementsByClass("p_goodstd03").text(), " |");
 //        while(st.hasMoreTokens()) System.out.println(st.nextToken());

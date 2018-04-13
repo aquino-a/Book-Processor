@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +37,17 @@ public class Connect {
         }
         
     }
+    
+    public static Document connectToURLwithHeaders(String url, Map<String,String> headers) {
+        try {
+            return Jsoup.connect(url).headers(headers).get();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            return null;
+        }
+        
+    }
+    
     // must check for null
     private static XSSFWorkbook getWorkbook(InputStream file ) {
         try {

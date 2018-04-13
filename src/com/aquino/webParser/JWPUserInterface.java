@@ -34,6 +34,7 @@ public class JWPUserInterface extends JPanel {
     private JMenu file;
     private JTextArea textArea;
     private ExcelWriter writer;
+    private DescriptionWriter desWriter;
     private File saveFile;
     private JLabel fileName, state;
     private Timer timer;
@@ -48,6 +49,8 @@ public class JWPUserInterface extends JPanel {
     }
 //TODO fix savebutton
     private void addcomponents() {
+        
+        desWriter = new DescriptionWriter();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         mainPanel = new JPanel();
         buttonPanel = new JPanel();
@@ -133,6 +136,7 @@ public class JWPUserInterface extends JPanel {
         try {
             askSaveFile();
             writer.saveFile(saveFile);
+            
         } catch (NullPointerException e) {
             saveFile = null;
         }
@@ -225,7 +229,8 @@ public class JWPUserInterface extends JPanel {
             public Void doInBackground() {
                 try {
                     disableActions();
-                    writer.writeBooks(Book.retrieveBookArray(textArea.getText()));
+                    Book[] books = Book.retrieveBookArray(textArea.getText());
+                    writer.writeBooks(books);
                 } catch (Exception e ) {
                 }
                 return null;

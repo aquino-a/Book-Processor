@@ -14,7 +14,9 @@ import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +34,7 @@ public class Book {
     private String title,publishDate,originalPrice,bookSize,
             cover,publishDateFormatted,bookSizeFormatted,
             imageURL, author, englishTitle, translator,
-            publisher, author2, isbnString;
+            publisher, author2, isbnString, description;
     private long isbn,oclc;
     
     private int pages, weight;
@@ -42,6 +44,8 @@ public class Book {
 //            System.out.println("in book constructor");
             doc = Connect.connectToURL(url);
     }
+
+    
     public Document getDoc() {
         return doc;
     }
@@ -422,17 +426,30 @@ public class Book {
         return getTitle();
     }
     
-    
-    
-    
-    
+    public String getDescription() {
+        if(description == null) scrapeLazyContent(this, doc);
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private Book scrapeLazyContent(Book book, Document doc) {
+        Map<String, String> map = new HashMap<>();
+        map.put("Referer", doc.location());
+        doc = Connect.connectToURLwithHeaders(
+                createLazyContentUrl(book.getISBN()), map);
+        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
+        if(element == null) {
+            book.setDescription(doc.getElementsByClass("p_textbox").eq(1).first().wholeText());
+        } else book.setDescription(element.wholeText());
+        return book;
+    }
     
-    
-    
-    
-    
-    
-    
+    private String createLazyContentUrl(long details) {
+        return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
+                + details + "&name=Introduce&type=0&date=11";
+    }
     
 }
