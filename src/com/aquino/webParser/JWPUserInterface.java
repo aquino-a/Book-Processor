@@ -125,6 +125,7 @@ public class JWPUserInterface extends JPanel {
             //if(saveFile == null) saveFile = FileUtility.saveLocation(mainPanel);
             if(saveFile == null) askSaveFile();
             writer.saveFile(saveFile);
+            desWriter.saveBooks(saveFile);
             state.setText("Saved!");
             timer.start();
         } catch (NullPointerException e) {
@@ -136,6 +137,7 @@ public class JWPUserInterface extends JPanel {
         try {
             askSaveFile();
             writer.saveFile(saveFile);
+            desWriter.saveBooks(saveFile);
             
         } catch (NullPointerException e) {
             saveFile = null;
@@ -231,6 +233,7 @@ public class JWPUserInterface extends JPanel {
                     disableActions();
                     Book[] books = Book.retrieveBookArray(textArea.getText());
                     writer.writeBooks(books);
+                    desWriter.writeBooks(books);
                 } catch (Exception e ) {
                 }
                 return null;

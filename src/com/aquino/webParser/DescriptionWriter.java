@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class DescriptionWriter {
     
     private static final Logger logger = Logger.getLogger(DescriptionWriter.class.getName());
-    private String bookDescriptions;
+    private String bookDescriptions = "";
     
     public boolean writeBooks(Book[] books) {
         StringBuilder sb = new StringBuilder(bookDescriptions);
