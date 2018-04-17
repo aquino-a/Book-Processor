@@ -235,6 +235,8 @@ public class JWPUserInterface extends JPanel {
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
                 } catch (Exception e ) {
+                    logger.log(Level.SEVERE, "Problem adding.");
+                    e.printStackTrace();
                 }
                 return null;
             }

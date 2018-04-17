@@ -33,7 +33,7 @@ public class DescriptionWriter {
                         book.getTitle(),book.getDescription()));
         }
         bookDescriptions = sb.toString();
-        logger.log(Level.INFO, "Done getting descriptions");
+        logger.log(Level.INFO, "Done setting up descriptions");
         return true;
     }
     
@@ -42,11 +42,12 @@ public class DescriptionWriter {
                 +"/"+ "Descriptions- "+LocalDateTime.now()
                         .format(DateTimeFormatter
                                 .ofPattern("yyyy MM dd k m"))
-                        .toString()+".txt");
-         try (BufferedWriter bw = new BufferedWriter(
+                        +".txt");
+        try (BufferedWriter bw = new BufferedWriter(
                         new OutputStreamWriter(
                                 new FileOutputStream(saveFile, true),"UTF-8"));) {
             bw.write(LocalDateTime.now().toString());
+            bw.newLine();
             bw.write(bookDescriptions);
         } catch (IOException  ex) {
             logger.log(Level.SEVERE, "Problem with writing the book {0}", ex.getMessage());

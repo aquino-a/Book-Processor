@@ -442,7 +442,10 @@ public class Book {
                 createLazyContentUrl(book.getISBN()), map);
         Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
         if(element == null) {
-            book.setDescription(doc.getElementsByClass("p_textbox").eq(1).first().wholeText());
+            element = doc.getElementsByClass("p_textbox").eq(1).first();
+            if(element == null) 
+                book.setDescription("");
+            else book.setDescription(element.wholeText());
         } else book.setDescription(element.wholeText());
         return book;
     }
