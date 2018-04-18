@@ -41,7 +41,7 @@ public class DescriptionWriter {
         File saveFile = new File(file.getAbsoluteFile().getParent()
                 +"/"+ "Descriptions- "+LocalDateTime.now()
                         .format(DateTimeFormatter
-                                .ofPattern("yyyy MM dd k m"))
+                                .ofPattern("yyyyMMdd-k_m"))
                         +".txt");
         try (BufferedWriter bw = new BufferedWriter(
                         new OutputStreamWriter(
@@ -49,6 +49,7 @@ public class DescriptionWriter {
             bw.write(LocalDateTime.now().toString());
             bw.newLine();
             bw.write(bookDescriptions);
+            bookDescriptions = "";
         } catch (IOException  ex) {
             logger.log(Level.SEVERE, "Problem with writing the book {0}", ex.getMessage());
             return false;

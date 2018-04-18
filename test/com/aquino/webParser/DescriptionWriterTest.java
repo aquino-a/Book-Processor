@@ -59,7 +59,8 @@ public class DescriptionWriterTest {
         
         File file = new File("text.txt");
         String des = book1.getDescription();
-        writer.writeBooks(new Book[]{book1}, file);
+        writer.writeBooks(new Book[]{book1});
+        writer.saveBooks(file);
         logger.log(Level.INFO, "Starting test {0}", book1.getTitle());
         assertEquals("'유병재 천재설' 의혹(?)마저 불러일으킨 전 국민의 웃음 폭탄 유병재의 첫 에세이. 코미디언이자 작가인 유병재가 지난 3년 동안 저축하듯 모은 에세이, 우화, 아이디어 노트, 그리고 미공개 글을 총 4장 200여 페이지에 담았다. 작가가 스스로 작명한 '농담집'이라는 제목부터 호기심을 자아낸다.\n" +
 "\n" +
