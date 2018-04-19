@@ -27,8 +27,8 @@ public class Romanizer {
     private static final List<String> VOWELS = 
             Collections.unmodifiableList(Arrays.asList(
                     "a","ae","ya","ye","eo","e","yeo","ye",
-                    "o","wa","wae","oi","yo","u","war","ue",
-                    "we","you","eu","ui","i"));
+                    "o","wa","wae","oi","yo","u","weo","ue",
+                    "we","you","eu","eui","i"));
     
     private static final List<String> LAST_CONSONANTS = 
             Collections.unmodifiableList(Arrays.asList(
