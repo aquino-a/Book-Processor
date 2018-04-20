@@ -238,11 +238,14 @@ public class Book {
     }
     private void retrieveWeight() {
         if(pages == 0) retrieveVarious();
-        else if(pages <= 300) weight = 1;
-        else if(pages <= 600) weight = 2;
-        else if(pages <= 900) weight = 3;
-        else if(pages <= 1200) weight = 4;
-        else if(pages <= 1500) weight = 5;
+        
+        weight = pages%300 > 1 ? (pages/300)+1 : pages/300;
+//        else if(pages <= 300) weight = 1;
+//        else if(pages <= 600) weight = 2;
+//        else if(pages <= 900) weight = 3;
+//        else if(pages <= 1200) weight = 4;
+//        else if(pages <= 1500) weight = 5;
+//        else if(pages <= 3000) weight = 6;
     }
     public int getWeight() {
         if(weight == 0) retrieveWeight();
