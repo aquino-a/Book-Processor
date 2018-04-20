@@ -22,8 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 /**
  *
@@ -440,14 +442,29 @@ public class Book {
         map.put("Referer", doc.location());
         doc = Connect.connectToURLwithHeaders(
                 createLazyContentUrl(book.getISBN()), map);
-        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
-        if(element == null) {
-            element = doc.getElementsByClass("p_textbox").eq(1).first();
-            if(element == null) 
-                book.setDescription("");
-            else book.setDescription(element.wholeText());
-        } else book.setDescription(element.wholeText());
+        book.setDescription(findDescription(doc));
+//        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
+//        if(element == null) {
+//            element = doc.getElementsByClass("p_textbox").eq(1).first();
+//            if(element == null) 
+//                book.setDescription("");
+//            else book.setDescription(element.wholeText());
+//        } else book.setDescription(element.wholeText());
         return book;
+    }
+    
+    private static String findDescription(Document doc) {
+            String result = null;
+            for (Element element : doc.getAllElements()) {
+                for (Node n : element.childNodes()) {
+                    if (n.nodeName().equals("#comment")){
+                        if("\n<!-- 책소개-->".contentEquals(n.toString())) {
+                             result = Jsoup.parse(element.siblingElements().toString()).getElementsByClass("p_textbox").first().wholeText().trim();
+                        }
+                    }
+                }
+            }
+            return result;
     }
     
     private String createLazyContentUrl(long details) {

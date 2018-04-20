@@ -32,7 +32,7 @@ public class AddNewLineTesting {
         JPanel panel = new JPanel();
         
         OCLCChecker checker = new OCLCChecker();
-        checker.getHitsAndWrite(10, panel);
+//        checker.getHitsAndWrite(10, panel);
         System.out.println(checker.getHits());
 //        Book[] books = checker.getBooks(15);
 //        books = checker.checkBooks(books);

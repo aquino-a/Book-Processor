@@ -17,7 +17,7 @@ public class RomanTest {
         System.out.println(Romanizer.hangulToRoman("아이구 너무 뚱뚱해서 김정은 같아여"));
         System.out.println(Romanizer.hangulToRoman("맛있습니다"));
         System.out.println(Romanizer.hangulToRoman("맛있어여"));
-        System.out.println(Romanizer.hangulToRoman("아이구 너무 뚱뚱해서 김정은 같아여"));
+        System.out.println(Romanizer.hangulToRoman("야 뭐 하냐"));
         System.out.println(Romanizer.hangulToRoman("아이구 너무 뚱뚱해서 김정은 같아여"));
         System.out.println(Romanizer.hangulToRoman("아이구 너무 뚱뚱해서 김정은 같아여"));
         System.out.println(Romanizer.hangulToRoman("아이구 너무 뚱뚱해서 김정은 같아여"));
