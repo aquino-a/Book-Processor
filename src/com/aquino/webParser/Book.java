@@ -238,9 +238,11 @@ public class Book {
     }
     private void retrieveWeight() {
         if(pages == 0) retrieveVarious();
-        if(pages <= 300) {weight = 1; return;}
-        if(pages <= 600) {weight = 2; return;}
-        if(pages <= 900) {weight = 3;}
+        else if(pages <= 300) weight = 1;
+        else if(pages <= 600) weight = 2;
+        else if(pages <= 900) weight = 3;
+        else if(pages <= 1200) weight = 4;
+        else if(pages <= 1500) weight = 5;
     }
     public int getWeight() {
         if(weight == 0) retrieveWeight();
