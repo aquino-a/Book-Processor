@@ -29,6 +29,7 @@ public class DescriptionScrapingTest {
     Book book3 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880");
     Book book4 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587");
     Book book5 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823");
+    Book book6 = new Book("https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=135519424");
     
     public DescriptionScrapingTest() {
         writer = new DescriptionWriter();
@@ -86,6 +87,13 @@ public class DescriptionScrapingTest {
         assertTrue(des.startsWith("캘리포니아대학교 산하 ‘"));
         assertTrue(des.endsWith(" 6개월이기 때문이다."));
         System.out.println(des);
+        
+        logger.log(Level.INFO, "Starting test {0}", book6.getTitle());
+        des = book6.getDescription();
+        assertTrue(des.startsWith("자신의 모순을 인정하며, "));
+        assertTrue(des.endsWith(" 선언문이다."));
+        System.out.println(des);
+        
         
         
     }
