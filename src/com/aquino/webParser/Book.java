@@ -26,6 +26,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
 
 /**
  *
@@ -67,6 +68,7 @@ public class Book {
             isbn = Long.parseLong(isbnString);
         } catch (NumberFormatException e) {
             isbn = -1;
+            isbnString = doc.getElementsByAttributeValueMatching("property", "books:isbn").attr("content");
         }
     }
     public Long getISBN() {
@@ -445,8 +447,12 @@ public class Book {
     private Book scrapeLazyContent(Book book, Document doc) {
         Map<String, String> map = new HashMap<>();
         map.put("Referer", doc.location());
-        doc = Connect.connectToURLwithHeaders(
-                createLazyContentUrl(book.getISBN()), map);
+        if(book.getISBN() == -1)
+            doc = Connect.connectToURLwithHeaders(
+                createLazyContentUrl(String.valueOf(book.getISBN())), map);
+        else doc = Connect.connectToURLwithHeaders(
+                createLazyContentUrl(book.getIsbnString()), map);
+        
         book.setDescription(findDescription(doc));
 //        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
 //        if(element == null) {
@@ -464,7 +470,14 @@ public class Book {
                 for (Node n : element.childNodes()) {
                     if (n.nodeName().equals("#comment")){
                         if("\n<!-- 책소개-->".contentEquals(n.toString())) {
-                             result = Jsoup.parse(element.siblingElements().toString()).getElementsByClass("p_textbox").first().wholeText().trim();
+                            try {
+                                result = Jsoup.parse(
+                                    element.siblingElements().toString())
+                                    .getElementsByClass("p_textbox")
+                                    .first().wholeText().trim();
+                            } catch (NullPointerException e) {
+                                result = "";
+                            }
                         }
                     }
                 }
@@ -472,7 +485,7 @@ public class Book {
             return result;
     }
     
-    private String createLazyContentUrl(long details) {
+    private String createLazyContentUrl(String details) {
         return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
                 + details + "&name=Introduce&type=0&date=11";
     }

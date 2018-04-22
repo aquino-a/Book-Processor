@@ -5,6 +5,12 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.Utilities.Connect;
+import org.jsoup.nodes.Comment;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+
 /**
  *
  * @author alex
@@ -12,12 +18,24 @@ package com.aquino.webParser;
 public class Demo {
     public static void main(String[] args) {
         
-        Book[] books = { new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
-                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
-                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
-                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
-                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
-        };  
+//        Book[] books = { new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
+//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
+//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
+//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
+//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
+//        };  
+          Document doc = Connect.connectToURL("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=122260932");
+          for (Element e : doc.getAllElements()) {
+              for (Node node : e.childNodes()) {
+                  if(node instanceof Comment) {
+                      Comment comment = (Comment) node;
+                      System.out.println(comment.getData());
+                  }
+              }
+            
+                  
+          }
+          
 //        ExcelWriter writer = new ExcelWriter(
 //                Connect.newWorkbookFromTemplate());
 //        JFrame frame = new JFrame("JWPdemo");
@@ -114,14 +132,14 @@ public class Demo {
         
         
 ////
-        for (Book book: books) {
-            System.out.println(book.getISBN());
-            System.out.println(book.getDescription());
-            System.out.println();
-            System.out.println();
-            System.out.println();
-            System.out.println("NEWLINE");
-        }
+//        for (Book book: books) {
+//            System.out.println(book.getISBN());
+//            System.out.println(book.getDescription());
+//            System.out.println();
+//            System.out.println();
+//            System.out.println();
+//            System.out.println("NEWLINE");
+//        }
 //        System.out.println(book.doc.getElementsByClass("p_goodstd03").text());
 //        StringTokenizer st = new StringTokenizer(book.doc.getElementsByClass("p_goodstd03").text(), " |");
 //        while(st.hasMoreTokens()) System.out.println(st.nextToken());
