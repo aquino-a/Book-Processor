@@ -81,6 +81,7 @@ public class ExcelWriter {
         if (Character.isDigit(book.getPublisher().charAt(0)))
             row.createCell(11).setCellValue(Integer.parseInt(book.getPublisher()));
         else row.createCell(11).setCellValue(book.getPublisher());
+        row.createCell(12).setCellValue(book.getCategory());
         row.createCell(15).setCellValue("Opes");
         row.createCell(16).setCellValue("KOR");
         row.createCell(19).setCellValue(book.getPublishDateFortmatted());

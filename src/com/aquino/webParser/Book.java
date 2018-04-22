@@ -37,7 +37,7 @@ public class Book {
     private String title,publishDate,originalPrice,bookSize,
             cover,publishDateFormatted,bookSizeFormatted,
             imageURL, author, englishTitle, translator,
-            publisher, author2, isbnString, description;
+            publisher, author2, isbnString, description, category;
     private long isbn,oclc;
     
     private int pages, weight;
@@ -489,5 +489,27 @@ public class Book {
         return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
                 + details + "&name=Introduce&type=0&date=11";
     }
+    
+    
+    private String findCategory(Book book, Document doc) {
+        return doc.getElementsByClass("p_categorize")
+                .first().getElementsByTag("a").get(1).text().trim();
+    }
+    /**
+     * @return the category
+     */
+    public String getCategory() {
+        if(category == null) this.setCategory(findCategory(this, doc));
+        return category;
+    }
+
+    /**
+     * @param category the category to set
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    
     
 }
