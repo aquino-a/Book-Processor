@@ -37,7 +37,8 @@ public class Book {
     private String title,publishDate,originalPrice,bookSize,
             cover,publishDateFormatted,bookSizeFormatted,
             imageURL, author, englishTitle, translator,
-            publisher, author2, isbnString, description, category;
+            publisher, author2, isbnString, description, category, authorOriginal,
+            locationUrl;
     private long isbn,oclc;
     
     private int pages, weight;
@@ -46,6 +47,7 @@ public class Book {
     public Book(String url) {
 //            System.out.println("in book constructor");
             doc = Connect.connectToURL(url);
+            locationUrl = doc.location();
     }
 
     
@@ -436,7 +438,7 @@ public class Book {
     }
     
     public String getDescription() {
-        if(description == null) scrapeLazyContent(this, doc);
+        if(description == null) scrapeLazyDescription(this);
         return description;
     }
 
@@ -444,14 +446,15 @@ public class Book {
         this.description = description;
     }
 
-    private Book scrapeLazyContent(Book book, Document doc) {
+    private Book scrapeLazyDescription(Book book) {
         Map<String, String> map = new HashMap<>();
-        map.put("Referer", doc.location());
+        Document doc;
+        map.put("Referer", book.getLocationUrl());
         if(book.getISBN() == -1)
             doc = Connect.connectToURLwithHeaders(
-                createLazyContentUrl(String.valueOf(book.getISBN())), map);
+                createLazyDescriptionUrl(String.valueOf(book.getISBN())), map);
         else doc = Connect.connectToURLwithHeaders(
-                createLazyContentUrl(book.getIsbnString()), map);
+                createLazyDescriptionUrl(book.getIsbnString()), map);
         
         book.setDescription(findDescription(doc));
 //        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
@@ -485,7 +488,7 @@ public class Book {
             return result;
     }
     
-    private String createLazyContentUrl(String details) {
+    private String createLazyDescriptionUrl(String details) {
         return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
                 + details + "&name=Introduce&type=0&date=11";
     }
@@ -495,6 +498,38 @@ public class Book {
         return doc.getElementsByClass("p_categorize")
                 .first().getElementsByTag("a").get(1).text().trim();
     }
+    
+    private Book scrapeLazyAuthor(Book book) {
+        
+        if(book.getEnglishTitle() == "") {
+            book.setAuthorOriginal("");
+            return book;
+        }
+            
+        Map<String, String> map = new HashMap<>();
+        Document doc;
+        
+        map.put("Referer", book.getLocationUrl());
+        doc = Connect.connectToURLwithHeaders(
+            createLazyAuthorUrl(String.valueOf(book.getISBN())), map);
+        book.setAuthorOriginal(findAuthorOriginal(doc));
+        return book;
+    }
+    
+    private String createLazyAuthorUrl(String details) {
+        return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
+                + details +"&name=AuthorInfo&type=0&date=11";
+    }
+    
+    private String findAuthorOriginal(Document doc) {
+        String result = doc.getElementsByClass("p_larfont").first().text().trim();
+        String regex = "\\(([^()]+)\\)";
+        Matcher m = Pattern.compile(regex).matcher(result);
+        if(m.find()) 
+            return m.group(1);
+        else return "";
+    }
+    
     /**
      * @return the category
      */
@@ -509,6 +544,39 @@ public class Book {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    /**
+     * @return the authorOriginal
+     */
+    public String getAuthorOriginal() {
+        if(authorOriginal == null) scrapeLazyAuthor(this);
+        return authorOriginal;
+    }
+
+    /**
+     * @param authorOriginal the authorOriginal to set
+     */
+    public void setAuthorOriginal(String authorOriginal) {
+        this.authorOriginal = authorOriginal;
+    }
+
+    /**
+     * @return the locationUrl
+     */
+    public String getLocationUrl() {
+        return locationUrl;
+    }
+
+    /**
+     * @param locationUrl the locationUrl to set
+     */
+    public void setLocationUrl(String locationUrl) {
+        this.locationUrl = locationUrl;
+    }
+
+    
+
+    
 
     
     

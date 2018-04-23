@@ -82,6 +82,8 @@ public class ExcelWriter {
             row.createCell(11).setCellValue(Integer.parseInt(book.getPublisher()));
         else row.createCell(11).setCellValue(book.getPublisher());
         row.createCell(12).setCellValue(book.getCategory());
+        if(!book.getEnglishTitle().equals(""))
+            row.createCell(13).setCellValue(book.getAuthorOriginal());
         row.createCell(15).setCellValue("Opes");
         row.createCell(16).setCellValue("KOR");
         row.createCell(19).setCellValue(book.getPublishDateFortmatted());
