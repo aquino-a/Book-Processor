@@ -112,7 +112,7 @@ public class Book {
     }
     
     private void retrieveVarious() {
-        StringTokenizer st = new StringTokenizer(doc.getElementsByClass("p_goodstd03").text(), " |");
+        StringTokenizer st = new StringTokenizer(doc.getElementsByClass("p_goodstd03").eq(1).text(), " |");
         Pattern number = Pattern.compile("(\\d+)");
         if(st.hasMoreTokens()){
             final String first = st.nextToken();
