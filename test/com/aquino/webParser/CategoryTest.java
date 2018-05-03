@@ -5,8 +5,7 @@
  */
 package com.aquino.webParser;
 
-import com.sun.istack.internal.logging.Logger;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,7 +19,7 @@ import static org.junit.Assert.*;
  */
 public class CategoryTest {
     
-        private static final Logger logger = Logger.getLogger(CategoryTest.class);
+        private static final Logger logger = Logger.getLogger(CategoryTest.class.getName());
         
         Book book1 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686");
         Book book2 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz");
