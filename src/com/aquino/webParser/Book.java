@@ -450,7 +450,7 @@ public class Book {
         Map<String, String> map = new HashMap<>();
         Document doc;
         map.put("Referer", book.getLocationUrl());
-        if(book.getISBN() == -1)
+        if(book.getISBN() != -1)
             doc = Connect.connectToURLwithHeaders(
                 createLazyDescriptionUrl(String.valueOf(book.getISBN())), map);
         else doc = Connect.connectToURLwithHeaders(
