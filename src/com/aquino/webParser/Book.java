@@ -117,15 +117,15 @@ public class Book {
         if(st.hasMoreTokens()){
             final String first = st.nextToken();
             if (Character.isDigit(first.charAt(0))){
-                cover = "Paperback";
+                cover = "PB";
                 Matcher m = number.matcher(first);
                 if(m.find()) {
                     pages = Integer.parseInt(m.group());
                 }
                 bookSize = st.nextToken();
             } else {
-                if(Pattern.compile("반").matcher(first).find()) cover = "Paperback";
-                else cover = "Hardcover";
+                if(Pattern.compile("반").matcher(first).find()) cover = "PB";
+                else cover = "HC";
                 Matcher m = number.matcher(st.nextToken());
                 if(m.find()) {
                     pages = Integer.parseInt(m.group());

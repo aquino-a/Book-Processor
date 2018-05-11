@@ -87,7 +87,7 @@ public class ExcelWriter {
         row.createCell(15).setCellValue("Opes");
         row.createCell(16).setCellValue("KOR");
         row.createCell(19).setCellValue(book.getPublishDateFortmatted());
-        row.createCell(20).setCellValue(1090);
+        row.createCell(20).setCellValue("Won");
         row.createCell(21).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
         row.createCell(22).setCellValue(book.getImageUrl());
@@ -98,10 +98,10 @@ public class ExcelWriter {
         row.createCell(28).setCellValue(book.getPages());
         row.createCell(31).setCellValue(book.getWeight());
         row.createCell(32).setCellValue("Books");
-        row.createCell(34).setCellValue("FALSE");
-        row.createCell(35).setCellValue("TRUE");
-        row.createCell(37).setCellValue("TRUE");
-        row.createCell(38).setCellValue("FALSE");
+        row.createCell(34).setCellValue(0);
+        row.createCell(35).setCellValue(1);
+        row.createCell(37).setCellValue(1);
+        row.createCell(38).setCellValue(0);
     }
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
