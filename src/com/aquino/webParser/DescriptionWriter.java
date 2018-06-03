@@ -29,8 +29,10 @@ public class DescriptionWriter {
     public boolean writeBooks(Book[] books) {
         StringBuilder sb = new StringBuilder(bookDescriptions);
         for (Book book : books) { 
-                sb.append(String.format("책이름: %s%n책소개: %n%s%n%n%n",
-                        book.getTitle(),book.getDescription()));
+                sb.append(String.format("%s%n%s%s%s%n%n%n%n",
+                        book.getTitle(),originalTitle(book.getEnglishTitle())
+                        ,originalAuthor(book.getAuthorOriginal()),
+                        book.getDescription() + "  " + book.getTranslator()));
         }
         bookDescriptions = sb.toString();
         logger.log(Level.INFO, "Done setting up descriptions");
@@ -56,6 +58,18 @@ public class DescriptionWriter {
         } 
         logger.log(Level.INFO, "Done writing book descriptions");
         return true;
+    }
+    
+    private String originalTitle(String title) {
+        if(!title.equals(""))
+            return title + "\n";
+        return title;
+    }
+    
+    private String originalAuthor(String author) {
+        if(!author.equals(""))
+            return author + "\n";
+        return author;
     }
     
 }
