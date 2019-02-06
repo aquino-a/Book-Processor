@@ -141,7 +141,7 @@ public class Book {
         if (st.hasMoreTokens()) {
             final String first = st.nextToken();
             if (Character.isDigit(first.charAt(0))) {
-                cover = "PB";
+                cover = "";
                 Matcher m = number.matcher(first);
                 if (m.find()) {
                     pages = Integer.parseInt(m.group());

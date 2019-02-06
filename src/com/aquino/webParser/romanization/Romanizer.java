@@ -28,11 +28,11 @@ public class Romanizer {
             Collections.unmodifiableList(Arrays.asList(
                     "a","ae","ya","ye","eo","e","yeo","ye",
                     "o","wa","wae","oi","yo","u","weo","ue",
-                    "we","you","eu","eui","i"));
+                    "wi","yu","eu","eui","i"));
     
     private static final List<String> LAST_CONSONANTS = 
             Collections.unmodifiableList(Arrays.asList(
-                    "","g","gg","gs","n","nj","nh","d","l",
+                    "","g","gg","gs","n","nj","n","d","l",
                     "g","lm","lb","ls","lt","lp","lh","m",
                     "b","bs","s","ss", "ng","j","ch","k",
                     "t","p","h"));
