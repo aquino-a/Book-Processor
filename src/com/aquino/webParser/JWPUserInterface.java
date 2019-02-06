@@ -9,6 +9,7 @@ import com.aquino.webParser.OCLC.OCLCChecker;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
+import com.aquino.webParser.Utilities.Links;
 import com.aquino.webParser.filters.CheckFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,6 +88,7 @@ public class JWPUserInterface extends JPanel {
         file.add(new JMenuItem(saveAsAction));
         JMenu tools = new JMenu("Tools");
         tools.add(new JMenuItem(scrapeOclc));
+        tools.add(new JMenuItem(scrapeBestOclc));
         menuBar.add(file);
         menuBar.add(tools);
         
@@ -117,7 +119,11 @@ public class JWPUserInterface extends JPanel {
     });
     
     private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
-        getOclcWorker().execute();
+        getOclcWorker(Links.Type.NEW).execute();
+    });
+    
+    private final Action scrapeBestOclc = Handlers.anonymousEventClass("Scrape BEST OCLCs", (event) ->{
+        getOclcWorker(Links.Type.BEST).execute();
     });
     
     private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
@@ -249,12 +255,13 @@ public class JWPUserInterface extends JPanel {
         };
     }
     
-    private SwingWorker getOclcWorker() {
+    private SwingWorker getOclcWorker(Links.Type type) {
         return new SwingWorker<Void,Void>() {
             @Override
             public Void doInBackground() {
                 try {
                     disableActions();
+                    Links.setType(type);
                     OCLCChecker checker = new OCLCChecker();
                     checker.getHitsAndWrite(1, 50, mainPanel);
                     logger.log(Level.INFO, "Done scraping for OCLC numbers.");

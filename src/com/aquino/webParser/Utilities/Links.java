@@ -20,9 +20,22 @@ import org.jsoup.select.Elements;
 public class Links {
     
     private static final Logger logger = Logger.getLogger(Links.class.getName());
+    private static Type type = Type.NEW;
+
+    public static Type getType() {
+        return type;
+    }
+
+    public static void setType(Type type) {
+        Links.type = type;
+    }
     
     private static String buildOCLCURL(String pageNumber) {
-        return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
+        if(type == Type.NEW)
+            return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
+        if (type == Type.BEST)
+            return "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0&page=" + pageNumber;
+        else return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
     }
     public static String getPageofLinks(int pageNumber) throws IOException {
         logger.log(Level.INFO, "Starting page {0}", pageNumber);
@@ -46,6 +59,10 @@ public class Links {
         if(elements.first() == null)
             throw new IOException("No book");
         else return elements;
+    }
+    
+    public enum Type {
+        BEST,NEW
     }
 //    public String getPagesOfLinks(int pageAmount) {
 //        StringJoiner joiner = new StringJoiner("\n");

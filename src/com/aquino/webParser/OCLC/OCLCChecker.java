@@ -90,9 +90,9 @@ public class OCLCChecker {
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
         frame.add(panel);
-        
+        Links.setType(Links.Type.BEST);
         OCLCChecker checker = new OCLCChecker();
-        checker.getHitsAndWrite(1,80,panel);
+        checker.getHitsAndWrite(1,2,panel);
         System.exit(0);
 
     }
