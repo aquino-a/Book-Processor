@@ -42,6 +42,9 @@ public class OCLCChecker {
     
     public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component) {
         File save = FileUtility.saveLocation(component);
+        if(save == null){
+            throw new IllegalArgumentException("No save file selected");
+        }
         try {
             for (int i = pageStart; i <= pageEnd; i++) {
             checkAndWriteOnePage(i);
