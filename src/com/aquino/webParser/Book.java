@@ -24,6 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
+
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -344,41 +346,49 @@ public class Book {
     }
 
     private void retrieveAuthorInfo() {
-        String previous = null;
-        int count = 1;
-        StringTokenizer st = new StringTokenizer(
-                doc.getElementsByAttributeValueMatching(
-                        "style", "height:25px; padding-right:10px;").text(),
-                 "|,");
-        while (st.hasMoreTokens()) {
-            if (author == null) {
-                parseAuthor(st.nextToken());
-                count++;
-                //continue;
-            }
-            String next = st.nextToken();
-            if (next.contains("(지은이)")) {
-                parseAuthor2(next, count);
-            }
+//        String previous = null;
+//        int count = 1;
+//        StringTokenizer st = new StringTokenizer(
+//                doc.getElementsByAttributeValueMatching(
+//                        "style", "height:25px; padding-right:10px;").text(),
+//                 "|,");
+//        while (st.hasMoreTokens()) {
+//            if (author == null) {
+//                parseAuthor(st.nextToken());
+//                count++;
+//                //continue;
+//            }
+//            String next = st.nextToken();
+//            if (next.contains("(지은이)")) {
+//                parseAuthor2(next, count);
+//            }
+//
+//            if (next.contains("(옮긴이)")) {
+//                this.translator = next.replace("(옮긴이)", "").trim();
+//                //continue;
+//            }
+//            if (next.contains("원제")) {
+//                parseEnglishTitle(next.replace("원제", ""));
+//            }
+//
+//            if (next.contains("-") && previous != null && publisher == null) {
+//                if (previous.indexOf("(") > 1) {
+//                    publisher = trimParentheses(previous);
+//                } else {
+//                    publisher = previous.trim();
+//                }
+//            }
+//            previous = next;
+//            count++;
+//        }
+        String authorSection = doc.getElementsByClass("Ere_sub2_title").first().text();
 
-            if (next.contains("(옮긴이)")) {
-                this.translator = next.replace("(옮긴이)", "").trim();
-                //continue;
-            }
-            if (next.contains("원제")) {
-                parseEnglishTitle(next.replace("원제", ""));
-            }
+        String translator = FindTranslator(authorSection);
+        String originalTitle = FindOriginalTitle(authorSection);
+        String publisher = FindPublisher(authorSection);
+        String publishDate = FindPublishDate(authorSection);
+        SetAuthors(this, authorSection);
 
-            if (next.contains("-") && previous != null && publisher == null) {
-                if (previous.indexOf("(") > 1) {
-                    publisher = trimParentheses(previous);
-                } else {
-                    publisher = previous.trim();
-                }
-            }
-            previous = next;
-            count++;
-        }
         retrieveAuthorNumber();
         retrievePublisherNumber();
         if (author2 != null && author2 != "") {
@@ -393,6 +403,35 @@ public class Book {
         if (author2 == null) {
             author2 = "";
         }
+    }
+
+    private Book SetAuthors(Book book, String authorSection) {
+
+        return book;
+
+//        "((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)"
+    }
+
+    private String FindPublishDate(String authorSection) {
+        return null;
+//        "\\d{4}-\\d{2}-\\d{2}"
+    }
+
+    private String FindPublisher(String authorSection) {
+        return null;
+//        "\\)([\\u3131-\\uD79DA-Za-z ]+)(?:\\d{4}-\\d{2}-\\d{2})"
+    }
+
+    //TODO implement these
+    private String FindOriginalTitle(String authorSection) {
+        return null;
+//        원제 : ([\\p{L} ]+)(?: \\( \\d{4}년\\))?
+    }
+
+    private String FindTranslator(String as) {
+
+        return null;
+        //([\\u3131-\\uD79D]{3}) \\(옮긴이\\)
     }
 
     public String getAuthor() {
