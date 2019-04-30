@@ -23,14 +23,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
-import javax.swing.JTextArea;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
 
 /**
  *
@@ -43,13 +40,20 @@ public class Book {
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, authorOriginal,
-            locationUrl;
+            locationUrl, kIsbn;
     private long isbn, oclc;
 
     private int pages, weight;
     private double originalPriceFormatted;
     
     private static final Logger logger = Logger.getLogger(Book.class.getName());
+
+    private static final Pattern translatorPattern = Pattern.compile("([\\u3131-\\uD79D]{3}) \\(옮긴이\\)");
+    private static final Pattern originalTitlePattern = Pattern.compile("원제 : ([\\p{L} ]+)(?: \\( \\d{4}년\\))?");
+    private static final Pattern publisherPattern = Pattern.compile("\\)([\\u3131-\\uD79DA-Za-z ]+)(?:\\d{4}-\\d{2}-\\d{2})");
+    private static final Pattern publishDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    private static final Pattern authorsPattern = Pattern.compile("((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)");
+
 
     public Book(String url) {
 //            System.out.println("in book constructor");
@@ -98,7 +102,9 @@ public class Book {
     }
 
     private void retrieveOriginalPrice() {
-        originalPrice = doc.getElementsByClass("p_goodstd02").first().text();
+
+//        originalPrice = doc.getElementsByClass("p_goodstd02").first().text();
+        originalPrice = doc.getElementsByClass("info_list").first().getElementsByClass("Ritem").first().text();
         StringBuilder sb = new StringBuilder(originalPrice);
         sb.deleteCharAt(sb.length() - 1);
         originalPrice = sb.toString();
@@ -137,58 +143,46 @@ public class Book {
         return publishDate;
     }
 
-    private void retrieveVarious() {
-        StringTokenizer st = new StringTokenizer(doc.getElementsByClass("p_goodstd03").eq(1).text(), " |");
-        Pattern number = Pattern.compile("(\\d+)");
-        if (st.hasMoreTokens()) {
-            final String first = st.nextToken();
-            if (Character.isDigit(first.charAt(0))) {
-                cover = "";
-                Matcher m = number.matcher(first);
-                if (m.find()) {
-                    pages = Integer.parseInt(m.group());
-                }
-                bookSize = st.nextToken();
-            } else {
-                if (Pattern.compile("반").matcher(first).find()) {
-                    cover = "PB";
-                } else {
-                    cover = "HC";
-                }
-                Matcher m = number.matcher(st.nextToken());
-                if (m.find()) {
-                    pages = Integer.parseInt(m.group());
-                }
-                bookSize = st.nextToken();
-            }
-
+    private void parseSecondDetailSection() {
+        String bookDetailSection = doc.getElementsByClass("conts_info_list1").first().text();
+        StringTokenizer stringTokenizer = new StringTokenizer(bookDetailSection," ");
+        while(stringTokenizer.hasMoreTokens()){
+            String s = stringTokenizer.nextToken();
+            if(s.contains("반양장본"))
+                cover = "PB";
+            else if(s.contains("양장본"))
+                cover = "HC";
+            else if(s.contains("쪽"))
+                pages = Integer.parseInt(s.substring(0,s.length()-1));
+            else if(s.contains("mm"))
+                bookSize = s;
         }
     }
 
     public String getType() {
         if (cover == null) {
-            retrieveVarious();
+            parseSecondDetailSection();
         }
         return cover;
     }
 
     public int getPages() {
         if (pages == 0) {
-            retrieveVarious();
+            parseSecondDetailSection();
         }
         return pages;
     }
 
     public String getBookSize() {
         if (bookSize == null) {
-            retrieveVarious();
+            parseSecondDetailSection();
         }
         return bookSize;
     }
 
     private void formatSize() {
         if (bookSize == null) {
-            retrieveVarious();
+            parseSecondDetailSection();
         }
         StringTokenizer st = new StringTokenizer(bookSize, "*m");
         try {
@@ -304,16 +298,9 @@ public class Book {
 
     private void retrieveWeight() {
         if (pages == 0) {
-            retrieveVarious();
+            parseSecondDetailSection();
         }
-
         weight = pages % 300 > 1 ? (pages / 300) + 1 : pages / 300;
-//        else if(pages <= 300) weight = 1;
-//        else if(pages <= 600) weight = 2;
-//        else if(pages <= 900) weight = 3;
-//        else if(pages <= 1200) weight = 4;
-//        else if(pages <= 1500) weight = 5;
-//        else if(pages <= 3000) weight = 6;
     }
 
     public int getWeight() {
@@ -345,126 +332,111 @@ public class Book {
         return oclc;
     }
 
-    private void retrieveAuthorInfo() {
-//        String previous = null;
-//        int count = 1;
-//        StringTokenizer st = new StringTokenizer(
-//                doc.getElementsByAttributeValueMatching(
-//                        "style", "height:25px; padding-right:10px;").text(),
-//                 "|,");
-//        while (st.hasMoreTokens()) {
-//            if (author == null) {
-//                parseAuthor(st.nextToken());
-//                count++;
-//                //continue;
-//            }
-//            String next = st.nextToken();
-//            if (next.contains("(지은이)")) {
-//                parseAuthor2(next, count);
-//            }
-//
-//            if (next.contains("(옮긴이)")) {
-//                this.translator = next.replace("(옮긴이)", "").trim();
-//                //continue;
-//            }
-//            if (next.contains("원제")) {
-//                parseEnglishTitle(next.replace("원제", ""));
-//            }
-//
-//            if (next.contains("-") && previous != null && publisher == null) {
-//                if (previous.indexOf("(") > 1) {
-//                    publisher = trimParentheses(previous);
-//                } else {
-//                    publisher = previous.trim();
-//                }
-//            }
-//            previous = next;
-//            count++;
-//        }
+    private void parseFirstDetailSection() {
         String authorSection = doc.getElementsByClass("Ere_sub2_title").first().text();
 
-        String translator = FindTranslator(authorSection);
-        String originalTitle = FindOriginalTitle(authorSection);
-        String publisher = FindPublisher(authorSection);
-        String publishDate = FindPublishDate(authorSection);
+        translator = FindTranslator(authorSection);
+        englishTitle  = FindOriginalTitle(authorSection);
+        publisher = FindPublisher(authorSection);
+        publishDate = FindPublishDate(authorSection);
         SetAuthors(this, authorSection);
 
-        retrieveAuthorNumber();
+        if(author != "1494")
+            retrieveAuthorNumber();
         retrievePublisherNumber();
-        if (author2 != null && author2 != "") {
+        if (author2 != null && !author2.equals("")) {
             retrieveAuthor2Number();
-        }
-        if (translator == null) {
-            translator = "";
-        }
-        if (englishTitle == null) {
-            englishTitle = "";
-        }
-        if (author2 == null) {
-            author2 = "";
         }
     }
 
     private Book SetAuthors(Book book, String authorSection) {
-
+        Matcher m =  authorsPattern.matcher(authorSection);
+        if(m.find()){
+            int size = m.groupCount();
+            if(size == 2){
+                String[] tokens = m.group(1).split(",");
+                if(tokens.length > 1){
+                    book.author = "1494";
+                    book.author2 = "";
+                } else {
+                    book.author = m.group(2);
+                    book.author2 = tokens[0];
+                }
+            }
+            else if(size == 2){
+                book.author = m.group(2);
+                book.author2 = "";
+            }
+        }
         return book;
 
 //        "((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)"
     }
 
     private String FindPublishDate(String authorSection) {
-        return null;
+        Matcher m = publishDatePattern.matcher(authorSection);
+        if(m.find())
+            return m.group(0);
+        return "";
 //        "\\d{4}-\\d{2}-\\d{2}"
     }
 
     private String FindPublisher(String authorSection) {
-        return null;
+        Matcher m = publisherPattern.matcher(authorSection);
+        if(m.find())
+            return m.group(1);
+        return "";
 //        "\\)([\\u3131-\\uD79DA-Za-z ]+)(?:\\d{4}-\\d{2}-\\d{2})"
     }
 
     //TODO implement these
     private String FindOriginalTitle(String authorSection) {
-        return null;
+        Matcher m = originalTitlePattern.matcher(authorSection);
+        if(m.find())
+            return m.group(1);
+        return "";
 //        원제 : ([\\p{L} ]+)(?: \\( \\d{4}년\\))?
     }
 
-    private String FindTranslator(String as) {
-
-        return null;
+    private String FindTranslator(String authorSection) {
+        Matcher m = translatorPattern.matcher(authorSection);
+        if(m.find())
+            return m.group(1);
+        return "";
         //([\\u3131-\\uD79D]{3}) \\(옮긴이\\)
     }
 
     public String getAuthor() {
         if (author == null) {
-            retrieveAuthorInfo();
+            parseFirstDetailSection();
         }
         return author;
     }
 
     public String getEnglishTitle() {
         if (englishTitle == null) {
-            retrieveAuthorInfo();
+            parseFirstDetailSection();
         }
         return englishTitle;
     }
 
     public String getPublisher() {
         if (publisher == null) {
-            retrieveAuthorInfo();
+            parseFirstDetailSection();
         }
         return publisher;
     }
 
     public String getTranslator() {
         if (translator == null) {
-            retrieveAuthorInfo();
+            parseFirstDetailSection();
         }
         return translator;
     }
 
     public String getAuthor2() {
         if (author2 == null) {
-            retrieveAuthorInfo();
+            parseFirstDetailSection();
         }
         return author2;
     }
@@ -614,9 +586,9 @@ public class Book {
         Map<String, String> map = new HashMap<>();
         Document doc;
         map.put("Referer", book.getLocationUrl());
-        if (book.getISBN() != -1) {
+        if (book.getkIsbn() != null) {
             doc = Connect.connectToURLwithHeaders(
-                    createLazyDescriptionUrl(String.valueOf(book.getISBN())), map);
+                    createLazyDescriptionUrl(String.valueOf(book.getkIsbn())), map);
         } else {
             doc = Connect.connectToURLwithHeaders(
                     createLazyDescriptionUrl(book.getIsbnString()), map);
@@ -642,7 +614,7 @@ public class Book {
                         try {
                             result = Jsoup.parse(
                                     element.siblingElements().toString())
-                                    .getElementsByClass("p_textbox")
+                                    .getElementsByClass("Ere_prod_mconts_R")
                                     .first().wholeText().trim();
                         } catch (NullPointerException e) {
                             result = "";
@@ -660,8 +632,9 @@ public class Book {
     }
 
     private String findCategory(Book book, Document doc) {
-        return doc.getElementsByClass("p_categorize")
-                .first().getElementsByTag("a").get(1).text().trim();
+        return doc.getElementById("ulCategory").getElementsByTag("li").first().getElementsByTag("a").get(1).text();
+//        return doc.getElementsByClass("p_categorize")
+//                .first().getElementsByTag("a").get(1).text().trim();
     }
 
     private Book scrapeLazyAuthor(Book book) {
@@ -676,7 +649,7 @@ public class Book {
 
         map.put("Referer", book.getLocationUrl());
         doc = Connect.connectToURLwithHeaders(
-                createLazyAuthorUrl(String.valueOf(book.getISBN())), map);
+                createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
         book.setAuthorOriginal(findAuthorOriginal(doc));
         return book;
     }
@@ -688,7 +661,7 @@ public class Book {
 
     private String findAuthorOriginal(Document doc) {
         try {
-            String result = doc.getElementsByClass("p_larfont").first().text().trim();
+            String result = doc.getElementsByClass("Ere_fs18 Ere_sub_gray3 Ere_str").first().text().trim();
             String regex = "\\(([^()]+)\\)";
             Matcher m = Pattern.compile(regex).matcher(result);
             if (m.find()) {
@@ -740,6 +713,13 @@ public class Book {
     public String getLocationUrl() {
         return locationUrl;
     }
+
+    public String getkIsbn() {
+        if(kIsbn == null)
+            kIsbn = doc.getElementsByAttributeValueMatching("property", "books:isbn").attr("content");
+        return kIsbn;
+    }
+
 
     /**
      * @param locationUrl the locationUrl to set
