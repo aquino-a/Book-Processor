@@ -8,6 +8,11 @@ package com.aquino.webParser.filters;
 
 
 import com.aquino.webParser.Book;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -23,16 +28,30 @@ public class CheckFilter extends DocumentFilter {
     public CheckFilter(Consumer consumer) {
         this.consumer = consumer;
     }
+    private boolean checking;
+
     @Override
     public void replace(
             DocumentFilter.FilterBypass fb,  int offset, 
             int length, String text, AttributeSet attrs) throws BadLocationException{
-        if (text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
-            Book book = new Book(text);
-            String exists = (!book.titleExists()) ? "NOT" : "ALREADY";
-            String output = book.getTitle() + " is " + exists + " in the inventory!";
-            super.replace(fb, 0, fb.getDocument().getLength(), output, attrs);
-            consumer.accept(text);
+
+        if (!checking &&text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
+            checking = true;
+            CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
+                Book book = new Book(text);
+                String exists = (!book.titleExists()) ? "NO" : "YES";
+                return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,10),exists, book.getOCLC() == -1 ? "NO" : "YES");
+            });
+            completableFuture.thenAccept(s -> {
+                checking = false;
+                try {
+                    super.replace(fb, 0, fb.getDocument().getLength(), s, attrs);
+                } catch (BadLocationException e) {
+                    //TODO properly handle this... shouldn't cause a problem.... This exception isn't caught anywhere anyway
+                    e.printStackTrace();
+                }
+                consumer.accept(text);
+            });
         }
     }
     
