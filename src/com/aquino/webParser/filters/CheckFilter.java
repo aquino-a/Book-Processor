@@ -40,7 +40,7 @@ public class CheckFilter extends DocumentFilter {
             CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
                 Book book = new Book(text);
                 String exists = (!book.titleExists()) ? "NO" : "YES";
-                return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,10),exists, book.getOCLC() == -1 ? "NO" : "YES");
+                return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOCLC() == -1 ? "NO" : "YES");
             });
             completableFuture.thenAccept(s -> {
                 checking = false;
