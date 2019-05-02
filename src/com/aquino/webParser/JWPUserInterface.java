@@ -29,10 +29,10 @@ public class JWPUserInterface extends JPanel {
     
     private static final Logger logger = Logger.getLogger(JWPUserInterface.class.getName());
     
-    private static JFrame frame;
+    private  JFrame frame;
     private JButton addButton, saveButton;
     private JPanel mainPanel,buttonPanel,checkPanel;
-    static JMenuBar menuBar;
+    private JMenuBar menuBar;
     private JMenu file;
     private JTextArea textArea;
     private ExcelWriter writer;
@@ -44,13 +44,11 @@ public class JWPUserInterface extends JPanel {
     private String checkedLink;
     private OclcProgress oclcProgress;
     
-    private JWPUserInterface() {
+    public JWPUserInterface() {
         addcomponents();
     }
-    public static JWPUserInterface getInstance() {
-        return new JWPUserInterface();
-    }
-//TODO fix savebutton
+    
+    //TODO fix savebutton
     private void addcomponents() {
         
         desWriter = new DescriptionWriter();
@@ -187,13 +185,13 @@ public class JWPUserInterface extends JPanel {
         if(event.getLength() > 2 ) addNewLine();
     });
     
-    public static void createAndShowGUI() {
+    public void createAndShowGUI() {
         frame = new JFrame("Jeein's Book Processor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         
         //content pane
-        frame.setContentPane(getInstance());
+        frame.setContentPane(this);
         frame.setJMenuBar(menuBar);
         
         //pack

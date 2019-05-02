@@ -33,7 +33,7 @@ public class JWPdemo {
         
         
         java.awt.EventQueue.invokeLater(() ->
-                JWPUserInterface.createAndShowGUI());
+                (new JWPUserInterface()).createAndShowGUI());
 
         
         
