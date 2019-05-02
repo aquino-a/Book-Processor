@@ -26,9 +26,10 @@ public class OclcProgress {
     }
 
     private String timeLeftToString(int milliseconds) {
-        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(milliseconds),
-                TimeUnit.MILLISECONDS.toMinutes(milliseconds) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(milliseconds) % TimeUnit.MINUTES.toSeconds(1));
+        int seconds = (milliseconds/1000);
+        int minutes = seconds / 60;
+        int hours = minutes / 60;
+        return String.format("%02d:%02d:%02d", hours % 60, minutes % 60, seconds % 60);
     }
 
     private void display() {
@@ -94,10 +95,10 @@ public class OclcProgress {
                 e.printStackTrace();
             }
 
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i <= 30; i++) {
                 try {
                     Thread.sleep(1000);
-                    p.setProgress(new ProgressData(0,i,29));
+                    p.setProgress(new ProgressData(0,i,30));
                 }
                 catch (Exception e) {
                     e.printStackTrace();
