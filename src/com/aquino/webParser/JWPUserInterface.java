@@ -266,7 +266,7 @@ public class JWPUserInterface extends JPanel {
                     if(oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
-                    checker.getHitsAndWrite(1, 50, mainPanel, oclcProgress::setProgress);
+                    checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
                     logger.log(Level.INFO, "Done scraping for OCLC numbers.");
                 } catch (Exception e ) {
                     Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");

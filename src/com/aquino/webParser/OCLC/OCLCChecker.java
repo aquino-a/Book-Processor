@@ -51,6 +51,8 @@ public class OCLCChecker {
             }
         } catch (IOException e) {
             logger.log(Level.INFO, "Reached end of pages");
+            if(consumer != null)
+                consumer.accept(new ProgressData(1,1,1));
         }  
         finally{
             writer.saveFile(save);

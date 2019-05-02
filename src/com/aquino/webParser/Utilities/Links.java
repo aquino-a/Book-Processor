@@ -62,7 +62,11 @@ public class Links {
     }
     
     public enum Type {
-        BEST,NEW
+        BEST(20),NEW(47);
+        private final int pages;
+        public int getPages(){return pages;};
+        Type(int pages){ this.pages = pages;};
+
     }
 //    public String getPagesOfLinks(int pageAmount) {
 //        StringJoiner joiner = new StringJoiner("\n");
