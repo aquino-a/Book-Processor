@@ -73,7 +73,7 @@ public class JWPUserInterface extends JPanel {
             public void accept(Object t) {
                 checkedLink = (String) t;
             }
-        }));
+        }, frame));
         
         //timer for state
         timer = new Timer(2000, deleteState);

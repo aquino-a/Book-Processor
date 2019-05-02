@@ -9,6 +9,7 @@ package com.aquino.webParser.filters;
 
 import com.aquino.webParser.Book;
 
+import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -23,11 +24,14 @@ import javax.swing.text.DocumentFilter;
  * @author alex
  */
 public class CheckFilter extends DocumentFilter { 
-    Consumer<String> consumer;
-    
-    public CheckFilter(Consumer consumer) {
+    private Consumer<String> consumer;
+    private Component component;
+
+    public CheckFilter(Consumer<String> consumer, Component component) {
         this.consumer = consumer;
+        this.component = component;
     }
+
     private boolean checking;
 
     @Override
@@ -37,6 +41,7 @@ public class CheckFilter extends DocumentFilter {
 
         if (!checking &&text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
             checking = true;
+            component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
                 Book book = new Book(text);
                 String exists = (!book.titleExists()) ? "NO" : "YES";
@@ -44,6 +49,7 @@ public class CheckFilter extends DocumentFilter {
             });
             completableFuture.thenAccept(s -> {
                 checking = false;
+                component.setCursor(null);
                 try {
                     super.replace(fb, 0, fb.getDocument().getLength(), s, attrs);
                 } catch (BadLocationException e) {
