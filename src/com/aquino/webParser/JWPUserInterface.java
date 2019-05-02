@@ -47,10 +47,11 @@ public class JWPUserInterface extends JPanel {
     public JWPUserInterface() {
         addcomponents();
     }
-    
+
     //TODO fix savebutton
     private void addcomponents() {
-        
+
+        frame = new JFrame("Jeein's Book Processor");
         desWriter = new DescriptionWriter();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         mainPanel = new JPanel();
@@ -93,7 +94,7 @@ public class JWPUserInterface extends JPanel {
         menuBar.add(tools);
         
         //panel
-        mainPanel.add(textArea);
+        mainPanel.add(new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
         buttonPanel.add(fileName);
         buttonPanel.add(addButton);
         buttonPanel.add(saveButton);
@@ -186,7 +187,6 @@ public class JWPUserInterface extends JPanel {
     });
     
     public void createAndShowGUI() {
-        frame = new JFrame("Jeein's Book Processor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         
