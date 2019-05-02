@@ -7,6 +7,7 @@ package com.aquino.webParser.OCLC;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.ExcelWriter;
+import com.aquino.webParser.ProgressData;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.Utilities.FileUtility;
 import com.aquino.webParser.Utilities.Links;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -40,14 +42,16 @@ public class OCLCChecker {
     
     
     
-    public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component) {
+    public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component, Consumer<ProgressData> consumer) {
         File save = FileUtility.saveLocation(component);
         if(save == null){
             throw new IllegalArgumentException("No save file selected");
         }
         try {
             for (int i = pageStart; i <= pageEnd; i++) {
-            checkAndWriteOnePage(i);
+                checkAndWriteOnePage(i);
+                if(consumer != null)
+                    consumer.accept(new ProgressData(pageStart,i,pageEnd));
             }
         } catch (IOException e) {
             logger.log(Level.INFO, "Reached end of pages");
@@ -95,10 +99,12 @@ public class OCLCChecker {
         frame.add(panel);
         Links.setType(Links.Type.BEST);
         OCLCChecker checker = new OCLCChecker();
-        checker.getHitsAndWrite(1,2,panel);
+        checker.getHitsAndWrite(1,2,panel,null);
         System.exit(0);
 
     }
+
+
 //    public void getOCLCTitles(int pageNumber, JComponent component) {
 //        File save = FileUtility.saveLocation(component);
 //        Book[] books = setHits(checkBooks(getBooks(pageNumber)));

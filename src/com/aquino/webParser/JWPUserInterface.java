@@ -41,6 +41,7 @@ public class JWPUserInterface extends JPanel {
     private Timer timer;
     private JTextField checkField;
     private String checkedLink;
+    private OclcProgress oclcProgress;
     
     private JWPUserInterface() {
         addcomponents();
@@ -263,7 +264,10 @@ public class JWPUserInterface extends JPanel {
                     disableActions();
                     Links.setType(type);
                     OCLCChecker checker = new OCLCChecker();
-                    checker.getHitsAndWrite(1, 50, mainPanel);
+                    if(oclcProgress == null)
+                        oclcProgress = new OclcProgress(frame);
+                    oclcProgress.start();
+                    checker.getHitsAndWrite(1, 50, mainPanel, oclcProgress::setProgress);
                     logger.log(Level.INFO, "Done scraping for OCLC numbers.");
                 } catch (Exception e ) {
                     Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
