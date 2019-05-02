@@ -7,15 +7,11 @@ package com.aquino.webParser.OCLC;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.ExcelWriter;
-import com.aquino.webParser.ProgressData;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.Utilities.FileUtility;
 import com.aquino.webParser.Utilities.Links;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;

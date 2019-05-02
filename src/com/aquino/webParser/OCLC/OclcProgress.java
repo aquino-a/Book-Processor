@@ -1,8 +1,7 @@
-package com.aquino.webParser;
+package com.aquino.webParser.OCLC;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.TimeUnit;
 
 public class OclcProgress {
     private JDialog dialog;
@@ -47,6 +46,7 @@ public class OclcProgress {
         dialog.add(labelEstimatedTime = new JLabel("Estimating..."));
         dialog.add(progressBar = new JProgressBar(0,100));
         dialog.setResizable(false);
+        dialog.setLocationRelativeTo(frame);
 
     }
 

@@ -6,6 +6,7 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.OCLC.OCLCChecker;
+import com.aquino.webParser.OCLC.OclcProgress;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
