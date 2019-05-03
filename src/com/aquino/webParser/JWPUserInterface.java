@@ -7,6 +7,7 @@ package com.aquino.webParser;
 
 import com.aquino.webParser.OCLC.OCLCChecker;
 import com.aquino.webParser.OCLC.OclcProgress;
+import com.aquino.webParser.OCLC.ProgressData;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
@@ -14,6 +15,7 @@ import com.aquino.webParser.Utilities.Links;
 import com.aquino.webParser.filters.CheckFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -268,8 +270,13 @@ public class JWPUserInterface extends JPanel {
                     oclcProgress.start();
                     checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
                     logger.log(Level.INFO, "Done scraping for OCLC numbers.");
-                } catch (Exception e ) {
+                }
+                catch(IOException ex){
+                    JOptionPane.showMessageDialog(frame,"Reached end of pages", "Done",JOptionPane.INFORMATION_MESSAGE);
+                }
+                catch (Exception e ) {
                     Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
+                    JOptionPane.showMessageDialog(frame,"Error occured:%nsaved books gotten so far", "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                 }
                 return null;

@@ -154,7 +154,7 @@ public class Book {
                 cover = "HC";
             else if(s.contains("쪽"))
                 pages = Integer.parseInt(s.substring(0,s.length()-1));
-            else if(s.contains("mm"))
+            else if(s.contains("m") || s.contains("*"))
                 bookSize = s;
         }
     }
@@ -351,6 +351,8 @@ public class Book {
 
     private Book SetAuthors(Book book, String authorSection) {
         Matcher m =  authorsPattern.matcher(authorSection);
+        book.author = "";
+        book.author2 = "";
         if(m.find()){
             int size = m.groupCount();
             if(size == 2){

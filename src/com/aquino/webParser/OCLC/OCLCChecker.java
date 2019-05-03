@@ -38,7 +38,7 @@ public class OCLCChecker {
     
     
     
-    public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component, Consumer<ProgressData> consumer) {
+    public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component, Consumer<ProgressData> consumer) throws IOException{
         File save = FileUtility.saveLocation(component);
         if(save == null){
             throw new IllegalArgumentException("No save file selected");
@@ -51,11 +51,12 @@ public class OCLCChecker {
             }
         } catch (IOException e) {
             logger.log(Level.INFO, "Reached end of pages");
-            if(consumer != null)
-                consumer.accept(new ProgressData(1,1,1));
-        }  
+            throw e;
+        }
         finally{
             writer.saveFile(save);
+            if(consumer != null)
+                consumer.accept(new ProgressData(1,1,1));
         }
     }
     
@@ -91,7 +92,7 @@ public class OCLCChecker {
     public int getHits() {
         return hits;
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
         frame.add(panel);
