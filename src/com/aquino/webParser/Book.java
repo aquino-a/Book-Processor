@@ -53,7 +53,7 @@ public class Book {
     private static final Pattern publisherPattern = Pattern.compile("\\)([\\u3131-\\uD79DA-Za-z ]+)(?:\\d{4}-\\d{2}-\\d{2})");
     private static final Pattern publishDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final Pattern authorsPattern = Pattern.compile("((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)");
-
+    private static final Pattern oclcPattern = Pattern.compile("oclc/(\\d+)$");
 
     public Book(String url) {
 //            System.out.println("in book constructor");
@@ -291,7 +291,14 @@ public class Book {
 //        StringTokenizer st = new StringTokenizer(textArea.getText());
         ArrayList<Book> bookList = new ArrayList<>();
         while (st.hasMoreTokens()) {
-            bookList.add(new Book(st.nextToken().trim()));
+            try{
+                bookList.add(new Book(st.nextToken().trim()));
+            }
+            catch (Exception e){
+                logger.log(Level.WARNING, String.format("Problem creating book: %s%n%s", e.getMessage()));
+                continue;
+            }
+
         }
         return bookList.toArray(new Book[bookList.size()]);
     }
@@ -322,6 +329,22 @@ public class Book {
         } catch (NullPointerException e) {
             oclc = -1;
         }
+    }
+
+    private void retrieveOCLCSmall(){
+        String location = Connect.readLocationHeader(getISBN().toString());
+        if(location.equals("-1"))
+            oclc = -1;
+        else
+            oclc = parseOCLC(location);
+    }
+
+    private long parseOCLC(String location) {
+        Matcher m = oclcPattern.matcher(location);
+        if(m.find())
+            return Long.parseLong(m.group(1));
+        else return -1;
+
     }
 
     public long getOCLC() {
