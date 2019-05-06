@@ -350,7 +350,7 @@ public class Book {
     public long getOCLC() {
 //        System.out.println("In get oclc");
         if (oclc == 0) {
-            retrieveOCLC();
+            retrieveOCLCSmall();
         }
         return oclc;
     }

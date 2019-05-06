@@ -50,14 +50,18 @@ public class BookTest {
     }
 
     @Test
-    public void testSomeMethod() {
+    public void Book1() {
         assertEquals("", book1.getAuthorOriginal());
-        assertEquals("Mark Manson", book2.getAuthorOriginal());
-        assertEquals("", book3.getAuthorOriginal());
-        assertEquals("大森藤ノ", book4.getAuthorOriginal());
-        assertEquals("Intelligent Change", book5.getAuthorOriginal());
-        assertEquals("Roxane Gay", book6.getAuthorOriginal());
-        assertEquals("", book7.getAuthorOriginal());
+        long start = System.currentTimeMillis();
+        assertEquals(1077331600L, book1.getOCLC());
+        long stop = System.currentTimeMillis();
+        System.out.printf("OCLC fetch time: %d ms", stop-start);
+//        assertEquals("Mark Manson", book2.getAuthorOriginal());
+//        assertEquals("", book3.getAuthorOriginal());
+//        assertEquals("大森藤ノ", book4.getAuthorOriginal());
+//        assertEquals("Intelligent Change", book5.getAuthorOriginal());
+//        assertEquals("Roxane Gay", book6.getAuthorOriginal());
+//        assertEquals("", book7.getAuthorOriginal());
         
     }
     
