@@ -36,7 +36,7 @@ public class ExcelWriter {
         retrieveStartRow();
     }
     private void retrieveStartRow() {
-        for (int i = 1; i < 100; i++) {
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
             
             if ( sheet.getRow(i) == null || 
                     sheet.getRow(i).getCell(1) == null) {
@@ -44,7 +44,6 @@ public class ExcelWriter {
                 startRow = i;
                 return;
             }
-            
         }
     }
     private void writeEntry(int rowNumber, Book book) {
