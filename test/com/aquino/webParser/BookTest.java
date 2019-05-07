@@ -5,7 +5,15 @@
  */
 package com.aquino.webParser;
 
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -64,5 +72,14 @@ public class BookTest {
 //        assertEquals("", book7.getAuthorOriginal());
         
     }
-    
+
+    @Test
+    public void JsonTest() throws IOException {
+        Connection.Response r =  Jsoup.connect("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbiamqnibus1956001&itemIdType=ItemId&ItemId=182285146&output=js").method(Connection.Method.GET).execute();
+        String s = r.body();
+        ObjectMapper m = new ObjectMapper();
+        JsonTestData d =  m.readValue(s, JsonTestData.class);
+    }
+
+
 }
