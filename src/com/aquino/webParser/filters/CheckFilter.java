@@ -43,9 +43,15 @@ public class CheckFilter extends DocumentFilter {
             checking = true;
             component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
-                Book book = new Book(text);
-                String exists = (!book.titleExists()) ? "NO" : "YES";
-                return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOCLC() == -1 ? "NO" : "YES");
+                try {
+                    Book book = new Book(text);
+                    String exists = (!book.titleExists()) ? "NO" : "YES";
+                    return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOCLC() == -1 ? "NO" : "YES");
+                }
+                catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                    return String.format("Error: %s", e.getMessage());
+                }
             });
             completableFuture.thenAccept(s -> {
                 checking = false;

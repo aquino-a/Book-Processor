@@ -276,7 +276,7 @@ public class JWPUserInterface extends JPanel {
                 }
                 catch (Exception e ) {
                     Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
-                    JOptionPane.showMessageDialog(frame,"Error occured:%nsaved books gotten so far", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,"Error occured during oclc scraping", "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                 }
                 return null;

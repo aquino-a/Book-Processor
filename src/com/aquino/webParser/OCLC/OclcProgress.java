@@ -76,9 +76,12 @@ public class OclcProgress {
 
     private void reset(){
         frame.setCursor(null);
-        dialog.dispose();
-        dialog = null;
-        timer.stop();
+        if(dialog != null){
+            dialog.dispose();
+            dialog = null;
+        }
+        if(timer.isRunning())
+            timer.stop();
     }
 
     public static void main(String[] args) {

@@ -58,6 +58,9 @@ public class Book {
     public Book(String url) {
 //            System.out.println("in book constructor");
         doc = Connect.connectToURL(url);
+        if(doc == null)
+            throw new IllegalArgumentException(String.format("Document is null: %s", url));
+
         locationUrl = doc.location();
     }
 
