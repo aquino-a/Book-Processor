@@ -13,11 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -200,7 +196,7 @@ public class Book {
             } else if (second % 1 == 0) {
                 bookSizeFormatted = first + " x " + (int) second;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NoSuchElementException e) {
             bookSizeFormatted = "problem";
         }
     }
