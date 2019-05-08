@@ -205,6 +205,7 @@ public class JWPUserInterface extends JPanel {
     }
     private void enableActions() {
         scrapeOclc.setEnabled(true);
+        scrapeBestOclc.setEnabled(true);
         saveAction.setEnabled(true);
         saveAsAction.setEnabled(true);
         openAction.setEnabled(true);
@@ -226,6 +227,7 @@ public class JWPUserInterface extends JPanel {
     }
     private void disableActions() {
         scrapeOclc.setEnabled(false);
+        scrapeBestOclc.setEnabled(false);
         saveAction.setEnabled(false);
         saveAsAction.setEnabled(false);
         openAction.setEnabled(false);
