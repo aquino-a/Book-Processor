@@ -82,7 +82,11 @@ public class OCLCChecker {
     
     private Book[] checkBooks(Book[] books) {
         return Stream.of(books)
-                .filter(b -> b.getOCLC() != -1 && !b.titleExists())
+                .filter(b -> {
+                    try{ return b.getOCLC() != -1 && !b.titleExists();}
+                    catch (Exception e) {
+                        logger.log(Level.WARNING, String.format("Error Checking Book: %s", e.getMessage()));
+                        return false;}})
                 .toArray(Book[]::new);
     }
     private Book[] setHits(Book[] books) {
