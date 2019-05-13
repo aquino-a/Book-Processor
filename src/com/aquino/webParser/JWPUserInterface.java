@@ -7,7 +7,6 @@ package com.aquino.webParser;
 
 import com.aquino.webParser.OCLC.OCLCChecker;
 import com.aquino.webParser.OCLC.OclcProgress;
-import com.aquino.webParser.OCLC.ProgressData;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
@@ -53,7 +52,7 @@ public class JWPUserInterface extends JPanel {
     //TODO fix savebutton
     private void addcomponents() {
 
-        frame = new JFrame("Jeein's Book Processor");
+        frame = new JFrame("Jeein's OldBook Processor");
         desWriter = new DescriptionWriter();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         mainPanel = new JPanel();
@@ -241,9 +240,9 @@ public class JWPUserInterface extends JPanel {
             public Void doInBackground() {
                 try {
                     disableActions();
-                    Book[] books = Book.retrieveBookArray(textArea.getText());
-                    writer.writeBooks(books);
-                    desWriter.writeBooks(books);
+                    OldBook[] oldBooks = OldBook.retrieveBookArray(textArea.getText());
+                    writer.writeBooks(oldBooks);
+                    desWriter.writeBooks(oldBooks);
                 } catch (Exception e ) {
                     logger.log(Level.SEVERE, "Problem adding.");
                     e.printStackTrace();

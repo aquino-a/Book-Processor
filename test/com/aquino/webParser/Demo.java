@@ -18,11 +18,11 @@ import org.jsoup.nodes.Node;
 public class Demo {
     public static void main(String[] args) {
         
-//        Book[] books = { new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
-//                ,new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
+//        OldBook[] books = { new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686")
+//                ,new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz")
+//                ,new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880")
+//                ,new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587")
+//                ,new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823")
 //        };  
           Document doc = Connect.connectToURL("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=122260932");
           for (Element e : doc.getAllElements()) {
@@ -45,7 +45,7 @@ public class Demo {
 //        
 //        JButton addButton = new JButton(Handlers.anonymousEventClass("add", event ->{
 //            try {
-//                writer.writeBooks(Book.retrieveBookArray(textArea));
+//                writer.writeBooks(OldBook.retrieveBookArray(textArea));
 //            } catch (Exception e) {
 //                System.out.println(e.getMessage());
 //                System.out.println(e.getCause());
@@ -77,7 +77,7 @@ public class Demo {
         //FileUtility.openFile(panel);
         
 //        
-//        Book book = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939");
+//        OldBook book = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939");
 //        System.out.println(book.getAuthor());
 //        System.out.println(book.getAuthor2());
 //        System.out.println(book.getPublisher());
@@ -109,10 +109,10 @@ public class Demo {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        //Book book = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz");
-        //Book book = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880");
-        //Book book = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686");
-        //Book book = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823");
+        //OldBook book = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz");
+        //OldBook book = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880");
+        //OldBook book = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686");
+        //OldBook book = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823");
         //book.retrieveAuthorInfo();
         
         
@@ -132,7 +132,7 @@ public class Demo {
         
         
 ////
-//        for (Book book: books) {
+//        for (OldBook book: books) {
 //            System.out.println(book.getISBN());
 //            System.out.println(book.getDescription());
 //            System.out.println();

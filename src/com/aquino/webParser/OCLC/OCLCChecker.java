@@ -5,7 +5,7 @@
  */
 package com.aquino.webParser.OCLC;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.OldBook;
 import com.aquino.webParser.ExcelWriter;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.Utilities.FileUtility;
@@ -61,37 +61,37 @@ public class OCLCChecker {
     }
     
     private void checkAndWriteOnePage(int pageNumber) throws IOException {
-        Book[] books = null;
+        OldBook[] oldBooks = null;
         try {
-            books = setHits(getOnePageCheckedBooks(pageNumber));
-            if(books != null && books.length > 0) {
-                logger.log(Level.INFO, "Books found: {0}", books.length);
-                writer.writeBooks(books);
+            oldBooks = setHits(getOnePageCheckedBooks(pageNumber));
+            if(oldBooks != null && oldBooks.length > 0) {
+                logger.log(Level.INFO, "Books found: {0}", oldBooks.length);
+                writer.writeBooks(oldBooks);
             }
         } catch (IOException e) {
             throw e;
         } 
     }
-    private Book[] getOnePageCheckedBooks(int pageNumber) throws IOException {
+    private OldBook[] getOnePageCheckedBooks(int pageNumber) throws IOException {
         return checkBooks(getBooks(pageNumber));
     }
     
-    private Book[] getBooks(int pageNumber) throws IOException {
-        return Book.retrieveBookArray(Links.getPageofLinks(pageNumber));
+    private OldBook[] getBooks(int pageNumber) throws IOException {
+        return OldBook.retrieveBookArray(Links.getPageofLinks(pageNumber));
     }
     
-    private Book[] checkBooks(Book[] books) {
-        return Stream.of(books)
+    private OldBook[] checkBooks(OldBook[] oldBooks) {
+        return Stream.of(oldBooks)
                 .filter(b -> {
                     try{ return b.getOCLC() != -1 && !b.titleExists();}
                     catch (Exception e) {
-                        logger.log(Level.WARNING, String.format("Error Checking Book: %s", e.getMessage()));
+                        logger.log(Level.WARNING, String.format("Error Checking OldBook: %s", e.getMessage()));
                         return false;}})
-                .toArray(Book[]::new);
+                .toArray(OldBook[]::new);
     }
-    private Book[] setHits(Book[] books) {
-        hits += books.length;
-        return books;
+    private OldBook[] setHits(OldBook[] oldBooks) {
+        hits += oldBooks.length;
+        return oldBooks;
     }
     public int getHits() {
         return hits;
@@ -110,7 +110,7 @@ public class OCLCChecker {
 
 //    public void getOCLCTitles(int pageNumber, JComponent component) {
 //        File save = FileUtility.saveLocation(component);
-//        Book[] books = setHits(checkBooks(getBooks(pageNumber)));
+//        OldBook[] books = setHits(checkBooks(getBooks(pageNumber)));
 //        if(hits > 0) {
 //            System.out.println("got hits");
 //            writer.writeBooks(books);

@@ -7,13 +7,10 @@ package com.aquino.webParser.filters;
 
 
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.OldBook;
 
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -44,9 +41,9 @@ public class CheckFilter extends DocumentFilter {
             component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
                 try {
-                    Book book = new Book(text);
-                    String exists = (!book.titleExists()) ? "NO" : "YES";
-                    return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0,book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOCLC() == -1 ? "NO" : "YES");
+                    OldBook oldBook = new OldBook(text);
+                    String exists = (!oldBook.titleExists()) ? "NO" : "YES";
+                    return String.format("%s... → Inventory: %s, OCLC: %s", oldBook.getTitle().substring(0, oldBook.getTitle().length() >= 10 ? 10 : oldBook.getTitle().length()),exists, oldBook.getOCLC() == -1 ? "NO" : "YES");
                 }
                 catch (IllegalArgumentException e){
                     e.printStackTrace();

@@ -5,20 +5,10 @@
  */
 package com.aquino.webParser.various;
 
-import com.aquino.webParser.Book;
 import com.aquino.webParser.OCLC.OCLCChecker;
-import com.aquino.webParser.filters.CheckFilter;
-import java.awt.datatransfer.Transferable;
-import java.util.function.BiConsumer;
-import javax.swing.JButton;
-import javax.swing.JComponent;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.TransferHandler;
-import javax.swing.TransferHandler.TransferSupport;
-import javax.swing.text.AbstractDocument;
 
 /**
  *
@@ -34,9 +24,9 @@ public class AddNewLineTesting {
         OCLCChecker checker = new OCLCChecker();
 //        checker.getHitsAndWrite(10, panel);
         System.out.println(checker.getHits());
-//        Book[] books = checker.getBooks(15);
+//        OldBook[] books = checker.getBooks(15);
 //        books = checker.checkBooks(books);
-//        for (Book book : books) {
+//        for (OldBook book : books) {
 //            System.out.println(book);
 //            
 //        }

@@ -21,13 +21,13 @@ public class CategoryTest {
     
         private static final Logger logger = Logger.getLogger(CategoryTest.class.getName());
         
-        Book book1 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686");
-        Book book2 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz");
-        Book book3 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880");
-        Book book4 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587");
-        Book book5 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823");
-        Book book6 = new Book("https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=135519424");
-        Book book7 = new Book("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=122235693");
+        OldBook oldBook1 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=119979686");
+        OldBook oldBook2 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=120057939&start=wz");
+        OldBook oldBook3 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123015880");
+        OldBook oldBook4 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123204587");
+        OldBook oldBook5 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=121719823");
+        OldBook oldBook6 = new OldBook("https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=135519424");
+        OldBook oldBook7 = new OldBook("http://www.aladin.co.kr/shop/wproduct.aspx?ItemId=122235693");
     
     public CategoryTest() {
     }
@@ -52,13 +52,13 @@ public class CategoryTest {
     @Test
     public void testSomeMethod() {
         
-        assertEquals("에세이", book1.getCategory());
-        assertEquals("자기계발", book2.getCategory());
-        assertEquals("유아", book3.getCategory());
-        assertEquals("소설/시/희곡", book4.getCategory());
-        assertEquals("자기계발", book5.getCategory());
-        assertEquals("사회과학", book6.getCategory());
-        assertEquals("소설/시/희곡", book7.getCategory());
+        assertEquals("에세이", oldBook1.getCategory());
+        assertEquals("자기계발", oldBook2.getCategory());
+        assertEquals("유아", oldBook3.getCategory());
+        assertEquals("소설/시/희곡", oldBook4.getCategory());
+        assertEquals("자기계발", oldBook5.getCategory());
+        assertEquals("사회과학", oldBook6.getCategory());
+        assertEquals("소설/시/희곡", oldBook7.getCategory());
         
         
         

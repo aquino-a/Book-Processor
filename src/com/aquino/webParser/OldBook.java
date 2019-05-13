@@ -29,7 +29,7 @@ import org.jsoup.nodes.Node;
  *
  * @author alex
  */
-public class Book {
+public class OldBook {
 
     private Document doc;
     private String title, publishDate, originalPrice, bookSize,
@@ -42,7 +42,7 @@ public class Book {
     private int pages, weight;
     private double originalPriceFormatted;
     
-    private static final Logger logger = Logger.getLogger(Book.class.getName());
+    private static final Logger logger = Logger.getLogger(OldBook.class.getName());
 
     private static final Pattern translatorPattern = Pattern.compile("([\\u3131-\\uD79D]{3}) \\(옮긴이\\)");
     private static final Pattern originalTitlePattern = Pattern.compile("원제 : ([\\p{L} ]+)(?: \\( \\d{4}년\\))?");
@@ -51,7 +51,7 @@ public class Book {
     private static final Pattern authorsPattern = Pattern.compile("((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)");
     private static final Pattern oclcPattern = Pattern.compile("oclc/(\\d+)$");
 
-    public Book(String url) {
+    public OldBook(String url) {
 //            System.out.println("in book constructor");
         doc = Connect.connectToURL(url);
         if(doc == null)
@@ -285,13 +285,13 @@ public class Book {
     }
 
     //change to string 12/18/17
-    public static Book[] retrieveBookArray(String text) {
+    public static OldBook[] retrieveBookArray(String text) {
         StringTokenizer st = new StringTokenizer(text);
 //        StringTokenizer st = new StringTokenizer(textArea.getText());
-        ArrayList<Book> bookList = new ArrayList<>();
+        ArrayList<OldBook> oldBookList = new ArrayList<>();
         while (st.hasMoreTokens()) {
             try{
-                bookList.add(new Book(st.nextToken().trim()));
+                oldBookList.add(new OldBook(st.nextToken().trim()));
             }
             catch (Exception e){
                 logger.log(Level.WARNING, String.format("Problem creating book: %s%n%s", e.getMessage()));
@@ -299,7 +299,7 @@ public class Book {
             }
 
         }
-        return bookList.toArray(new Book[bookList.size()]);
+        return oldBookList.toArray(new OldBook[oldBookList.size()]);
     }
 
     private void retrieveWeight() {
@@ -371,28 +371,28 @@ public class Book {
         }
     }
 
-    private Book SetAuthors(Book book, String authorSection) {
+    private OldBook SetAuthors(OldBook oldBook, String authorSection) {
         Matcher m =  authorsPattern.matcher(authorSection);
-        book.author = "";
-        book.author2 = "";
+        oldBook.author = "";
+        oldBook.author2 = "";
         if(m.find()){
             int size = m.groupCount();
             if(size == 2){
                 String[] tokens = m.group(1).split(",");
                 if(tokens.length > 1){
-                    book.author = "1494";
-                    book.author2 = "";
+                    oldBook.author = "1494";
+                    oldBook.author2 = "";
                 } else {
-                    book.author = m.group(2);
-                    book.author2 = tokens[0];
+                    oldBook.author = m.group(2);
+                    oldBook.author2 = tokens[0];
                 }
             }
             else if(size == 2){
-                book.author = m.group(2);
-                book.author2 = "";
+                oldBook.author = m.group(2);
+                oldBook.author2 = "";
             }
         }
-        return book;
+        return oldBook;
 
 //        "((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)"
     }
@@ -606,27 +606,27 @@ public class Book {
         this.description = description;
     }
 
-    private Book scrapeLazyDescription(Book book) {
+    private OldBook scrapeLazyDescription(OldBook oldBook) {
         Map<String, String> map = new HashMap<>();
         Document doc;
-        map.put("Referer", book.getLocationUrl());
-        if (book.getkIsbn() != null) {
+        map.put("Referer", oldBook.getLocationUrl());
+        if (oldBook.getkIsbn() != null) {
             doc = Connect.connectToURLwithHeaders(
-                    createLazyDescriptionUrl(String.valueOf(book.getkIsbn())), map);
+                    createLazyDescriptionUrl(String.valueOf(oldBook.getkIsbn())), map);
         } else {
             doc = Connect.connectToURLwithHeaders(
-                    createLazyDescriptionUrl(book.getIsbnString()), map);
+                    createLazyDescriptionUrl(oldBook.getIsbnString()), map);
         }
 
-        book.setDescription(findDescription(doc));
+        oldBook.setDescription(findDescription(doc));
 //        Element element = doc.getElementsByAttributeValue("style", "padding: 10px 0 10px 0").first();
 //        if(element == null) {
 //            element = doc.getElementsByClass("p_textbox").eq(1).first();
 //            if(element == null) 
-//                book.setDescription("");
-//            else book.setDescription(element.wholeText());
-//        } else book.setDescription(element.wholeText());
-        return book;
+//                oldBook.setDescription("");
+//            else oldBook.setDescription(element.wholeText());
+//        } else oldBook.setDescription(element.wholeText());
+        return oldBook;
     }
 
     private static String findDescription(Document doc) {
@@ -655,27 +655,27 @@ public class Book {
                 + details + "&name=Introduce&type=0&date=11";
     }
 
-    private String findCategory(Book book, Document doc) {
+    private String findCategory(OldBook oldBook, Document doc) {
         return doc.getElementById("ulCategory").getElementsByTag("li").first().getElementsByTag("a").get(1).text();
 //        return doc.getElementsByClass("p_categorize")
 //                .first().getElementsByTag("a").get(1).text().trim();
     }
 
-    private Book scrapeLazyAuthor(Book book) {
+    private OldBook scrapeLazyAuthor(OldBook oldBook) {
 
-        if (book.getEnglishTitle() == "") {
-            book.setAuthorOriginal("");
-            return book;
+        if (oldBook.getEnglishTitle() == "") {
+            oldBook.setAuthorOriginal("");
+            return oldBook;
         }
 
         Map<String, String> map = new HashMap<>();
         Document doc;
 
-        map.put("Referer", book.getLocationUrl());
+        map.put("Referer", oldBook.getLocationUrl());
         doc = Connect.connectToURLwithHeaders(
-                createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
-        book.setAuthorOriginal(findAuthorOriginal(doc));
-        return book;
+                createLazyAuthorUrl(String.valueOf(oldBook.getkIsbn())), map);
+        oldBook.setAuthorOriginal(findAuthorOriginal(doc));
+        return oldBook;
     }
 
     private String createLazyAuthorUrl(String details) {
