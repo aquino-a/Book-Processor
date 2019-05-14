@@ -692,7 +692,7 @@ public class OldBook {
                 return m.group(1);
             } else return "";
         } catch (NullPointerException e) {
-            logger.log(Level.INFO, "Couldn't find original Author: "+ doc.location());
+            logger.log(Level.INFO, "Couldn't find original AladinAuthor: "+ doc.location());
             return "";
         }
     }

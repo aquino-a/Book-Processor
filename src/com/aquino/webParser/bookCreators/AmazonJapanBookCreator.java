@@ -1,4 +1,4 @@
-package com.aquino.webParser.Amazon;
+package com.aquino.webParser.bookCreators;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.Utilities.Connect;
@@ -43,11 +43,27 @@ public class AmazonJapanBookCreator {
     private Book fillInBasicData(Book book, Document doc) {
         book.setOriginalPriceNumber(parsePrice(doc));
         book.setTitle(parseTitle(doc));
+        book.setDescription(parseDescription(doc));
+        book.setCover(parseType(doc));
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
+        book = setWeight(book);
+
         return book;
     }
 
+
+    private String parseDescription(Document doc) {
+        try {
+            return doc.getElementById("productDescription").text();
+        }catch (Exception e){
+            logger.log(Level.WARNING, String.format("Couldn't parse description: %s", e.getMessage()));
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    //TODO handle original names
     private Book parseAuthorDetails(Book book, Document doc) {
         try{
             Elements es = doc.getElementById("bylineInfo").getElementsByClass("author notFaded");
@@ -74,19 +90,22 @@ public class AmazonJapanBookCreator {
         }catch (Exception e){
             logger.log(Level.WARNING, String.format("Couldn't parse author details: %s", e.getMessage()));
             e.printStackTrace();
-//            book.setAuthor("");
-//            book.setAuthor2("");
-//            book.setTranslator("");
-//            book.setEnglishTitle("");
         }
         finally {
-            //TODO implement this;
-//            setDefaultAutorSection(book);
+            setDefaultAutorSection(book);
             return book;
         }
     }
 
+    private void setDefaultAutorSection(Book book) {
+        //TODO MORE REQUIRED???
+        if(book.getAuthor() == null) book.setAuthor("");
+        if(book.getAuthor2() == null) book.setAuthor2("");
+        if(book.getTranslator() == null) book.setTranslator("");
+    }
+
     private String findContributorName(Element e) {
+        //TODO better way to find using attribute value containing
         return e.getElementsByTag("a").first().ownText();
     }
 
@@ -156,6 +175,29 @@ public class AmazonJapanBookCreator {
         logger.log(Level.WARNING, String.format("Couldn't find book size: %s", sizeSource));
         return "";
     }
+
+    private Book setWeight(Book book) {
+        int pages = book.getPages();
+        if(pages > -1)
+            book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
+        else book.setWeight(-1);
+        return book;
+    }
+
+    private String parseType(Document doc) {
+        try {
+            for(Element e : doc.getElementById("title").getElementsByClass("a-size-medium a-color-secondary a-text-normal")){
+                if(e.text().contains("ソフトカバー"))
+                    return "PB";
+            }
+            return "";
+        } catch (Exception e){
+            logger.log(Level.WARNING, String.format("Couldn't no book type found: %s", e.getMessage()));
+            return "";
+        }
+    }
+
+
 
 
 }
