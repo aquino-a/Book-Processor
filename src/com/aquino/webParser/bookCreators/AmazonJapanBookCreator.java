@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AmazonJapanBookCreator {
+public class AmazonJapanBookCreator implements BookCreator {
 
 
     private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=%s";
@@ -25,12 +25,14 @@ public class AmazonJapanBookCreator {
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
+    @Override
     public Book createBook(String isbn){
         Document doc = Connect.connectToURL(String.format(searchUrlFormat, isbn));
         return null;
     }
 
 
+    @Override
     public Book createBookFromBookPage(String bookPageUrl) throws IOException {
         Book book = new Book();
         Document doc = Connect.connectToURL(bookPageUrl);
@@ -198,6 +200,31 @@ public class AmazonJapanBookCreator {
     }
 
 
+    @Override
+    public Book fillInAllDetails(Book book){
+        //TODO implement
+        return book;
+    }
+
+    @Override
+    public String BookPagePrefix() {
+        return null;
+    }
+
+    @Override
+    public Book[] bookArrayFromLink(String pageofLinks) {
+        return new Book[0];
+    }
+
+    @Override
+    public Book[] bookArrayFromIsbn(String pageofIsbns) {
+        return new Book[0];
+    }
+
+    @Override
+    public void checkInventoryAndOclc(Book result) {
+
+    }
 
 
 }

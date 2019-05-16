@@ -5,11 +5,14 @@
  */
 package com.aquino.webParser.OCLC;
 
+import com.aquino.webParser.Book;
 import com.aquino.webParser.OldBook;
 import com.aquino.webParser.ExcelWriter;
 import com.aquino.webParser.Utilities.Connect;
 import com.aquino.webParser.Utilities.FileUtility;
 import com.aquino.webParser.Utilities.Links;
+import com.aquino.webParser.bookCreators.BookCreator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -27,11 +30,14 @@ import javax.swing.JPanel;
 public class OCLCChecker {
     
     private static final Logger logger = Logger.getLogger(OCLCChecker.class.getName());
-    ExcelWriter writer;
+    private BookCreator bookCreator;
+    private ExcelWriter writer;
 //    Links link;
     int hits;
 
-    public OCLCChecker() {
+    public OCLCChecker(BookCreator bookCreator)
+    {
+        this.bookCreator = bookCreator;
         writer = new ExcelWriter(Connect.newWorkbookFromTemplate());
 //        link = new Links();
     }
@@ -61,7 +67,7 @@ public class OCLCChecker {
     }
     
     private void checkAndWriteOnePage(int pageNumber) throws IOException {
-        OldBook[] oldBooks = null;
+        Book[] oldBooks = null;
         try {
             oldBooks = setHits(getOnePageCheckedBooks(pageNumber));
             if(oldBooks != null && oldBooks.length > 0) {
@@ -72,26 +78,27 @@ public class OCLCChecker {
             throw e;
         } 
     }
-    private OldBook[] getOnePageCheckedBooks(int pageNumber) throws IOException {
+    private Book[] getOnePageCheckedBooks(int pageNumber) throws IOException {
         return checkBooks(getBooks(pageNumber));
     }
     
-    private OldBook[] getBooks(int pageNumber) throws IOException {
-        return OldBook.retrieveBookArray(Links.getPageofLinks(pageNumber));
+    private Book[] getBooks(int pageNumber) throws IOException {
+        return bookCreator.bookArrayFromLink(Links.getPageofLinks(pageNumber));
+//        return OldBook.retrieveBookArray(Links.getPageofLinks(pageNumber));
     }
     
-    private OldBook[] checkBooks(OldBook[] oldBooks) {
+    private Book[] checkBooks(Book[] oldBooks) {
         return Stream.of(oldBooks)
                 .filter(b -> {
-                    try{ return b.getOCLC() != -1 && !b.titleExists();}
+                    try{ bookCreator.checkInventoryAndOclc(b); return b.getOclc() != -1 && !b.isTitleExists();}
                     catch (Exception e) {
                         logger.log(Level.WARNING, String.format("Error Checking OldBook: %s", e.getMessage()));
                         return false;}})
-                .toArray(OldBook[]::new);
+                .toArray(Book[]::new);
     }
-    private OldBook[] setHits(OldBook[] oldBooks) {
-        hits += oldBooks.length;
-        return oldBooks;
+    private Book[] setHits(Book[] books) {
+        hits += books.length;
+        return books;
     }
     public int getHits() {
         return hits;

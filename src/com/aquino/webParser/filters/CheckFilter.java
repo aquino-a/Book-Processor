@@ -7,9 +7,11 @@ package com.aquino.webParser.filters;
 
 
 
-import com.aquino.webParser.OldBook;
+import com.aquino.webParser.Book;
+import com.aquino.webParser.bookCreators.BookCreator;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import javax.swing.text.AttributeSet;
@@ -24,9 +26,12 @@ public class CheckFilter extends DocumentFilter {
     private Consumer<String> consumer;
     private Component component;
 
-    public CheckFilter(Consumer<String> consumer, Component component) {
+    private BookCreator bookCreator;
+
+    public CheckFilter(Consumer<String> consumer, Component component, BookCreator bookCreator) {
         this.consumer = consumer;
         this.component = component;
+        this.bookCreator = bookCreator;
     }
 
     private boolean checking;
@@ -36,16 +41,17 @@ public class CheckFilter extends DocumentFilter {
             DocumentFilter.FilterBypass fb,  int offset, 
             int length, String text, AttributeSet attrs) throws BadLocationException{
 
-        if (!checking &&text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
+//        if (!checking &&text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
+        if (!checking &&text.contains(bookCreator.BookPagePrefix())) {
             checking = true;
             component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
                 try {
-                    OldBook oldBook = new OldBook(text);
-                    String exists = (!oldBook.titleExists()) ? "NO" : "YES";
-                    return String.format("%s... → Inventory: %s, OCLC: %s", oldBook.getTitle().substring(0, oldBook.getTitle().length() >= 10 ? 10 : oldBook.getTitle().length()),exists, oldBook.getOCLC() == -1 ? "NO" : "YES");
+                    Book book = setupBook(text);
+                    String exists = (!book.isTitleExists()) ? "NO" : "YES";
+                    return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0, book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOclc() == -1 ? "NO" : "YES");
                 }
-                catch (IllegalArgumentException e){
+                catch (IllegalArgumentException | IOException e){
                     e.printStackTrace();
                     return String.format("Error: %s", e.getMessage());
                 }
@@ -62,6 +68,18 @@ public class CheckFilter extends DocumentFilter {
                 consumer.accept(text);
             });
         }
+    }
+
+    private Book setupBook(String text) throws IOException {
+        Book result = bookCreator.createBookFromBookPage(text);
+        String isbn = String.valueOf(result.getIsbn());
+        bookCreator.checkInventoryAndOclc(result);
+        return result;
+    }
+
+
+    public void setBookCreator(BookCreator bookCreator) {
+        this.bookCreator = bookCreator;
     }
     
     

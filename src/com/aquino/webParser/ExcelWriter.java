@@ -46,56 +46,55 @@ public class ExcelWriter {
             }
         }
     }
-    private void writeEntry(int rowNumber, OldBook oldBook) {
-        if(oldBook.getDoc() == null) return;
+    private void writeEntry(int rowNumber, Book book) {
         XSSFRow row = sheet.createRow(rowNumber);
         XSSFCellStyle isbnNumberFormat = workbook.createCellStyle();
         isbnNumberFormat.setDataFormat(workbook.createDataFormat().getFormat("#####"));
         XSSFCellStyle yellowBackground = workbook.createCellStyle();
         yellowBackground.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
         yellowBackground.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        if(oldBook.getISBN() == -1) {
-            row.createCell(0).setCellValue(oldBook.getIsbnString());
-            row.createCell(1).setCellValue(oldBook.getIsbnString());
+        if(book.getIsbn() == -1) {
+            row.createCell(0).setCellValue(book.getIsbnString());
+            row.createCell(1).setCellValue(book.getIsbnString());
         } else {
-            row.createCell(0).setCellValue(oldBook.getISBN());
+            row.createCell(0).setCellValue(book.getIsbn());
             row.getCell(0).setCellStyle(isbnNumberFormat);
-            row.createCell(1).setCellValue(oldBook.getISBN());
+            row.createCell(1).setCellValue(book.getIsbn());
             row.getCell(1).setCellStyle(isbnNumberFormat);
         }
-        if(oldBook.getOCLC() != -1)
-            row.createCell(3).setCellValue(oldBook.getOCLC());
-        if(!oldBook.getEnglishTitle().equals(""))
-            row.createCell(4).setCellValue(oldBook.getEnglishTitle());
-        row.createCell(6).setCellValue(Romanizer.hangulToRoman(oldBook.getTitle()));
-        row.createCell(7).setCellValue(oldBook.getTitle());
-        if(Character.isDigit(oldBook.getAuthor().charAt(0)))
-            row.createCell(9).setCellValue(Integer.parseInt(oldBook.getAuthor()));
-        else row.createCell(9).setCellValue(oldBook.getAuthor());
-        if(!oldBook.getAuthor2().equals("")){
-            if(Character.isDigit(oldBook.getAuthor2().charAt(0)))
-                row.createCell(10).setCellValue(Integer.parseInt(oldBook.getAuthor2()));
-            else row.createCell(10).setCellValue(oldBook.getAuthor2());
+        if(book.getOclc() != -1)
+            row.createCell(3).setCellValue(book.getOclc());
+        if(!book.getEnglishTitle().equals(""))
+            row.createCell(4).setCellValue(book.getEnglishTitle());
+        row.createCell(6).setCellValue(Romanizer.hangulToRoman(book.getTitle()));
+        row.createCell(7).setCellValue(book.getTitle());
+        if(Character.isDigit(book.getAuthor().charAt(0)))
+            row.createCell(9).setCellValue(Integer.parseInt(book.getAuthor()));
+        else row.createCell(9).setCellValue(book.getAuthor());
+        if(!book.getAuthor2().equals("")){
+            if(Character.isDigit(book.getAuthor2().charAt(0)))
+                row.createCell(10).setCellValue(Integer.parseInt(book.getAuthor2()));
+            else row.createCell(10).setCellValue(book.getAuthor2());
         }
-        if (Character.isDigit(oldBook.getPublisher().charAt(0)))
-            row.createCell(11).setCellValue(Integer.parseInt(oldBook.getPublisher()));
-        else row.createCell(11).setCellValue(oldBook.getPublisher());
-        row.createCell(12).setCellValue(oldBook.getCategory());
-        if(!oldBook.getEnglishTitle().equals(""))
-            row.createCell(13).setCellValue(oldBook.getAuthorOriginal());
+        if (Character.isDigit(book.getPublisher().charAt(0)))
+            row.createCell(11).setCellValue(Integer.parseInt(book.getPublisher()));
+        else row.createCell(11).setCellValue(book.getPublisher());
+        row.createCell(12).setCellValue(book.getCategory());
+        if(!book.getEnglishTitle().equals(""))
+            row.createCell(13).setCellValue(book.getAuthorOriginal());
         row.createCell(15).setCellValue("Opes");
         row.createCell(16).setCellValue("KOR");
-        row.createCell(19).setCellValue(oldBook.getPublishDateFortmatted());
+        row.createCell(19).setCellValue(book.getPublishDateFormatted());
         row.createCell(20).setCellValue("Won");
-        row.createCell(21).setCellValue(oldBook.getOriginalPriceNumber());
+        row.createCell(21).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
-        row.createCell(22).setCellValue(oldBook.getImageUrl());
-        if(!oldBook.getTranslator().equals(""))
-            row.createCell(23).setCellValue(oldBook.getTranslator());
-        row.createCell(26).setCellValue(oldBook.getBookSizeFormatted());
-        row.createCell(27).setCellValue(oldBook.getType());
-        row.createCell(28).setCellValue(oldBook.getPages());
-        row.createCell(31).setCellValue(oldBook.getWeight());
+        row.createCell(22).setCellValue(book.getImageURL());
+        if(!book.getTranslator().equals(""))
+            row.createCell(23).setCellValue(book.getTranslator());
+        row.createCell(26).setCellValue(book.getBookSizeFormatted());
+        row.createCell(27).setCellValue(book.getType());
+        row.createCell(28).setCellValue(book.getPages());
+        row.createCell(31).setCellValue(book.getWeight());
         row.createCell(32).setCellValue("Books");
         row.createCell(34).setCellValue(0);
         row.createCell(35).setCellValue(1);
@@ -110,17 +109,17 @@ public class ExcelWriter {
             System.out.println(e.getMessage());
         }
     }
-    public void writeDemo(OldBook oldBook) {
+    public void writeDemo(Book oldBook) {
         writeEntry(startRow, oldBook);
     }
-    private void writeEntries(OldBook[] oldBooks) {
+    private void writeEntries(Book[] oldBooks) {
         int i = startRow;
-        for (OldBook oldBook : oldBooks) {
-            writeEntry(i++, oldBook);
+        for (Book book : oldBooks) {
+            writeEntry(i++, book);
         }
     }
-    public void writeBooks(OldBook[] oldBooks) {
+    public void writeBooks(Book[] books) {
         retrieveStartRow();
-        writeEntries(oldBooks);
+        writeEntries(books);
     }
 }

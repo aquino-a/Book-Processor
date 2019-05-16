@@ -56,7 +56,7 @@ public class Book {
         this.bookSize = bookSize;
     }
 
-    public String getCover() {
+    public String getType() {
         return cover;
     }
 

@@ -24,13 +24,13 @@ public class DescriptionWriter {
     private static final Logger logger = Logger.getLogger(DescriptionWriter.class.getName());
     private String bookDescriptions = "";
     
-    public boolean writeBooks(OldBook[] oldBooks) {
+    public boolean writeBooks(Book[] books) {
         StringBuilder sb = new StringBuilder(bookDescriptions);
-        for (OldBook oldBook : oldBooks) {
+        for (Book book : books) {
                 sb.append(String.format("%s%n%s%s%s%n%n%n%n",
-                        oldBook.getTitle(),originalTitle(oldBook.getEnglishTitle())
-                        ,originalAuthor(oldBook.getAuthorOriginal()),
-                        oldBook.getDescription() + "  " + oldBook.getTranslator()));
+                        book.getTitle(),originalTitle(book.getEnglishTitle())
+                        ,originalAuthor(book.getAuthorOriginal()),
+                        book.getDescription() + "  " + book.getTranslator()));
         }
         bookDescriptions = sb.toString();
         logger.log(Level.INFO, "Done setting up descriptions");

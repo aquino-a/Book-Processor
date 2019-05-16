@@ -8,6 +8,7 @@ package com.aquino.webParser;
 import com.aquino.webParser.OCLC.OCLCChecker;
 import com.aquino.webParser.OCLC.OclcProgress;
 import com.aquino.webParser.Utilities.Connect;
+import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.Utilities.FileUtility;
 import com.aquino.webParser.Utilities.Links;
@@ -44,6 +45,8 @@ public class JWPUserInterface extends JPanel {
     private JTextField checkField;
     private String checkedLink;
     private OclcProgress oclcProgress;
+
+    private BookCreator bookCreator;
     
     public JWPUserInterface() {
         addcomponents();
@@ -240,9 +243,10 @@ public class JWPUserInterface extends JPanel {
             public Void doInBackground() {
                 try {
                     disableActions();
-                    OldBook[] oldBooks = OldBook.retrieveBookArray(textArea.getText());
-                    writer.writeBooks(oldBooks);
-                    desWriter.writeBooks(oldBooks);
+//                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
+                    Book[] books = bookCreator.bookArrayFromLink(textArea.getText());
+                    writer.writeBooks(books);
+                    desWriter.writeBooks(books);
                 } catch (Exception e ) {
                     logger.log(Level.SEVERE, "Problem adding.");
                     e.printStackTrace();
