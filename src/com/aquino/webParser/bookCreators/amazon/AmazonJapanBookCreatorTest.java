@@ -1,4 +1,4 @@
-package com.aquino.webParser.bookCreators;
+package com.aquino.webParser.bookCreators.amazon;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

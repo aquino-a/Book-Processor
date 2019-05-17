@@ -4,6 +4,10 @@ import com.aquino.webParser.Book;
 import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.oclc.OclcService;
+import com.aquino.webParser.utilities.Connect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.NotImplementedException;
+import org.jsoup.Jsoup;
 
 import java.io.IOException;
 
@@ -13,42 +17,46 @@ public class AladinBookCreator implements BookCreator {
     private final String apiKey;
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
+    private final ObjectMapper mapper;
 
-    public AladinBookCreator(String apiKey, BookWindowService bookWindowService, OclcService oclcService) {
+    public AladinBookCreator(String apiKey, BookWindowService bookWindowService, OclcService oclcService, ObjectMapper mapper) {
         this.apiKey = apiKey;
         this.bookWindowService = bookWindowService;
         this.oclcService = oclcService;
+        this.mapper = mapper;
     }
 
-    public Book createBook(String isbn){
+    @Override
+    public Book createBookFromIsbn(String isbn){
         return null;
     }
 
     @Override
     public Book createBookFromBookPage(String bookPageUrl) throws IOException {
         String itemId = parseItemId(bookPageUrl);
-
-        return null;
+        //TODO check item id
+        String json = Jsoup.connect(String.format(apiUrlFormat, apiKey, itemId)).execute().body();
+        return mapper.readValue(json, AladinApiResult.class).getResult().asBook();
     }
 
     @Override
     public Book fillInAllDetails(Book book) {
-        return null;
+        throw new NotImplementedException("TODO");
     }
 
     @Override
     public String BookPagePrefix() {
-        return null;
+        return "aladin.co.kr/shop/wproduct.aspx?ItemId";
     }
 
     @Override
     public Book[] bookArrayFromLink(String pageofLinks) {
-        return new Book[0];
+        throw new NotImplementedException("TODO");
     }
 
     @Override
     public Book[] bookArrayFromIsbn(String pageofIsbns) {
-        return new Book[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override

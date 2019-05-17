@@ -1,9 +1,11 @@
-package com.aquino.webParser.bookCreators;
+package com.aquino.webParser.bookCreators.amazon;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -36,7 +38,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     @Override
-    public Book createBook(String isbn){
+    public Book createBookFromIsbn(String isbn){
         Document doc = Connect.connectToURL(String.format(searchUrlFormat, isbn));
         return null;
     }
@@ -213,22 +215,22 @@ public class AmazonJapanBookCreator implements BookCreator {
     @Override
     public Book fillInAllDetails(Book book){
         //TODO implement
-        return book;
+        throw new NotImplementedException("TODO");
     }
 
     @Override
     public String BookPagePrefix() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Book[] bookArrayFromLink(String pageofLinks) {
-        return new Book[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Book[] bookArrayFromIsbn(String pageofIsbns) {
-        return new Book[0];
+        throw new NotImplementedException("TODO");
     }
 
     @Override
