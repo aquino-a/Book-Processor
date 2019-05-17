@@ -6,7 +6,7 @@ public class Book {
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, authorOriginal,
-            locationUrl, kIsbn;
+            locationUrl, kIsbn, bookPageUrl;
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -15,6 +15,7 @@ public class Book {
 
     private int originalPriceNumber;
     private double originalPriceFormatted;
+
 
     public boolean isTitleExists() {
         return titleExists;
@@ -222,5 +223,13 @@ public class Book {
 
     public void setOriginalPriceNumber(int parsePrice) {
         originalPriceNumber = parsePrice;
+    }
+
+    public String getBookPageUrl() {
+        return bookPageUrl;
+    }
+
+    public void setBookPageUrl(String bookPageUrl) {
+        this.bookPageUrl = bookPageUrl;
     }
 }

@@ -7,7 +7,6 @@ package com.aquino.webParser.oclc;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.ExcelWriter;
-import com.aquino.webParser.bookCreators.aladin.AladinApiResult;
 import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
@@ -16,9 +15,11 @@ import com.aquino.webParser.bookCreators.BookCreator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -68,39 +69,40 @@ public class OCLCChecker {
     }
     
     private void checkAndWriteOnePage(int pageNumber) throws IOException {
-        Book[] oldBooks = null;
+        List<Book> books = null;
         try {
-            oldBooks = setHits(getOnePageCheckedBooks(pageNumber));
-            if(oldBooks != null && oldBooks.length > 0) {
-                logger.log(Level.INFO, "Books found: {0}", oldBooks.length);
-                writer.writeBooks(oldBooks);
+            books = setHits(getOnePageCheckedBooks(pageNumber));
+            if(books != null && books.size() > 0) {
+                logger.log(Level.INFO, "Books found: {0}", books.size());
+                writer.writeBooks(books);
             }
         } catch (IOException e) {
             throw e;
         } 
     }
-    private Book[] getOnePageCheckedBooks(int pageNumber) throws IOException {
+    private List<Book> getOnePageCheckedBooks(int pageNumber) throws IOException {
         return checkBooks(getBooks(pageNumber));
     }
     
-    private Book[] getBooks(int pageNumber) throws IOException {
-        return bookCreator.bookArrayFromLink(Links.getPageofLinks(pageNumber));
+    private List<Book> getBooks(int pageNumber) throws IOException {
+        return bookCreator.bookListFromLink(Links.getPageofLinks(pageNumber));
 //        return OldBook.retrieveBookArray(Links.getPageofLinks(pageNumber));
     }
     
-    private Book[] checkBooks(Book[] oldBooks) {
-        return Stream.of(oldBooks)
+    private List<Book> checkBooks(List<Book> books) {
+        return books.stream()
                 .filter(b -> {
                     try{ bookCreator.checkInventoryAndOclc(b); return b.getOclc() != -1 && !b.isTitleExists();}
                     catch (Exception e) {
                         logger.log(Level.WARNING, String.format("Error Checking OldBook: %s", e.getMessage()));
-                        return false;}})
-                .toArray(Book[]::new);
+                        return false;}}).collect(Collectors.toList());
     }
-    private Book[] setHits(Book[] books) {
-        hits += books.length;
+
+    private List<Book> setHits(List<Book> books) {
+        hits += books.size();
         return books;
     }
+
     public int getHits() {
         return hits;
     }
@@ -109,7 +111,8 @@ public class OCLCChecker {
         JPanel panel = new JPanel();
         frame.add(panel);
         Links.setType(Links.Type.BEST);
-        OCLCChecker checker = new OCLCChecker(new AladinBookCreator());
+        //move test elsewhere
+        OCLCChecker checker = new OCLCChecker(null);
         checker.getHitsAndWrite(1,2,panel,null);
         System.exit(0);
 

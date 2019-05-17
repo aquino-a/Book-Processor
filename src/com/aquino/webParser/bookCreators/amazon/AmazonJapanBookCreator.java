@@ -16,7 +16,10 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -214,8 +217,9 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     @Override
     public Book fillInAllDetails(Book book){
-        //TODO implement
-        throw new NotImplementedException("TODO");
+        bookWindowService.findIds(book);
+        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+        return book;
     }
 
     @Override
@@ -224,13 +228,18 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     @Override
-    public Book[] bookArrayFromLink(String pageofLinks) {
+    public List<Book> bookListFromLink(String pageofLinks) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Book[] bookArrayFromIsbn(String pageofIsbns) {
-        throw new NotImplementedException("TODO");
+    public List<Book> bookListFromIsbn(String pageofIsbns) {
+        List<Book> list = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(pageofIsbns);
+        while(st.hasMoreTokens()){
+            list.add(createBookFromIsbn(st.nextToken()));
+        }
+        return list;
     }
 
     @Override

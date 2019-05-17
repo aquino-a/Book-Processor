@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ public class DescriptionWriter {
     private static final Logger logger = Logger.getLogger(DescriptionWriter.class.getName());
     private String bookDescriptions = "";
     
-    public boolean writeBooks(Book[] books) {
+    public boolean writeBooks(List<Book> books) {
         StringBuilder sb = new StringBuilder(bookDescriptions);
         for (Book book : books) {
                 sb.append(String.format("%s%n%s%s%s%n%n%n%n",

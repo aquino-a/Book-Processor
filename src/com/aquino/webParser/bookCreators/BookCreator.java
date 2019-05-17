@@ -4,6 +4,7 @@ import com.aquino.webParser.Book;
 import com.aquino.webParser.OldBook;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface BookCreator {
     Book createBookFromIsbn(String isbn);
@@ -15,9 +16,9 @@ public interface BookCreator {
     String BookPagePrefix();
 
 
-    Book[] bookArrayFromLink(String pageofLinks);
+    List<Book> bookListFromLink(String pageofLinks) throws IOException;
 
-    Book[] bookArrayFromIsbn(String pageofIsbns);
+    List<Book> bookListFromIsbn(String pageofIsbns);
 
     void checkInventoryAndOclc(Book result);
 }

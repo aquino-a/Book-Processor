@@ -17,7 +17,7 @@ import com.aquino.webParser.filters.CheckFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,14 +52,14 @@ public class JWPUserInterface extends JPanel {
 
     private BookCreator bookCreator;
     
-    public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) {
+    public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) throws IOException {
         this.processorFactory = processorFactory;
         this.bookCreator = defaultCreator;
         addcomponents();
     }
 
     //TODO fix savebutton
-    private void addcomponents() {
+    private void addcomponents() throws IOException {
 
         frame = new JFrame("Jeein's OldBook Processor");
         desWriter = new DescriptionWriter();
@@ -250,7 +250,7 @@ public class JWPUserInterface extends JPanel {
                 try {
                     disableActions();
 //                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
-                    Book[] books = fetchBooks();
+                    List<Book> books = fetchBooks();
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
                 } catch (Exception e ) {
@@ -268,15 +268,15 @@ public class JWPUserInterface extends JPanel {
         };
     }
 
-    private Book[] fetchBooks(){
-        Book[] books = null;
+    private List<Book> fetchBooks() throws IOException {
+        List<Book> books = null;
         if(dataType == DataType.BookPage)
-            books = bookCreator.bookArrayFromLink(textArea.getText());
+            books = bookCreator.bookListFromLink(textArea.getText());
         else if (dataType == DataType.Isbn)
-            books = bookCreator.bookArrayFromIsbn(textArea.getText());
+            books = bookCreator.bookListFromIsbn(textArea.getText());
 
         //TODO Hidden exception?
-        Arrays.stream(books).forEach(book -> bookCreator.fillInAllDetails(book));
+        books.stream().forEach(book -> bookCreator.fillInAllDetails(book));
         return books;
     }
     
@@ -325,7 +325,7 @@ public class JWPUserInterface extends JPanel {
         Isbn, BookPage
     }
 
-    private void changeBookCreator(BookCreatorType creatorType){
+    private void changeBookCreator(BookCreatorType creatorType) throws IOException {
         bookCreator = processorFactory.CreateBookCreator(creatorType);
     }
 

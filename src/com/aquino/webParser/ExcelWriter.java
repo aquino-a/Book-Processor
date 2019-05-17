@@ -10,6 +10,7 @@ import com.aquino.webParser.romanization.Romanizer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -100,6 +101,7 @@ public class ExcelWriter {
         row.createCell(35).setCellValue(1);
         row.createCell(37).setCellValue(1);
         row.createCell(38).setCellValue(0);
+        row.createCell(39).setCellValue(book.getBookPageUrl());
     }
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
@@ -112,13 +114,13 @@ public class ExcelWriter {
     public void writeDemo(Book oldBook) {
         writeEntry(startRow, oldBook);
     }
-    private void writeEntries(Book[] oldBooks) {
+    private void writeEntries(List<Book> books) {
         int i = startRow;
-        for (Book book : oldBooks) {
+        for (Book book : books) {
             writeEntry(i++, book);
         }
     }
-    public void writeBooks(Book[] books) {
+    public void writeBooks(List<Book> books) {
         retrieveStartRow();
         writeEntries(books);
     }

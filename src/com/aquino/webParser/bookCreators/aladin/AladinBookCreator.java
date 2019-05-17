@@ -4,12 +4,14 @@ import com.aquino.webParser.Book;
 import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.oclc.OclcService;
-import com.aquino.webParser.utilities.Connect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class AladinBookCreator implements BookCreator {
 
@@ -36,12 +38,16 @@ public class AladinBookCreator implements BookCreator {
         String itemId = parseItemId(bookPageUrl);
         //TODO check item id
         String json = Jsoup.connect(String.format(apiUrlFormat, apiKey, itemId)).execute().body();
-        return mapper.readValue(json, AladinApiResult.class).getResult().asBook();
+        Book result = mapper.readValue(json, AladinApiResult.class).getResult().asBook();
+        result.setBookPageUrl(bookPageUrl);
+        return result;
     }
 
     @Override
     public Book fillInAllDetails(Book book) {
-        throw new NotImplementedException("TODO");
+        bookWindowService.findIds(book);
+        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+        return book;
     }
 
     @Override
@@ -50,12 +56,17 @@ public class AladinBookCreator implements BookCreator {
     }
 
     @Override
-    public Book[] bookArrayFromLink(String pageofLinks) {
-        throw new NotImplementedException("TODO");
+    public List<Book> bookListFromLink(String pageofLinks) throws IOException {
+        List<Book> list = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(pageofLinks);
+        while(st.hasMoreTokens()){
+            list.add(createBookFromBookPage(st.nextToken()));
+        }
+        return list;
     }
 
     @Override
-    public Book[] bookArrayFromIsbn(String pageofIsbns) {
+    public List<Book> bookListFromIsbn(String pageofIsbns) {
         throw new UnsupportedOperationException();
     }
 
