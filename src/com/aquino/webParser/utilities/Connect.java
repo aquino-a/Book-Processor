@@ -1,4 +1,4 @@
-package com.aquino.webParser.Utilities;
+package com.aquino.webParser.utilities;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -12,8 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;

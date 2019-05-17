@@ -5,17 +5,18 @@
  */
 package com.aquino.webParser;
 
-import com.aquino.webParser.OCLC.OCLCChecker;
-import com.aquino.webParser.OCLC.OclcProgress;
-import com.aquino.webParser.Utilities.Connect;
+import com.aquino.webParser.oclc.OCLCChecker;
+import com.aquino.webParser.oclc.OclcProgress;
+import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.filters.NewLineFilter;
-import com.aquino.webParser.Utilities.FileUtility;
-import com.aquino.webParser.Utilities.Links;
+import com.aquino.webParser.utilities.FileUtility;
+import com.aquino.webParser.utilities.Links;
 import com.aquino.webParser.filters.CheckFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,10 +46,14 @@ public class JWPUserInterface extends JPanel {
     private JTextField checkField;
     private String checkedLink;
     private OclcProgress oclcProgress;
+    private ProcessorFactoryImpl processorFactory;
+    private DataType dataType = DataType.BookPage;
 
     private BookCreator bookCreator;
     
-    public JWPUserInterface() {
+    public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) {
+        this.processorFactory = processorFactory;
+        this.bookCreator = defaultCreator;
         addcomponents();
     }
 
@@ -78,7 +83,7 @@ public class JWPUserInterface extends JPanel {
             public void accept(Object t) {
                 checkedLink = (String) t;
             }
-        }, frame));
+        }, frame, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
         
         //timer for state
         timer = new Timer(2000, deleteState);
@@ -244,7 +249,7 @@ public class JWPUserInterface extends JPanel {
                 try {
                     disableActions();
 //                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
-                    Book[] books = bookCreator.bookArrayFromLink(textArea.getText());
+                    Book[] books = fetchBooks();
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
                 } catch (Exception e ) {
@@ -261,6 +266,18 @@ public class JWPUserInterface extends JPanel {
             }
         };
     }
+
+    private Book[] fetchBooks(){
+        Book[] books = null;
+        if(dataType == DataType.BookPage)
+            books = bookCreator.bookArrayFromLink(textArea.getText());
+        else if (dataType == DataType.Isbn)
+            books = bookCreator.bookArrayFromIsbn(textArea.getText());
+
+        //TODO Hidden exception?
+        Arrays.stream(books).forEach(book -> bookCreator.fillInAllDetails(book));
+        return books;
+    }
     
     private SwingWorker getOclcWorker(Links.Type type) {
         return new SwingWorker<Void,Void>() {
@@ -269,18 +286,18 @@ public class JWPUserInterface extends JPanel {
                 try {
                     disableActions();
                     Links.setType(type);
-                    OCLCChecker checker = new OCLCChecker();
+                    OCLCChecker checker = new OCLCChecker(processorFactory.CreateBookCreator(BookCreatorType.AladinApi));
                     if(oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
                     checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
-                    logger.log(Level.INFO, "Done scraping for OCLC numbers.");
+                    logger.log(Level.INFO, "Done scraping for oclc numbers.");
                 }
                 catch(IOException ex){
                     JOptionPane.showMessageDialog(frame,"Reached end of pages", "Done",JOptionPane.INFORMATION_MESSAGE);
                 }
                 catch (Exception e ) {
-                    Logger.getLogger("OCLC").log(Level.SEVERE, "OCLC problems");
+                    Logger.getLogger("oclc").log(Level.SEVERE, "oclc problems");
                     JOptionPane.showMessageDialog(frame,"Error occured during oclc scraping", "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                 }
@@ -301,6 +318,18 @@ public class JWPUserInterface extends JPanel {
     }
     private void setCheckField(String str) {
         checkField.setText(str);
+    }
+
+    private enum DataType{
+        Isbn, BookPage
+    }
+
+    private void changeBookCreator(BookCreatorType creatorType){
+        bookCreator = processorFactory.CreateBookCreator(creatorType);
+    }
+
+    private void changeDataType(DataType dataType) {
+        this.dataType = dataType;
     }
     
     

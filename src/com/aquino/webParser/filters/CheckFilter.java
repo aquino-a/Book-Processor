@@ -49,7 +49,7 @@ public class CheckFilter extends DocumentFilter {
                 try {
                     Book book = setupBook(text);
                     String exists = (!book.isTitleExists()) ? "NO" : "YES";
-                    return String.format("%s... → Inventory: %s, OCLC: %s", book.getTitle().substring(0, book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOclc() == -1 ? "NO" : "YES");
+                    return String.format("%s... → Inventory: %s, oclc: %s", book.getTitle().substring(0, book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOclc() == -1 ? "NO" : "YES");
                 }
                 catch (IllegalArgumentException | IOException e){
                     e.printStackTrace();

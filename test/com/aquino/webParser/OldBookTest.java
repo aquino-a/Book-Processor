@@ -60,7 +60,7 @@ public class OldBookTest {
         long start = System.currentTimeMillis();
         assertEquals(1077331600L, oldBook1.getOCLC());
         long stop = System.currentTimeMillis();
-        System.out.printf("OCLC fetch time: %d ms", stop-start);
+        System.out.printf("oclc fetch time: %d ms", stop-start);
 //        assertEquals("Mark Manson", oldBook2.getAuthorOriginal());
 //        assertEquals("", oldBook3.getAuthorOriginal());
 //        assertEquals("大森藤ノ", oldBook4.getAuthorOriginal());

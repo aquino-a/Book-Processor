@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser.Utilities;
+package com.aquino.webParser.utilities;
 
 import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**

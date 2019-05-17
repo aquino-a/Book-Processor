@@ -1,4 +1,4 @@
-package com.aquino.webParser.OCLC;
+package com.aquino.webParser.oclc;
 
 import javax.swing.*;
 import java.awt.*;

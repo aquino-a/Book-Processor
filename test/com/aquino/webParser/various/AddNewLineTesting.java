@@ -5,7 +5,7 @@
  */
 package com.aquino.webParser.various;
 
-import com.aquino.webParser.OCLC.OCLCChecker;
+import com.aquino.webParser.oclc.OCLCChecker;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

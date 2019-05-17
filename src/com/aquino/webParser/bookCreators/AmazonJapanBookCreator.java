@@ -1,7 +1,9 @@
 package com.aquino.webParser.bookCreators;
 
 import com.aquino.webParser.Book;
-import com.aquino.webParser.Utilities.Connect;
+import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.oclc.OclcService;
+import com.aquino.webParser.utilities.Connect;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -24,6 +26,14 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+    private final BookWindowService bookWindowService;
+    private final OclcService oclcService;
+
+    public AmazonJapanBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
+        this.bookWindowService = bookWindowService;
+        this.oclcService = oclcService;
+    }
 
     @Override
     public Book createBook(String isbn){
@@ -222,8 +232,14 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     @Override
-    public void checkInventoryAndOclc(Book result) {
-
+    public void checkInventoryAndOclc(Book book) {
+        if(book.getIsbn() == -1L){
+            book.setOclc(-1L);
+            return;
+        }
+        String isbn = String.valueOf(book.getIsbn());
+        book.setTitleExists(bookWindowService.doesBookExist(isbn));
+        book.setOclc(oclcService.findOclc(isbn));
     }
 
 

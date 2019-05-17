@@ -5,15 +5,14 @@
  */
 package com.aquino.webParser.various;
 
-import com.aquino.webParser.Utilities.Connect;
+import com.aquino.webParser.utilities.Connect;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
-import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.jsoup.nodes.Element;
 
 /**
  *

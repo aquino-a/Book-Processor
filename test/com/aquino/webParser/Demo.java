@@ -5,7 +5,7 @@
  */
 package com.aquino.webParser;
 
-import com.aquino.webParser.Utilities.Connect;
+import com.aquino.webParser.utilities.Connect;
 import org.jsoup.nodes.Comment;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

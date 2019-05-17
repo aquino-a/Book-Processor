@@ -1,4 +1,4 @@
-package com.aquino.webParser.OCLC;
+package com.aquino.webParser.oclc;
 
 public class ProgressData{
     public ProgressData(int start, int current, int end) {

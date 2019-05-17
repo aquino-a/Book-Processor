@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser.OCLC;
+package com.aquino.webParser.oclc;
 
 import com.aquino.webParser.Book;
-import com.aquino.webParser.OldBook;
 import com.aquino.webParser.ExcelWriter;
-import com.aquino.webParser.Utilities.Connect;
-import com.aquino.webParser.Utilities.FileUtility;
-import com.aquino.webParser.Utilities.Links;
+import com.aquino.webParser.bookCreators.aladin.AladinApiResult;
+import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
+import com.aquino.webParser.utilities.Connect;
+import com.aquino.webParser.utilities.FileUtility;
+import com.aquino.webParser.utilities.Links;
 import com.aquino.webParser.bookCreators.BookCreator;
 
 import java.io.File;
@@ -108,7 +109,7 @@ public class OCLCChecker {
         JPanel panel = new JPanel();
         frame.add(panel);
         Links.setType(Links.Type.BEST);
-        OCLCChecker checker = new OCLCChecker();
+        OCLCChecker checker = new OCLCChecker(new AladinBookCreator());
         checker.getHitsAndWrite(1,2,panel,null);
         System.exit(0);
 

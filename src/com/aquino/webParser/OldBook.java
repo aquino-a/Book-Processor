@@ -5,8 +5,8 @@
  */
 package com.aquino.webParser;
 
-import com.aquino.webParser.Utilities.Connect;
-import com.aquino.webParser.Utilities.Login;
+import com.aquino.webParser.utilities.Connect;
+import com.aquino.webParser.utilities.Login;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
