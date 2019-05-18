@@ -45,7 +45,7 @@ public class Book {
     private static final Logger logger = Logger.getLogger(Book.class.getName());
 
     private static final Pattern translatorPattern = Pattern.compile("([\\u3131-\\uD79D]{3}) \\(옮긴이\\)");
-    private static final Pattern originalTitlePattern = Pattern.compile("원제 : ([\\p{L} ]+)(?: \\( \\d{4}년\\))?");
+    private static final Pattern originalTitlePattern = Pattern.compile("원제 : ([\\p{L}:'\\*,0-9’\\- ]+)(?: \\( \\d{4}년\\))?");
     private static final Pattern publisherPattern = Pattern.compile("\\)([\\u3131-\\uD79DA-Za-z ]+)(?:\\d{4}-\\d{2}-\\d{2})");
     private static final Pattern publishDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final Pattern authorsPattern = Pattern.compile("((?:[\\u3131-\\uD79D]+,)*)([\\u3131-\\uD79D ]+) \\(지은이\\)");
