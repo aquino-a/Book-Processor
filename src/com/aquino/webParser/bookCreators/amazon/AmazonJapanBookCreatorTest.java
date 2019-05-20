@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -35,5 +36,17 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(date.getMonthValue(), 7);
         assertEquals(date.getYear(), 2012);
         assertEquals(date.getDayOfMonth(), 27);
+    }
+
+    @Test
+    public void StreamTest() {
+        int[] ia = {1, 2, 3};
+
+        try {
+            Stream.of(ia).forEach((ii) -> {throw new NumberFormatException(); });
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertTrue(true);
+        }
     }
 }

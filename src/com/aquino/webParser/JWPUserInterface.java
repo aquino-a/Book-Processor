@@ -274,8 +274,6 @@ public class JWPUserInterface extends JPanel {
             books = bookCreator.bookListFromLink(textArea.getText());
         else if (dataType == DataType.Isbn)
             books = bookCreator.bookListFromIsbn(textArea.getText());
-
-        //TODO Hidden exception?
         books.stream().forEach(book -> bookCreator.fillInAllDetails(book));
         return books;
     }
