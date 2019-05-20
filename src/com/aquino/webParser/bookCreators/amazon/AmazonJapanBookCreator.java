@@ -62,12 +62,13 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     }
 
-    private Book fillInBasicData(Book book, Document doc) {
+    public Book fillInBasicData(Book book, Document doc) {
         book.setOriginalPriceNumber(parsePrice(doc));
         book.setTitle(parseTitle(doc));
         book.setDescription(parseDescription(doc));
         book.setCover(parseType(doc));
-        book.setImageURL(parseImageUrl(doc));
+        //TODO implement for test
+        //book.setImageURL(parseImageUrl(doc));
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
         book = setWeight(book);
@@ -92,7 +93,8 @@ public class AmazonJapanBookCreator implements BookCreator {
             int authorCount = 0;
             String contributionType = null;
             for (Element e : es) {
-                contributionType = e.getElementsByClass("contribution").first().ownText();
+                contributionType = e.getElementsByClass("contribution").first()
+                        .getElementsByClass("a-color-secondary").first().ownText();
                 if(contributionType.contains("翻訳"))
                     book.setTranslator(findContributorName(e));
                 else if(contributionType.contains("著")){
@@ -128,7 +130,18 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String findContributorName(Element e) {
         //TODO better way to find using attribute value containing
-        return e.getElementsByTag("a").first().ownText();
+        Element element = e.getElementsByClass("a-link-normal contributorNameID").first();
+        if(notNullorEmpty(element))
+            return element.ownText().trim();
+        element = e.getElementsByClass("a-link-normal").first();
+        if(notNullorEmpty(element))
+            return  element.ownText().trim();
+        logger.log(Level.WARNING, String.format("Couldn't parse contributor: %s", e.text()));
+        return "";
+    }
+
+    private boolean notNullorEmpty(Element e){
+        return e != null && !e.ownText().trim().equals("");
     }
 
     private int parsePrice(Document doc) {
@@ -143,7 +156,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private String parseTitle(Document doc) {
         String titleSource = doc.getElementById("productTitle").ownText().trim();
         if(titleSource.indexOf("(") > -1)
-            return titleSource.substring(0, titleSource.indexOf("("));
+            return titleSource.substring(0, titleSource.indexOf("(")).trim();
         else return titleSource;
     }
 
@@ -157,7 +170,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                 book.setPublisher(findPublisher(e.ownText().trim()));
             else if(whole.contains("発売日"))
                 book.setPublishDateFormatted(findPublishedDateFormatted(e.ownText().trim()));
-            else if(whole.contains("梱包サイズ"))
+            else if(whole.contains("梱包サイズ") || whole.contains("商品パッケ"))
                 book.setBookSizeFormatted(findBookSizeFormatted(e.ownText().trim()));
             else if(whole.contains("ISBN-13"))
                 book.setIsbn(findIsbn(e.ownText().trim()));

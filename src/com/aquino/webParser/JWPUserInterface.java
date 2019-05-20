@@ -277,6 +277,8 @@ public class JWPUserInterface extends JPanel {
                 try {
                     disableActions();
 //                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
+                    if(textArea.getText().trim().equals(""))
+                        return null;
                     List<Book> books = fetchBooks();
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
