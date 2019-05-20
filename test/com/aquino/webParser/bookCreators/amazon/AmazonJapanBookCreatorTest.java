@@ -57,7 +57,7 @@ public class AmazonJapanBookCreatorTest {
     public void basicInfoTestFromPage2() throws IOException, URISyntaxException {
         Book book = new Book();
         Document doc;
-        URL url = this.getClass().getResource("test2.mhtml");
+        URL url = this.getClass().getResource("test2.html");
         File f = new File(url.toURI());
         doc = Jsoup.parse(f,"UTF-8");
 
@@ -173,7 +173,22 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
-    public void createBookFromBookPage() {
+    public void createBookFromBookIsbnTest() throws IOException {
+
+        String isbn = "9784822289607";
+        Book book = bc.createBookFromIsbn(isbn);
+        assertEquals(9784822289607L,book.getIsbn());
+        assertEquals(400,book.getPages());
+        assertEquals("01/11/2019",book.getPublishDateFormatted());
+        assertEquals("21 x 14.8",book.getBookSizeFormatted());
+        assertEquals("FACTFULNESS",book.getTitle());
+        assertEquals(1944,book.getOriginalPriceNumber());
+        assertEquals("1494",book.getAuthor());
+        assertEquals("",book.getAuthor2());
+        assertEquals("上杉 周作 & 関 美和",book.getTranslator());
+        assertEquals("日経BP社",book.getPublisher());
+        assertTrue(book.getDescription().startsWith("内容紹介"));
+        assertTrue(book.getDescription().endsWith("表示する"));
     }
 
     @Test

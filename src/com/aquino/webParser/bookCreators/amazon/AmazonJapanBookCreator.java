@@ -26,7 +26,8 @@ import java.util.logging.Logger;
 public class AmazonJapanBookCreator implements BookCreator {
 
 
-    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=%s";
+    private static final String bookPagePrefix = "https://www.amazon.co.jp";
+    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
@@ -46,9 +47,10 @@ public class AmazonJapanBookCreator implements BookCreator {
         Document doc = Connect.connectToURL(String.format(searchUrlFormat, isbn));
         if(doc == null)
             throw new IOException(String.format("Search Document wasn't loaded: %s",isbn));
-        String link = doc.getElementsByAttributeValue("data-component-id", "8").first().getElementsByClass("a-link-normal")
+        String link = doc.getElementsByClass("a-size-mini a-spacing-none a-color-base s-line-clamp-2")
+                .first().getElementsByClass("a-link-normal a-text-normal")
                 .first().attr("href");
-        return createBookFromBookPage(link);
+        return createBookFromBookPage(bookPagePrefix+link);
     }
 
 
@@ -89,7 +91,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     //TODO handle original names
     private Book parseAuthorDetails(Book book, Document doc) {
         try{
-            Elements es = doc.getElementById("bylineInfo").getElementsByClass("author notFaded");
+            Elements es = doc.getElementById("bylineInfo").getElementsByClass("author");
             int authorCount = 0;
             String contributionType = null;
             for (Element e : es) {
