@@ -95,8 +95,11 @@ public class AmazonJapanBookCreator implements BookCreator {
             for (Element e : es) {
                 contributionType = e.getElementsByClass("contribution").first()
                         .getElementsByClass("a-color-secondary").first().ownText();
-                if(contributionType.contains("翻訳"))
-                    book.setTranslator(findContributorName(e));
+                if(contributionType.contains("翻訳")){
+                    if(book.getTranslator() != null)
+                        book.setTranslator(book.getTranslator() + " & " + findContributorName(e));
+                    else book.setTranslator(findContributorName(e));
+                }
                 else if(contributionType.contains("著")){
                     if(authorCount == 0){
                         authorCount++;

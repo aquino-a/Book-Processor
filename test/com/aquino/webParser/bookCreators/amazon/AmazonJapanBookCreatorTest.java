@@ -102,6 +102,77 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
+    public void basicInfoTestFromPage4() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("test4.html");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals(9784163907956L,book.getIsbn());
+        assertEquals(372,book.getPages());
+        assertEquals("02/22/2018",book.getPublishDateFormatted());
+        assertEquals("19 x 13.4",book.getBookSizeFormatted());
+        assertEquals("【2019年本屋大賞 大賞】そして、バトンは渡された",book.getTitle());
+        assertEquals(1728,book.getOriginalPriceNumber());
+        assertEquals("瀬尾まいこ",book.getAuthor());
+        assertEquals("",book.getAuthor2());
+        assertEquals("",book.getTranslator());
+        assertEquals("文藝春秋",book.getPublisher());
+        assertEquals("PB",book.getType());
+        assertTrue(book.getDescription().startsWith("内容紹介"));
+        assertTrue(book.getDescription().endsWith("表示する"));
+    }
+
+    @Test
+    public void basicInfoTestFromPage5() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("test5.html");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals(9784822289607L,book.getIsbn());
+        assertEquals(400,book.getPages());
+        assertEquals("01/11/2019",book.getPublishDateFormatted());
+        assertEquals("21 x 14.8",book.getBookSizeFormatted());
+        assertEquals("FACTFULNESS",book.getTitle());
+        assertEquals(1944,book.getOriginalPriceNumber());
+        assertEquals("1494",book.getAuthor());
+        assertEquals("",book.getAuthor2());
+        assertEquals("上杉 周作 & 関 美和",book.getTranslator());
+        assertEquals("日経BP社",book.getPublisher());
+        assertTrue(book.getDescription().startsWith("内容紹介"));
+        assertTrue(book.getDescription().endsWith("表示する"));
+    }
+
+    @Test
+    public void basicInfoTestFromPage6() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("test6.html");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals(9784265802364L,book.getIsbn());
+        assertEquals(32,book.getPages());
+        assertEquals("01/18/2018",book.getPublishDateFormatted());
+        assertEquals("28.7 x 24.6",book.getBookSizeFormatted());
+        assertEquals("すずちゃんののうみそ 自閉症スペクトラム",book.getTitle());
+        assertEquals(1728,book.getOriginalPriceNumber());
+        assertEquals("竹山 美奈子",book.getAuthor());
+        assertEquals("",book.getAuthor2());
+        assertEquals("",book.getTranslator());
+        assertEquals("岩崎書店",book.getPublisher());
+        assertEquals("",book.getType());
+        assertTrue(book.getDescription().startsWith("内容紹介"));
+        assertTrue(book.getDescription().endsWith("表示する"));
+    }
+
+    @Test
     public void createBookFromBookPage() {
     }
 

@@ -48,6 +48,7 @@ public class JWPUserInterface extends JPanel {
     private String checkedLink;
     private JMenu language;
     private OclcProgress oclcProgress;
+    private NewLineFilter newLineFilter;
 
     private ProcessorFactoryImpl processorFactory;
     private DataType dataType = DataType.BookPage;
@@ -70,8 +71,9 @@ public class JWPUserInterface extends JPanel {
         checkPanel = new JPanel();
         textArea = new JTextArea(37,35);
         textArea.setLineWrap(true);
+        newLineFilter = new NewLineFilter(dataType, bookCreator);
         ((AbstractDocument) textArea.getDocument()).
-                setDocumentFilter(new NewLineFilter());
+                setDocumentFilter(newLineFilter);
         addButton = new JButton(addAction);
         saveButton = new JButton(saveAction);
         fileName = new JLabel("",SwingConstants.LEFT);
@@ -348,16 +350,15 @@ public class JWPUserInterface extends JPanel {
         checkField.setText(str);
     }
 
-    private enum DataType{
-        Isbn, BookPage
-    }
-
     private void changeBookCreator(BookCreatorType creatorType) throws IOException {
         bookCreator = processorFactory.CreateBookCreator(creatorType);
+        newLineFilter.setBookCreator(bookCreator);
     }
 
     private void changeDataType(DataType dataType) {
         this.dataType = dataType;
+        newLineFilter.setDataType(dataType);
+
     }
     
     
