@@ -46,10 +46,11 @@ public class JWPUserInterface extends JPanel {
     private Timer timer;
     private JTextField checkField;
     private String checkedLink;
+    private JMenu language;
     private OclcProgress oclcProgress;
+
     private ProcessorFactoryImpl processorFactory;
     private DataType dataType = DataType.BookPage;
-
     private BookCreator bookCreator;
     
     public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) throws IOException {
@@ -100,9 +101,14 @@ public class JWPUserInterface extends JPanel {
         JMenu tools = new JMenu("Tools");
         tools.add(new JMenuItem(scrapeOclc));
         tools.add(new JMenuItem(scrapeBestOclc));
+        language = new JMenu("Language");
+        language.add(new JMenuItem(koreanAction));
+        language.add(new JMenuItem(japaneseAction));
+
+
         menuBar.add(file);
         menuBar.add(tools);
-        
+        menuBar.add(language);
         //panel
         mainPanel.add(new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
         buttonPanel.add(fileName);
@@ -125,6 +131,27 @@ public class JWPUserInterface extends JPanel {
         
         
     }
+
+    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AmazonJapan);
+            changeDataType(DataType.Isbn);
+            language.setText("Japanese");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    });
+
+    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AladinApi);
+            changeDataType(DataType.BookPage);
+            language.setText("Korean");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    });
+
     private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
         getAddWorker().execute();
     });
