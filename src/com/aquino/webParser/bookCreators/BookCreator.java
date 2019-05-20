@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface BookCreator {
-    Book createBookFromIsbn(String isbn);
+    Book createBookFromIsbn(String isbn) throws IOException;
 
     Book createBookFromBookPage(String bookPageUrl) throws IOException;
 
@@ -18,7 +18,7 @@ public interface BookCreator {
 
     List<Book> bookListFromLink(String pageofLinks) throws IOException;
 
-    List<Book> bookListFromIsbn(String pageofIsbns);
+    List<Book> bookListFromIsbn(String pageofIsbns) throws IOException;
 
     void checkInventoryAndOclc(Book result);
 }

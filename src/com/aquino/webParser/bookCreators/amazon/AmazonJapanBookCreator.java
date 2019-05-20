@@ -41,9 +41,14 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     @Override
-    public Book createBookFromIsbn(String isbn){
+    public Book createBookFromIsbn(String isbn) throws IOException {
+        //data-component-id="8"
         Document doc = Connect.connectToURL(String.format(searchUrlFormat, isbn));
-        return null;
+        if(doc == null)
+            throw new IOException(String.format("Search Document wasn't loaded: %s",isbn));
+        String link = doc.getElementsByAttributeValue("data-component-id", "8").first().getElementsByClass("a-link-normal")
+                .first().attr("href");
+        return createBookFromBookPage(link);
     }
 
 
@@ -62,13 +67,13 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setTitle(parseTitle(doc));
         book.setDescription(parseDescription(doc));
         book.setCover(parseType(doc));
+        book.setImageURL(parseImageUrl(doc));
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
         book = setWeight(book);
 
         return book;
     }
-
 
     private String parseDescription(Document doc) {
         try {
@@ -154,9 +159,12 @@ public class AmazonJapanBookCreator implements BookCreator {
                 book.setPublishDateFormatted(findPublishedDateFormatted(e.ownText().trim()));
             else if(whole.contains("梱包サイズ"))
                 book.setBookSizeFormatted(findBookSizeFormatted(e.ownText().trim()));
+            else if(whole.contains("ISBN-13"))
+                book.setIsbn(findIsbn(e.ownText().trim()));
         }
         return book;
     }
+
     private int findPages(String pagesSource) {
         try {
             return Integer.parseInt(pagesSource.substring(0,pagesSource.indexOf("ページ")));
@@ -193,7 +201,15 @@ public class AmazonJapanBookCreator implements BookCreator {
         return "";
     }
 
-    private Book setWeight(Book book) {
+    private long findIsbn(String isbnSource) {
+        try {
+            return Long.parseLong(isbnSource.replace("-",""));
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+        private Book setWeight(Book book) {
         int pages = book.getPages();
         if(pages > -1)
             book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
@@ -214,8 +230,12 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
+    private String parseImageUrl(Document doc) {
+        throw new NotImplementedException("TODO");
+    }
 
-    @Override
+
+        @Override
     public Book fillInAllDetails(Book book){
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
@@ -233,7 +253,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     @Override
-    public List<Book> bookListFromIsbn(String pageofIsbns) {
+    public List<Book> bookListFromIsbn(String pageofIsbns) throws IOException {
         List<Book> list = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(pageofIsbns);
         while(st.hasMoreTokens()){
