@@ -69,8 +69,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setTitle(parseTitle(doc));
         book.setDescription(parseDescription(doc));
         book.setCover(parseType(doc));
-        //TODO implement for test
-        //book.setImageURL(parseImageUrl(doc));
+        book.setImageURL(parseImageUrl(doc));
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
         book = setWeight(book);
@@ -249,11 +248,27 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private String parseImageUrl(Document doc) {
-        throw new NotImplementedException("TODO");
+        try {
+            String result = doc.getElementsByClass("a-align-center sims-fbt-image-1").first().getElementsByTag("img")
+                    .first().attr("src");
+            return removeImageModifier(result);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, String.format("Couldn't find image url: %s", e.getMessage()));
+            return "";
+        }
+    }
+
+    private String removeImageModifier(String imageUrl) {
+        StringBuilder sb = new StringBuilder(imageUrl);
+        int lastIndex = sb.lastIndexOf(".");
+        sb.replace(lastIndex,lastIndex+1,"$");
+        lastIndex = sb.lastIndexOf(".");
+        sb.replace(lastIndex+1, sb.lastIndexOf("$")+1,"");
+        return sb.toString();
     }
 
 
-        @Override
+    @Override
     public Book fillInAllDetails(Book book){
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));

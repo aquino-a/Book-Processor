@@ -45,6 +45,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(book.getPublishDateFormatted(), "12/24/2018");
         assertEquals(book.getPublisher(), "幻冬舎");
         assertEquals(book.getAuthor2(), "");
+//        assertEquals("",book.getImageURL());
         assertEquals(book.getTranslator(), "");
         assertEquals(book.getBookSizeFormatted(), "18.6 x 12.8");
         assertEquals(book.getType(), "");
@@ -69,6 +70,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(book.getPublishDateFormatted(), "03/15/2019");
         assertEquals(book.getPublisher(), "文響社");
         assertEquals(book.getAuthor2(), "");
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/81T5b9dTwkL.jpg",book.getImageURL());
         assertEquals(book.getTranslator(), "井口耕二");
         assertEquals(book.getBookSizeFormatted(), "14.8 x 2.7");
         assertEquals(book.getType(), "PB");
@@ -94,6 +96,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(2700,book.getOriginalPriceNumber());
         assertEquals("",book.getAuthor());
         assertEquals("",book.getAuthor2());
+//        assertEquals("",book.getImageURL());
         assertEquals("",book.getTranslator());
         assertEquals("",book.getType());
         assertEquals("旭屋出版",book.getPublisher());
@@ -118,6 +121,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(1728,book.getOriginalPriceNumber());
         assertEquals("瀬尾まいこ",book.getAuthor());
         assertEquals("",book.getAuthor2());
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/61vjYK8JYwL.jpg",book.getImageURL());
         assertEquals("",book.getTranslator());
         assertEquals("文藝春秋",book.getPublisher());
         assertEquals("PB",book.getType());
@@ -142,6 +146,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(1944,book.getOriginalPriceNumber());
         assertEquals("1494",book.getAuthor());
         assertEquals("",book.getAuthor2());
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/61G6sKES3eL.jpg",book.getImageURL());
         assertEquals("上杉 周作 & 関 美和",book.getTranslator());
         assertEquals("日経BP社",book.getPublisher());
         assertTrue(book.getDescription().startsWith("内容紹介"));
@@ -165,6 +170,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(1728,book.getOriginalPriceNumber());
         assertEquals("竹山 美奈子",book.getAuthor());
         assertEquals("",book.getAuthor2());
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/81tBP1ukvLL.jpg",book.getImageURL());
         assertEquals("",book.getTranslator());
         assertEquals("岩崎書店",book.getPublisher());
         assertEquals("",book.getType());
@@ -185,6 +191,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(1944,book.getOriginalPriceNumber());
         assertEquals("1494",book.getAuthor());
         assertEquals("",book.getAuthor2());
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/61G6sKES3eL.jpg",book.getImageURL());
         assertEquals("上杉 周作 & 関 美和",book.getTranslator());
         assertEquals("日経BP社",book.getPublisher());
         assertTrue(book.getDescription().startsWith("内容紹介"));
