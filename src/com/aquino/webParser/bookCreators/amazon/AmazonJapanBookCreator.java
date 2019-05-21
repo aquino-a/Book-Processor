@@ -130,6 +130,8 @@ public class AmazonJapanBookCreator implements BookCreator {
         if(book.getAuthor() == null) book.setAuthor("");
         if(book.getAuthor2() == null) book.setAuthor2("");
         if(book.getTranslator() == null) book.setTranslator("");
+        if(book.getEnglishTitle() == null) book.setEnglishTitle("");
+        if(book.getAuthorOriginal() == null) book.setAuthorOriginal("");
     }
 
     private String findContributorName(Element e) {
