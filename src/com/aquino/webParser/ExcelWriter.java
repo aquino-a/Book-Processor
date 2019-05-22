@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -89,7 +92,9 @@ public class ExcelWriter {
         row.createCell(20).setCellValue(book.getCurrencyType());
         row.createCell(21).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
-        row.createCell(22).setCellValue(book.getImageURL());
+        row.createCell(22).setHyperlink(createHyperLink(book.getImageURL()));
+        row.getCell(22).setCellValue(book.getImageURL());
+        row.getCell(22).setCellStyle(workbook.createCellStyle());
         if(!book.getTranslator().equals(""))
             row.createCell(23).setCellValue(book.getTranslator());
         row.createCell(26).setCellValue(book.getBookSizeFormatted());
@@ -103,6 +108,15 @@ public class ExcelWriter {
         row.createCell(38).setCellValue(0);
         row.createCell(39).setCellValue(book.getBookPageUrl());
     }
+
+    private Hyperlink createHyperLink(String imageURL) {
+        if(imageURL == null || imageURL.equals(""))
+            return null;
+        XSSFHyperlink result = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
+        result.setAddress(imageURL);
+        return result;
+    }
+
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
             logger.log(Level.INFO, "Saving file");
