@@ -54,9 +54,10 @@ public class NewLineFilter extends DocumentFilter{
         String token;
         while(st.hasMoreTokens()){
             token = st.nextToken();
-            if(dataType.equals(DataType.BookPage))
+            if(dataType.equals(DataType.BookPage)){
                 if(!token.contains(bookCreator.BookPagePrefix()))
                     return false;
+            }
             else if(dataType.equals(DataType.Isbn)){
                 try {
                     Long.parseLong(token);
