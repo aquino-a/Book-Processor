@@ -66,6 +66,8 @@ public class ExcelWriter {
             row.createCell(1).setCellValue(book.getIsbn());
             row.getCell(1).setCellStyle(isbnNumberFormat);
         }
+        row.createCell(2).setHyperlink(createHyperLink(book.getBookPageUrl()));
+        row.getCell(2).setCellValue("Book page");
         if(book.getOclc() != -1)
             row.createCell(3).setCellValue(book.getOclc());
         if(!book.getEnglishTitle().equals(""))
@@ -92,11 +94,12 @@ public class ExcelWriter {
         row.createCell(20).setCellValue(book.getCurrencyType());
         row.createCell(21).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
-        row.createCell(22).setHyperlink(createHyperLink(book.getImageURL()));
-        row.getCell(22).setCellValue(book.getImageURL());
+        row.createCell(22).setCellValue(book.getImageURL());
         row.getCell(22).setCellStyle(workbook.createCellStyle());
         if(!book.getTranslator().equals(""))
             row.createCell(23).setCellValue(book.getTranslator());
+        row.createCell(24).setHyperlink(createHyperLink(book.getImageURL()));
+        row.getCell(24).setCellValue("Image");
         row.createCell(26).setCellValue(book.getBookSizeFormatted());
         row.createCell(27).setCellValue(book.getType());
         row.createCell(28).setCellValue(book.getPages());
@@ -106,7 +109,6 @@ public class ExcelWriter {
         row.createCell(35).setCellValue(1);
         row.createCell(37).setCellValue(1);
         row.createCell(38).setCellValue(0);
-        row.createCell(39).setCellValue(book.getBookPageUrl());
     }
 
     private Hyperlink createHyperLink(String imageURL) {

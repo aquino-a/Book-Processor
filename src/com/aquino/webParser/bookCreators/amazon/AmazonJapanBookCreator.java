@@ -65,6 +65,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         Document doc = Connect.connectToURL(bookPageUrl);
         if(doc == null)
             throw new IOException(String.format("Document wasn't loaded: %s",bookPageUrl));
+        book.setBookPageUrl(bookPageUrl);
         return fillInBasicData(book, doc);
 
     }
