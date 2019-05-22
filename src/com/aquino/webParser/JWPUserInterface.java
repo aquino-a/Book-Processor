@@ -14,6 +14,8 @@ import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
 import com.aquino.webParser.filters.CheckFilter;
+
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -281,6 +283,7 @@ public class JWPUserInterface extends JPanel {
 //                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
                     if(textArea.getText().trim().equals(""))
                         return null;
+                    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     List<Book> books = fetchBooks();
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
@@ -292,6 +295,7 @@ public class JWPUserInterface extends JPanel {
             }
             @Override
             public void done() {
+                frame.setCursor(null);
                 state.setText("Added!");
                 timer.start();
                 enableActions();
