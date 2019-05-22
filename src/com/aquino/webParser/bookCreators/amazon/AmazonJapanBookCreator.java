@@ -36,7 +36,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern imageUrlScriptPattern = Pattern.compile(
-            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9]+.jpg)");
+            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%]+.jpg)");
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
