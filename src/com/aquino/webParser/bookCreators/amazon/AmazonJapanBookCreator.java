@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AmazonJapanBookCreator implements BookCreator {
 
@@ -33,6 +35,8 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private static final Pattern imageUrlScriptPattern = Pattern.compile(
+            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9]+.jpg)");
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
@@ -254,13 +258,19 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String parseImageUrl(Document doc) {
         try {
-            String result = doc.getElementsByClass("a-align-center sims-fbt-image-1").first().getElementsByTag("img")
-                    .first().attr("src");
-            return removeImageModifier(result);
+           Element element = doc.getElementById("booksImageBlock_feature_div").getElementsByTag("script").first();
+           return findImageUrl(element.data());
         } catch (Exception e) {
             logger.log(Level.WARNING, String.format("Couldn't find image url: %s", e.getMessage()));
             return "";
         }
+    }
+
+    private String findImageUrl(String scriptBody) {
+        Matcher m = imageUrlScriptPattern.matcher(scriptBody);
+        if(m.find())
+            return m.group(1);
+        return "";
     }
 
     private String removeImageModifier(String imageUrl) {
