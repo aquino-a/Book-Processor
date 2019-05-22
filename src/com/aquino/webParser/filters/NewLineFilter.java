@@ -13,6 +13,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.DocumentFilter.FilterBypass;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -49,17 +50,23 @@ public class NewLineFilter extends DocumentFilter{
     }
 
     private boolean IsStringValid(String str) {
-        if(dataType.equals(DataType.BookPage))
-            return str.contains(bookCreator.BookPagePrefix());
-        else if(dataType.equals(DataType.Isbn)){
-            try {
-                Long.parseLong(str);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
+        StringTokenizer st = new StringTokenizer(str);
+        String token;
+        while(st.hasMoreTokens()){
+            token = st.nextToken();
+            if(dataType.equals(DataType.BookPage))
+                if(!token.contains(bookCreator.BookPagePrefix()))
+                    return false;
+            else if(dataType.equals(DataType.Isbn)){
+                try {
+                    Long.parseLong(token);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
             }
+            else throw new UnsupportedOperationException();
         }
-        throw new UnsupportedOperationException();
+        return true;
     }
 
 

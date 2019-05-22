@@ -6,7 +6,7 @@ public class Book {
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, authorOriginal,
-            locationUrl, kIsbn, bookPageUrl;
+            locationUrl, kIsbn, bookPageUrl, languageCode, currencyType ;
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -231,5 +231,21 @@ public class Book {
 
     public void setBookPageUrl(String bookPageUrl) {
         this.bookPageUrl = bookPageUrl;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getCurrencyType() {
+        return currencyType;
+    }
+
+    public void setCurrencyType(String currencyType) {
+        this.currencyType = currencyType;
     }
 }

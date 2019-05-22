@@ -69,7 +69,7 @@ public class ExcelWriter {
             row.createCell(4).setCellValue(book.getEnglishTitle());
         row.createCell(6).setCellValue(Romanizer.hangulToRoman(book.getTitle()));
         row.createCell(7).setCellValue(book.getTitle());
-        if(Character.isDigit(book.getAuthor().charAt(0)))
+        if(book.getAuthor() != null && !book.getAuthor().equals("") && Character.isDigit(book.getAuthor().charAt(0)))
             row.createCell(9).setCellValue(Integer.parseInt(book.getAuthor()));
         else row.createCell(9).setCellValue(book.getAuthor());
         if(!book.getAuthor2().equals("")){
@@ -84,9 +84,9 @@ public class ExcelWriter {
         if(!book.getEnglishTitle().equals(""))
             row.createCell(13).setCellValue(book.getAuthorOriginal());
         row.createCell(15).setCellValue("Opes");
-        row.createCell(16).setCellValue("KOR");
+        row.createCell(16).setCellValue(book.getLanguageCode());
         row.createCell(19).setCellValue(book.getPublishDateFormatted());
-        row.createCell(20).setCellValue("Won");
+        row.createCell(20).setCellValue(book.getCurrencyType());
         row.createCell(21).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
         row.createCell(22).setCellValue(book.getImageURL());
