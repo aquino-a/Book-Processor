@@ -12,29 +12,24 @@ import static java.util.Collections.unmodifiableList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AladinBookInfo {
     private final List<AladinAuthor> authors;
-    private final List<String> imageUrls;
     private final int pages;
+    private final AladinPacking packing;
     private String originalTitle;
 
     @JsonCreator
     public AladinBookInfo(
             @JsonProperty("authors") List<AladinAuthor> authors,
-            @JsonProperty("letslookimg") List<String> imageUrls,
-            @JsonProperty("itemPage") int pages
+            @JsonProperty("itemPage") int pages,
+            @JsonProperty("packing") AladinPacking packing
     ) {
         this.authors = unmodifiableList(new ArrayList<AladinAuthor>(authors));
-        this.imageUrls = unmodifiableList(new ArrayList<String>(imageUrls));
         this.pages = pages;
+        this.packing = packing;
     }
 
     @JsonProperty("authors")
     public List<AladinAuthor> getAuthors() {
         return authors;
-    }
-
-    @JsonProperty("imageUrls")
-    public List<String> getImageUrls() {
-        return imageUrls;
     }
 
     public String getOriginalTitle() {
@@ -47,4 +42,11 @@ public class AladinBookInfo {
         this.originalTitle = originalTitle;
     }
 
+    public AladinPacking getPacking() {
+        return packing;
+    }
+
+    public int getPages() {
+        return pages;
+    }
 }

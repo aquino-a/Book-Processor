@@ -12,8 +12,16 @@ public class AladinAuthor {
 
     //TODO enum for authorType
     @JsonCreator
-    public AladinAuthor(@JsonProperty("authorType") String authorType,@JsonProperty("name") String name) {
+    public AladinAuthor(@JsonProperty("authorType") String authorType,@JsonProperty("authorName") String name) {
         this.authorType = authorType;
         this.name = name;
+    }
+
+    public String getAuthorType() {
+        return authorType;
+    }
+
+    public String getName() {
+        return name;
     }
 }

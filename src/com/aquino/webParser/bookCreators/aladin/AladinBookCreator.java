@@ -15,6 +15,8 @@ import java.util.StringTokenizer;
 
 public class AladinBookCreator implements BookCreator {
 
+    //http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=%s&itemIdType=ItemId&ItemId=%s&output=js&Version=20131101&OptResult=authors,fullDescription,packing
+
     private static final String apiUrlFormat = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=%s&itemIdType=ItemId&ItemId=%s&output=js&OptResult=packing&Cover=Big";
     private final String apiKey;
     private final BookWindowService bookWindowService;
