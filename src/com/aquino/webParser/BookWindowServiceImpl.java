@@ -23,7 +23,7 @@ public class BookWindowServiceImpl implements BookWindowService {
         String url = makeURL("https://www.bookswindow.com/admin/mfg/manage/keyword/",publisher);
         Element element = retrieveElementAuthorPublisher(url);
         if (element != null) {
-            return element.text();
+            return element.text() + ' ' + publisher;
         } else return publisher;
     }
 
@@ -33,7 +33,7 @@ public class BookWindowServiceImpl implements BookWindowService {
             return author;
         Element element = retrieveElementAuthorPublisher(makeURLAuthor(author));
         if (element != null) {
-            return element.text();
+            return element.text() + ' ' + author;
         } else return author;
     }
 
