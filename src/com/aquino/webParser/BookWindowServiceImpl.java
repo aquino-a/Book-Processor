@@ -29,7 +29,7 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     @Override
     public String findAuthorId(String author){
-        if(author == null || author == "")
+        if(author == null || author.equals("") || author.equals("1494"))
             return author;
         Element element = retrieveElementAuthorPublisher(makeURLAuthor(author));
         if (element != null) {

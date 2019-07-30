@@ -30,7 +30,7 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private static final String bookPagePrefix = "https://www.amazon.co.jp";
 //    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
-    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=%s&i=stripbooks&ref=nb_sb_noss";
+    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=\"%s\"&i=stripbooks&ref=nb_sb_noss";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");

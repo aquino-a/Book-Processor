@@ -74,15 +74,15 @@ public class ExcelWriter {
             row.createCell(4).setCellValue(book.getEnglishTitle());
         row.createCell(6).setCellValue(Romanizer.hangulToRoman(book.getTitle()));
         row.createCell(7).setCellValue(book.getTitle());
-        if(book.getAuthor() != null && !book.getAuthor().equals("") && Character.isDigit(book.getAuthor().charAt(book.getAuthor().length() -1)))
+        if(book.getAuthor() != null && !book.getAuthor().equals("") && IsStringAllNum(book.getAuthor()))
             row.createCell(9).setCellValue(Integer.parseInt(book.getAuthor()));
         else row.createCell(9).setCellValue(book.getAuthor());
         if(!book.getAuthor2().equals("")){
-            if(Character.isDigit(book.getAuthor2().charAt(book.getAuthor2().length() - 1)))
+            if(IsStringAllNum(book.getAuthor2()))
                 row.createCell(10).setCellValue(Integer.parseInt(book.getAuthor2()));
             else row.createCell(10).setCellValue(book.getAuthor2());
         }
-        if (Character.isDigit(book.getPublisher().charAt(book.getPublisher().length() - 1)))
+        if (IsStringAllNum(book.getPublisher()))
             row.createCell(11).setCellValue(Integer.parseInt(book.getPublisher()));
         else row.createCell(11).setCellValue(book.getPublisher());
         row.createCell(12).setCellValue(book.getCategory());
@@ -109,6 +109,14 @@ public class ExcelWriter {
         row.createCell(35).setCellValue(1);
         row.createCell(37).setCellValue(1);
         row.createCell(38).setCellValue(0);
+    }
+
+    private boolean IsStringAllNum(String str) {
+        for (char c: str.toCharArray()) {
+            if(!Character.isDigit(c))
+                return false;
+        }
+        return true;
     }
 
     private Hyperlink createHyperLink(String imageURL) {
