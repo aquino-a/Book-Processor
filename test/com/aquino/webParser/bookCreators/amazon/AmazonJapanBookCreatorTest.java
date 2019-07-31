@@ -199,6 +199,31 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
+    public void BiggestNumbersBookSizeTest() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("width in middle test.htm");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals(9784087458497L,book.getIsbn());
+        assertEquals(360,book.getPages());
+        assertEquals("03/20/2019",book.getPublishDateFormatted());
+        assertEquals("15.2 x 10.5",book.getBookSizeFormatted());
+        assertEquals("裸の華",book.getTitle());
+        assertEquals(756,book.getOriginalPriceNumber());
+        assertEquals("桜木 紫乃",book.getAuthor());
+        assertEquals("",book.getAuthor2());
+//        assertEquals("https://images-na.ssl-images-amazon.com/images/I/81tBP1ukvLL.jpg",book.getImageURL());
+//        assertEquals("",book.getTranslator());
+        assertEquals("集英社",book.getPublisher());
+//        assertEquals("",book.getType());
+//        assertTrue(book.getDescription().startsWith("内容紹介"));
+//        assertTrue(book.getDescription().endsWith("表示する"));
+    }
+
+    @Test
     public void JsoupParse() {
         Document doc = Jsoup.parse("<li><b>ムック:</b> 127ページ</li>");
         assertEquals(doc.getElementsByTag("li").first().ownText().trim(), "127ページ" );

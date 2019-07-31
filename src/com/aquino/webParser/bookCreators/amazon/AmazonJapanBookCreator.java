@@ -6,6 +6,7 @@ import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,10 +17,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -32,11 +30,13 @@ public class AmazonJapanBookCreator implements BookCreator {
 //    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
     private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=\"%s\"&i=stripbooks&ref=nb_sb_noss";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
+    private static final String bookSizeFormat = "%.1f x %.1f";
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern imageUrlScriptPattern = Pattern.compile(
             "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%]+.jpg)");
+
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
@@ -222,10 +222,14 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String findBookSizeFormatted(String sizeSource) {
         //28.5 x 20.9 x 1.4 cm
-        if(sizeSource.lastIndexOf("x") > -1)
-            return sizeSource.substring(0, sizeSource.lastIndexOf("x")).trim();
-        logger.log(Level.WARNING, String.format("Couldn't find book size: %s", sizeSource));
-        return "";
+        String[] nums = sizeSource.split("[ x cm]");
+        double[] arr = Arrays.stream(nums).filter(n -> NumberUtils.isCreatable(n))
+                .map(Double::valueOf)
+                .sorted(Comparator.reverseOrder())
+                .limit(2)
+                .mapToDouble(Double::doubleValue)
+                .toArray();
+        return String.format(bookSizeFormat, arr[0],arr[1]);
     }
 
     private long findIsbn(String isbnSource) {
