@@ -229,7 +229,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                 .limit(2)
                 .mapToDouble(Double::doubleValue)
                 .toArray();
-        return String.format(bookSizeFormat, arr[0],arr[1]);
+        return String.format(bookSizeFormat, arr[0],arr[1]).replace(".0","");
     }
 
     private long findIsbn(String isbnSource) {
