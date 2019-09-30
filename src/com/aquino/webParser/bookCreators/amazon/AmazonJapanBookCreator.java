@@ -159,10 +159,11 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private int parsePrice(Document doc) {
-        String priceSource = doc.getElementsByClass("a-size-base a-color-price a-color-price").first().text().trim();
         try {
+            String priceSource = doc.getElementsByClass("a-size-base a-color-price a-color-price").first().text().trim();
             return NumberFormat.getInstance(Locale.JAPAN).parse(priceSource.replace("￥","").trim()).intValue();
-        } catch (ParseException e) {
+        } catch (NullPointerException | ParseException e) {
+            logger.log(Level.WARNING, String.format("Couldn't parse price: %s", e.getMessage()));
             return -1;
         }
     }
