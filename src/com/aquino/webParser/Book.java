@@ -233,17 +233,7 @@ public class Book {
     }
 
     private String imageUrlCreate(String startUrl) {
-        StringBuilder sb = new StringBuilder(startUrl);
-        sb.replace(sb.indexOf("cover"), sb.indexOf("cover") + 5, "letslook");
-        sb.setCharAt(sb.lastIndexOf("_") + 1, 'f');
-
-//        sb.setCharAt(sb.lastIndexOf("1"), 'f');
-//        sb.delete(sb.indexOf("cover"), sb.length());
-//        sb.append("letslook/");
-//        sb.append(doc.getElementsByAttributeValueMatching(
-//                "property", "books:isbn").attr("content"));
-//        sb.append("_f.jpg");
-        return sb.toString();
+        return startUrl;
     }
 
     private void retrieveImageUrl() {
