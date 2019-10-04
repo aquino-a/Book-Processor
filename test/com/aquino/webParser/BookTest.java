@@ -73,13 +73,7 @@ public class BookTest {
         
     }
 
-    @Test
-    public void JsonTest() throws IOException {
-        Connection.Response r =  Jsoup.connect("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx?ttbkey=ttbiamqnibus1956001&itemIdType=ItemId&ItemId=182285146&output=js").method(Connection.Method.GET).execute();
-        String s = r.body();
-        ObjectMapper m = new ObjectMapper();
-        JsonTestData d =  m.readValue(s, JsonTestData.class);
-    }
+
 
 
 }
