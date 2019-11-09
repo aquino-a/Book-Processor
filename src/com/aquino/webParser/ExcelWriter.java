@@ -72,7 +72,7 @@ public class ExcelWriter {
             row.createCell(3).setCellValue(book.getOclc());
         if(!book.getEnglishTitle().equals(""))
             row.createCell(4).setCellValue(book.getEnglishTitle());
-        row.createCell(6).setCellValue(Romanizer.hangulToRoman(book.getTitle()));
+        row.createCell(6).setCellValue(book.getRomanizedTitle());
         row.createCell(7).setCellValue(book.getTitle());
         if(book.getAuthor() != null && !book.getAuthor().equals("") && IsStringAllNum(book.getAuthor()))
             row.createCell(9).setCellValue(Integer.parseInt(book.getAuthor()));

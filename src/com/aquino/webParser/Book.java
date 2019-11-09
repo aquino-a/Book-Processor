@@ -6,7 +6,7 @@ public class Book {
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, authorOriginal,
-            locationUrl, kIsbn, bookPageUrl, languageCode, currencyType ;
+            locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "";
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -15,7 +15,6 @@ public class Book {
 
     private int originalPriceNumber;
     private double originalPriceFormatted;
-
 
     public boolean isTitleExists() {
         return titleExists;
@@ -247,5 +246,13 @@ public class Book {
 
     public void setCurrencyType(String currencyType) {
         this.currencyType = currencyType;
+    }
+
+    public String getRomanizedTitle() {
+        return romanizedTitle;
+    }
+
+    public void setRomanizedTitle(String romanizedTitle) {
+        this.romanizedTitle = romanizedTitle;
     }
 }
