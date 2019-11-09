@@ -1,13 +1,18 @@
 package com.aquino.webParser.bookCreators.amazon;
 
 import com.aquino.webParser.Book;
+import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
+import com.aquino.webParser.oclc.OclcService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +28,15 @@ import static org.junit.Assert.*;
 public class AmazonJapanBookCreatorTest {
 
     private AmazonJapanBookCreator bc;
+    @Mock
+    BookWindowService bookWindowService;
+    @Mock
+    OclcService oclcService;
 
     @Before
     public void setUp() throws Exception {
-        bc = new AmazonJapanBookCreator(null,null);
+        MockitoAnnotations.initMocks(this);
+        bc = new AmazonJapanBookCreator(bookWindowService,oclcService);
     }
 
     @Test
@@ -72,7 +82,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(book.getAuthor2(), "");
         assertEquals("https://images-na.ssl-images-amazon.com/images/I/81T5b9dTwkL.jpg",book.getImageURL());
         assertEquals(book.getTranslator(), "井口耕二");
-        assertEquals(book.getBookSizeFormatted(), "14.8 x 2.7");
+        assertEquals(book.getBookSizeFormatted(), "21 x 14.8");
         assertEquals(book.getType(), "PB");
         assertEquals(book.getTitle(), "PIXAR <ピクサー> 世界一のアニメーション企業の今まで語られなかったお金の話");
         assertTrue(book.getDescription().startsWith("内容紹介"));
@@ -179,6 +189,21 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
+    public void japRomanizeTestFromPage() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("test6.html");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals("すずちゃんののうみそ 自閉症スペクトラム",book.getTitle());
+        //suzu chan nono umi so jiheishou supekutoramu
+        bc.fillInAllDetails(book);
+        assertEquals("suzu chan nono umi so jiheishou supekutoramu", book.getRomanizedTitle());
+    }
+
+    @Test
     public void createBookFromBookIsbnTest() throws IOException {
 
         String isbn = "9784822289607";
@@ -188,7 +213,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("01/11/2019",book.getPublishDateFormatted());
         assertEquals("21 x 14.8",book.getBookSizeFormatted());
         assertEquals("FACTFULNESS",book.getTitle());
-        assertEquals(1944,book.getOriginalPriceNumber());
+        assertEquals(1980,book.getOriginalPriceNumber());
         assertEquals("1494",book.getAuthor());
         assertEquals("",book.getAuthor2());
         assertEquals("https://images-na.ssl-images-amazon.com/images/I/61G6sKES3eL.jpg",book.getImageURL());

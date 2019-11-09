@@ -7,11 +7,16 @@ import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -31,6 +36,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=\"%s\"&i=stripbooks&ref=nb_sb_noss";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String bookSizeFormat = "%.1f x %.1f";
+    private static final String translitFormat = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
     private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
     private static final DateTimeFormatter sourceFormatter = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -293,7 +299,19 @@ public class AmazonJapanBookCreator implements BookCreator {
     public Book fillInAllDetails(Book book){
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+        book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         return book;
+    }
+
+    private String lookupRomanizedTitle(String title) {
+        if (title == null || title.equals(""))
+            return title;
+        try {
+            Connection c = Jsoup.connect(String.format(translitFormat, URLEncoder.encode(title, StandardCharsets.UTF_8.toString())));
+            return c.ignoreContentType(true).execute().body().replaceAll("\"", "");
+        } catch (IOException e) {
+            return "";
+        }
     }
 
     @Override
