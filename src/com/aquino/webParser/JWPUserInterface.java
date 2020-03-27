@@ -19,7 +19,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -308,11 +310,32 @@ public class JWPUserInterface extends JPanel {
         if(dataType == DataType.BookPage)
             books = bookCreator.bookListFromLink(textArea.getText());
         else if (dataType == DataType.Isbn)
-            books = bookCreator.bookListFromIsbn(textArea.getText());
+            books = GetBookListFromIsbns(textArea.getText());
         books.stream().forEach(book -> bookCreator.fillInAllDetails(book));
         return books;
     }
-    
+
+    private List<Book> GetBookListFromIsbns(String text) {
+        List<Book> list = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(text);
+        while(st.hasMoreTokens()) {
+            String isbn = st.nextToken();
+            try {
+                Book book = bookCreator.createBookFromIsbn(isbn);
+                if(book.getIsbn() == 0)
+                    throw new Exception(String.format("ISBN is 0"));
+                list.add(book);
+            }
+            catch (Exception e){
+                JOptionPane.showMessageDialog(frame, String.format("Problem with isbn: {0}", isbn));
+                logger.log(Level.SEVERE, String.format("Problem with isbn: {0}", isbn));
+                logger.log(Level.SEVERE, e.getMessage());
+                continue;
+            }
+        }
+        return list;
+    }
+
     private SwingWorker getOclcWorker(Links.Type type) {
         return new SwingWorker<Void,Void>() {
             @Override
