@@ -327,8 +327,8 @@ public class JWPUserInterface extends JPanel {
                 list.add(book);
             }
             catch (Exception e){
-                JOptionPane.showMessageDialog(frame, String.format("Problem with isbn: {0}", isbn));
-                logger.log(Level.SEVERE, String.format("Problem with isbn: {0}", isbn));
+                JOptionPane.showMessageDialog(frame, String.format("Problem with isbn: %s", isbn));
+                logger.log(Level.SEVERE, String.format("Problem with isbn: %s", isbn));
                 logger.log(Level.SEVERE, e.getMessage());
                 continue;
             }
