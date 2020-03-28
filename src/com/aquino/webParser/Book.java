@@ -15,6 +15,7 @@ public class Book {
 
     private int originalPriceNumber;
     private double originalPriceFormatted;
+    private String vendorName = "";
 
     public boolean isTitleExists() {
         return titleExists;
@@ -254,5 +255,13 @@ public class Book {
 
     public void setRomanizedTitle(String romanizedTitle) {
         this.romanizedTitle = romanizedTitle;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
     }
 }
