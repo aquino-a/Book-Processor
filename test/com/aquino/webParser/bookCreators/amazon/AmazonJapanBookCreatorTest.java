@@ -216,7 +216,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(1980,book.getOriginalPriceNumber());
         assertEquals("1494",book.getAuthor());
         assertEquals("",book.getAuthor2());
-        assertEquals("https://images-na.ssl-images-amazon.com/images/I/61G6sKES3eL.jpg",book.getImageURL());
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/81evkcIzJoL.jpg",book.getImageURL());
         assertEquals("上杉 周作 & 関 美和",book.getTranslator());
         assertEquals("日経BP",book.getPublisher());
         assertTrue(book.getDescription().startsWith("内容紹介"));

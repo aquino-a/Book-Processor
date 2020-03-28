@@ -191,7 +191,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                 book.setPublisher(findPublisher(e.ownText().trim()));
             else if(whole.contains("発売日"))
                 book.setPublishDateFormatted(findPublishedDateFormatted(e.ownText().trim()));
-            else if(whole.contains("梱包サイズ") || whole.contains("商品パッケ"))
+            else if(whole.contains("梱包サイズ") || whole.contains("商品パッケ") || whole.contains("商品の寸法"))
                 book.setBookSizeFormatted(findBookSizeFormatted(e.ownText().trim()));
             else if(whole.contains("ISBN-13"))
                 book.setIsbn(findIsbn(e.ownText().trim()));
