@@ -308,10 +308,24 @@ public class AmazonJapanBookCreator implements BookCreator {
             return title;
         try {
             Connection c = Jsoup.connect(String.format(translitFormat, URLEncoder.encode(title, StandardCharsets.UTF_8.toString())));
-            return c.ignoreContentType(true).execute().body().replaceAll("\"", "");
+            String romanized =  c.ignoreContentType(true).execute().body().replaceAll("\"", "");
+            return capitalizeFirstLetter(romanized);
         } catch (IOException e) {
             return "";
         }
+    }
+
+    private String capitalizeFirstLetter(String text) {
+        if(text == null || text.length() == 0)
+            return text;
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if(Character.isAlphabetic(chars[i])){
+                chars[i] = Character.toUpperCase(chars[i]);
+                break;
+            }
+        }
+        return new String(chars);
     }
 
     @Override

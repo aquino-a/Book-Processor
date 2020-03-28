@@ -200,7 +200,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("すずちゃんののうみそ 自閉症スペクトラム",book.getTitle());
         //suzu chan nono umi so jiheishou supekutoramu
         bc.fillInAllDetails(book);
-        assertEquals("suzu chan nono umi so jiheishou supekutoramu", book.getRomanizedTitle());
+        assertEquals("Suzu chan nono umi so jiheishou supekutoramu", book.getRomanizedTitle());
     }
 
     @Test
