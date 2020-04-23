@@ -241,8 +241,8 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("https://images-na.ssl-images-amazon.com/images/I/81IIRWN-c%2BL.jpg",book.getImageURL());
         assertEquals("上杉 周作 & 関 美和",book.getTranslator());
         assertEquals("日経BP",book.getPublisher());
-        assertTrue(book.getDescription().startsWith("内容紹介"));
-        assertTrue(book.getDescription().endsWith("表示する"));
+        assertTrue(book.getDescription().startsWith("内容"));
+        assertTrue(book.getDescription().endsWith("続きを読む"));
     }
 
     @Test

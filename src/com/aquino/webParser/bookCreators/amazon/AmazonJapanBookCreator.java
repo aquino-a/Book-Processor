@@ -96,7 +96,7 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String parseDescription(Document doc) {
         try {
-            return doc.getElementById("productDescription").text();
+            return doc.getElementsByClass("a-section a-spacing-small a-padding-base").first().text();
         }catch (Exception e){
             logger.log(Level.WARNING, String.format("Couldn't parse description: %s", e.getMessage()));
             e.printStackTrace();
