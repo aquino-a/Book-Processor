@@ -33,7 +33,7 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private static final String bookPagePrefix = "https://www.amazon.co.jp";
 //    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
-    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=\"%s\"-kindle&i=stripbooks&ref=nb_sb_noss";
+    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?k=\"%s\"&i=stripbooks&ref=nb_sb_noss";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String bookSizeFormat = "%.1f x %.1f";
     private static final String translitFormat = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
@@ -58,9 +58,12 @@ public class AmazonJapanBookCreator implements BookCreator {
         Document doc = Connect.connectToURL(String.format(searchUrlFormat, isbn));
         if(doc == null)
             throw new IOException(String.format("Search Document wasn't loaded: %s",isbn));
-        String link = doc.getElementsByClass("a-size-mini a-spacing-none a-color-base s-line-clamp-2")
-                .first().getElementsByClass("a-link-normal a-text-normal")
-                .first().attr("href");
+        String link =  doc.getElementsByClass("a-size-base a-link-normal a-text-bold")
+                .stream()
+                .filter(e -> e.wholeText().contains("単行本"))
+                .findFirst()
+                .orElse(null)
+                .attr("href");
         return createBookFromBookPage(bookPagePrefix+link);
     }
 

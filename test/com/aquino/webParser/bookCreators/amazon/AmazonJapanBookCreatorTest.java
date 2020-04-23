@@ -189,6 +189,28 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
+    public void FromIsbnKindleBugFix1() throws IOException, URISyntaxException {
+
+        String isbn = "9784391154511";
+        Book book = bc.createBookFromIsbn(isbn);
+        assertEquals(book.getIsbn(), 9784391154511L);
+        assertEquals(book.getPages(), 127);
+        assertEquals(book.getOriginalPriceNumber(), 1485);
+        assertEquals(book.getAuthor(), "河井 美歩");
+    }
+
+    @Test
+    public void FromIsbnKindleBugFix2() throws IOException, URISyntaxException {
+
+        String isbn = "9784864541473";
+        Book book = bc.createBookFromIsbn(isbn);
+        assertEquals(book.getIsbn(), 9784864541473L);
+        assertEquals(book.getPages(), 184);
+        assertEquals(book.getOriginalPriceNumber(), 1980);
+        assertEquals(book.getAuthor(), "白井 恭弘");
+    }
+
+    @Test
     public void japRomanizeTestFromPage() throws IOException, URISyntaxException {
         Book book = new Book();
         Document doc;
