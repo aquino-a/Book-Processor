@@ -60,7 +60,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             throw new IOException(String.format("Search Document wasn't loaded: %s",isbn));
         String link =  doc.getElementsByClass("a-size-base a-link-normal a-text-bold")
                 .stream()
-                .filter(e -> e.wholeText().contains("単行本") || e.wholeText().contains("大型本"))
+                .filter(e -> e.wholeText().contains("単行本") || e.wholeText().contains("大型本") || e.wholeText().contains("文庫"))
                 .findFirst()
                 .orElse(null)
                 .attr("href");
