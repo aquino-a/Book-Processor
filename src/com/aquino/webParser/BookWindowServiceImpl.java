@@ -42,8 +42,12 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private Element retrieveElement(String url, String attr, String value) {
-        return Login.getDocument(url).
-                getElementsByAttributeValueMatching(attr, value).first();
+        try{
+            return Login.getDocument(url).
+                    getElementsByAttributeValueMatching(attr, value).first();
+        } catch (NullPointerException e){
+            return null;
+        }
     }
 
     private String makeURLAuthor(String author) {
