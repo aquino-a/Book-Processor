@@ -99,7 +99,10 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String parseDescription(Document doc) {
         try {
-            return doc.getElementsByClass("a-section a-spacing-small a-padding-base").first().text();
+            return doc.getElementById("bookDescription_feature_div")
+                    .getElementsByTag("noscript")
+                    .first()
+                    .wholeText().replaceAll("\n", "").trim();
         }catch (Exception e){
             logger.log(Level.WARNING, String.format("Couldn't parse description: %s", e.getMessage()));
             e.printStackTrace();
@@ -152,6 +155,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         if(book.getTranslator() == null) book.setTranslator("");
         if(book.getEnglishTitle() == null) book.setEnglishTitle("");
         if(book.getAuthorOriginal() == null) book.setAuthorOriginal("");
+        if(book.getBookSizeFormatted() == null) book.setBookSizeFormatted("");
     }
 
     private String findContributorName(Element e) {
@@ -188,19 +192,24 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private Book parseSecondDetailSection(Book book, Document doc) {
-        Elements es =  doc.getElementById("detail_bullets_id").getElementsByTag("ul").first().getElementsByTag("li");
+        Elements es =  doc.getElementById("detailBullets_feature_div").getElementsByTag("ul").first().getElementsByClass("a-list-item");
         for (Element e : es ){
             String whole = e.wholeText();
-            if(whole.contains("ページ"))
-                book.setPages(findPages(e.ownText()));
-            else if(whole.contains("出版社"))
-                book.setPublisher(findPublisher(e.ownText().trim()));
-            else if(whole.contains("発売日"))
-                book.setPublishDateFormatted(findPublishedDateFormatted(e.ownText().trim()));
-            else if(whole.contains("梱包サイズ") || whole.contains("商品パッケ") || whole.contains("商品の寸法"))
-                book.setBookSizeFormatted(findBookSizeFormatted(e.ownText().trim()));
-            else if(whole.contains("ISBN-13"))
-                book.setIsbn(findIsbn(e.ownText().trim()));
+            if(whole.contains("ページ")){
+                book.setPages(findPages(e.child(1).ownText()));
+            }
+            else if(whole.contains("出版社")){
+                book.setPublisher(findPublisher(e.child(1).ownText().trim()));
+            }
+            else if(whole.contains("発売日")){
+                book.setPublishDateFormatted(findPublishedDateFormatted(e.child(1).ownText().trim()));
+            }
+            else if(whole.contains("梱包サイズ") || whole.contains("商品パッケ") || whole.contains("商品の寸法")){
+                book.setBookSizeFormatted(findBookSizeFormatted(e.child(1).ownText().trim()));
+            }
+            else if(whole.contains("ISBN-13")){
+                book.setIsbn(findIsbn(e.child(1).ownText().trim()));
+            }
         }
         return book;
     }

@@ -189,6 +189,32 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
+    public void basicInfoTestFromPage7() throws IOException, URISyntaxException {
+        Book book = new Book();
+        Document doc;
+        URL url = this.getClass().getResource("test7.html");
+        File f = new File(url.toURI());
+        doc = Jsoup.parse(f,"UTF-8");
+
+        bc.fillInBasicData(book, doc);
+        assertEquals(book.getIsbn(), 9784488437039L);
+        assertEquals(book.getPages(), 448);
+        assertEquals(book.getOriginalPriceNumber(), 1056);
+        assertEquals(book.getAuthor(), "大阪 圭吉");
+        assertEquals(book.getPublishDateFormatted(), "08/12/2020");
+        assertEquals(book.getPublisher(), "東京創元社");
+        assertEquals(book.getAuthor2(), "");
+        assertEquals("https://images-na.ssl-images-amazon.com/images/I/71Dk-7rRZuL.jpg",book.getImageURL());
+        assertEquals(book.getTranslator(), "");
+        assertEquals(book.getBookSizeFormatted(), "");
+        assertEquals(book.getType(), "");
+        assertEquals(book.getTitle(), "死の快走船");
+        assertTrue(book.getDescription().startsWith("岬に建つ白"));
+        assertTrue(book.getDescription().endsWith("り抜く。"));
+    }
+
+
+    @Test
     public void FromIsbnKindleBugFix1() throws IOException, URISyntaxException {
 
         String isbn = "9784391154511";
