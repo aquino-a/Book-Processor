@@ -109,6 +109,16 @@ public class ExcelWriter {
         row.createCell(35).setCellValue(1);
         row.createCell(37).setCellValue(1);
         row.createCell(38).setCellValue(0);
+        book.getMiscellaneous().forEach(ei -> {
+            if(ei.getColumnNumber() <= 38){
+                return;
+            }
+            switch (ei.getType()){
+                case HyperLink: row.createCell(ei.getColumnNumber()).setHyperlink(createHyperLink(ei.getValue()));
+                break;
+                default: break;
+            }
+        });
     }
 
     private boolean IsStringAllNum(String str) {

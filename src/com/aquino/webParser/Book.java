@@ -1,5 +1,7 @@
 package com.aquino.webParser;
 
+import java.util.List;
+
 public class Book {
 
     private String title, publishDate, originalPrice, bookSize,
@@ -16,6 +18,8 @@ public class Book {
     private int originalPriceNumber;
     private double originalPriceFormatted;
     private String vendorName = "";
+
+    private List<ExtraInfo> miscellaneous;
 
     public boolean isTitleExists() {
         return titleExists;
@@ -263,5 +267,13 @@ public class Book {
 
     public void setVendorName(String vendorName) {
         this.vendorName = vendorName;
+    }
+
+    public List<ExtraInfo> getMiscellaneous() {
+        return miscellaneous;
+    }
+
+    public void setMiscellaneous(List<ExtraInfo> miscellaneous) {
+        this.miscellaneous = miscellaneous;
     }
 }
