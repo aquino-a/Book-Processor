@@ -2,7 +2,10 @@ package com.aquino.webParser.bookCreators.amazon;
 
 import com.aquino.webParser.Book;
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.ExtraInfo;
 import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
+import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.NotImplementedException;
@@ -46,6 +49,9 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
+
+    private HontoBookCreator hontoBookCreator;
+    private HonyaClubBookCreator honyaClubBookCreator;
 
     public AmazonJapanBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
         this.bookWindowService = bookWindowService;
@@ -315,7 +321,36 @@ public class AmazonJapanBookCreator implements BookCreator {
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
+        SetHonyaLink(book);
+        SetHontoLink(book);
         return book;
+    }
+
+    private void SetHontoLink(Book book) {
+        if(hontoBookCreator == null){
+            return;
+        }
+        try {
+            Book hontoBook = hontoBookCreator.createBookFromIsbn(book.getIsbnString());
+            book.getMiscellaneous().add(new ExtraInfo(39, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private void SetHonyaLink(Book book) {
+        if(honyaClubBookCreator == null){
+            return;
+        }
+        try {
+            Book honyaBook = honyaClubBookCreator.createBookFromIsbn(book.getIsbnString());
+            book.getMiscellaneous().add(new ExtraInfo(40, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
     }
 
     private String lookupRomanizedTitle(String title) {
@@ -372,6 +407,14 @@ public class AmazonJapanBookCreator implements BookCreator {
         String isbn = String.valueOf(book.getIsbn());
         book.setTitleExists(bookWindowService.doesBookExist(isbn));
         book.setOclc(oclcService.findOclc(isbn));
+    }
+
+    public void setHontoBookCreator(HontoBookCreator hontoBookCreator) {
+        this.hontoBookCreator = hontoBookCreator;
+    }
+
+    public void setHonyaClubBookCreator(HonyaClubBookCreator honyaClubBookCreator) {
+        this.honyaClubBookCreator = honyaClubBookCreator;
     }
 
 
