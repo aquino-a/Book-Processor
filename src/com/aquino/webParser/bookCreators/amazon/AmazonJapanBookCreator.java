@@ -6,6 +6,7 @@ import com.aquino.webParser.ExtraInfo;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.NotImplementedException;
@@ -52,6 +53,7 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private HontoBookCreator hontoBookCreator;
     private HonyaClubBookCreator honyaClubBookCreator;
+    private YahooBookCreator yahooBookCreator;
 
     public AmazonJapanBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
         this.bookWindowService = bookWindowService;
@@ -323,6 +325,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         SetHonyaLink(book);
         SetHontoLink(book);
+        SetYahooLink(book);
         return book;
     }
 
@@ -351,6 +354,19 @@ public class AmazonJapanBookCreator implements BookCreator {
             return;
         }
 
+    }
+
+    private void SetYahooLink(Book book) {
+        if(yahooBookCreator == null){
+            return;
+        }
+        try {
+            Book yahooBook = yahooBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            book.getMiscellaneous().add(new ExtraInfo(41, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     private String lookupRomanizedTitle(String title) {
@@ -417,5 +433,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         this.honyaClubBookCreator = honyaClubBookCreator;
     }
 
-
+    public void setYahooBookCreator(YahooBookCreator yahooBookCreator) {
+        this.yahooBookCreator = yahooBookCreator;
+    }
 }

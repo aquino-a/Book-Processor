@@ -3,6 +3,7 @@ package com.aquino.webParser;
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.BookCreator;
@@ -37,6 +38,7 @@ public class ProcessorFactoryImpl {
                     AmazonJapanBookCreator abc = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService());
                     abc.setHontoBookCreator(new HontoBookCreator());
                     abc.setHonyaClubBookCreator(new HonyaClubBookCreator());
+                    abc.setYahooBookCreator(new YahooBookCreator());
                     newCreator = abc;
 
                 } break;
