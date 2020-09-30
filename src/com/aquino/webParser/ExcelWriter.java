@@ -114,11 +114,13 @@ public class ExcelWriter {
                 return;
             }
             switch (ei.getType()){
-                case HyperLink: row.createCell(ei.getColumnNumber()).setHyperlink(createHyperLink(ei.getValue()));
+                case HyperLink: {
+                    row.createCell(ei.getColumnNumber()).setHyperlink(createHyperLink(ei.getValue()));
+                    row.getCell(ei.getColumnNumber()).setCellValue(ei.getName());
+                }
                 break;
                 default: break;
             }
-            row.getCell(ei.getColumnNumber()).setCellValue(ei.getValue());
         });
     }
 

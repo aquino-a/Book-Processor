@@ -5,6 +5,7 @@ public class ExtraInfo {
     private int columnNumber;
     private String value;
     private Type type;
+    private String name;
 
     public ExtraInfo(int columnNumber, String value, Type type) {
         this.columnNumber = columnNumber;
@@ -34,6 +35,14 @@ public class ExtraInfo {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public enum Type {

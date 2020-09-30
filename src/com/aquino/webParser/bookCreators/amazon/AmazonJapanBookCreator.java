@@ -335,7 +335,9 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book hontoBook = hontoBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            book.getMiscellaneous().add(new ExtraInfo(39, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+            ExtraInfo ei = new ExtraInfo(39, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Honto");
+            book.getMiscellaneous().add(ei);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -348,7 +350,9 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book honyaBook = honyaClubBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            book.getMiscellaneous().add(new ExtraInfo(40, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+            ExtraInfo ei = new ExtraInfo(40, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Honya");
+            book.getMiscellaneous().add(ei);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -362,7 +366,9 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book yahooBook = yahooBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            book.getMiscellaneous().add(new ExtraInfo(41, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
+            ExtraInfo ei = new ExtraInfo(41, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Yahoo");
+            book.getMiscellaneous().add(ei);
         } catch (IOException e) {
             e.printStackTrace();
             return;
