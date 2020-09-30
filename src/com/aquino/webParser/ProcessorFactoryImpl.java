@@ -1,6 +1,8 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreatorType;
+import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
+import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.BookCreator;
@@ -31,7 +33,13 @@ public class ProcessorFactoryImpl {
             BookCreator newCreator;
             switch(creatorType){
                 case AladinApi: newCreator = new AladinBookCreator(getAladinApiKey(), CreateWindowService(), CreateOclcService(),CreateObjectMapper()); break;
-                case AmazonJapan: newCreator = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService()); break;
+                case AmazonJapan: {
+                    AmazonJapanBookCreator abc = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService());
+                    abc.setHontoBookCreator(new HontoBookCreator());
+                    abc.setHonyaClubBookCreator(new HonyaClubBookCreator());
+                    newCreator = abc;
+
+                } break;
                 default: throw new UnsupportedOperationException(creatorType.toString());
             }
             bookCreatorHashMap.put(creatorType, newCreator);

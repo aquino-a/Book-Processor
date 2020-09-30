@@ -118,6 +118,7 @@ public class ExcelWriter {
                 break;
                 default: break;
             }
+            row.getCell(ei.getColumnNumber()).setCellValue(ei.getValue());
         });
     }
 

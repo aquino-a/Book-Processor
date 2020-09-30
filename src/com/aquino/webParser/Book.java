@@ -1,5 +1,6 @@
 package com.aquino.webParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Book {
@@ -270,6 +271,8 @@ public class Book {
     }
 
     public List<ExtraInfo> getMiscellaneous() {
+        if(miscellaneous == null)
+            miscellaneous = new ArrayList<ExtraInfo>();
         return miscellaneous;
     }
 

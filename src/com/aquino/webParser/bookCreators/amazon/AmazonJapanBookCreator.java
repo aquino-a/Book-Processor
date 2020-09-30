@@ -331,7 +331,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return;
         }
         try {
-            Book hontoBook = hontoBookCreator.createBookFromIsbn(book.getIsbnString());
+            Book hontoBook = hontoBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
             book.getMiscellaneous().add(new ExtraInfo(39, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
         } catch (IOException e) {
             e.printStackTrace();
@@ -344,7 +344,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return;
         }
         try {
-            Book honyaBook = honyaClubBookCreator.createBookFromIsbn(book.getIsbnString());
+            Book honyaBook = honyaClubBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
             book.getMiscellaneous().add(new ExtraInfo(40, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink));
         } catch (IOException e) {
             e.printStackTrace();
