@@ -3,7 +3,6 @@ package com.aquino.webParser.bookCreators.worldcat;
 import com.aquino.webParser.Book;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.utilities.Connect;
-import javafx.beans.binding.Bindings;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
@@ -14,8 +13,8 @@ public class WorldCatBookCreator implements BookCreator {
 
     private static final String SEARCH_URL_FORMAT = "https://www.worldcat.org/search?qt=worldcat_org_all&q=%s";
     private static final String WORLD_CAT_URL = "https://www.worldcat.org";
-    private static final Pattern PUBLISHER_REGEX = Pattern.compile("[\\u0100-\\uFFFFA-Za-z]+ : ([\\w]+), [0-9]{4}", Pattern.LITERAL);
-
+    private static final Pattern PUBLISHER_REGEX = Pattern.compile("[\\u0100-\\uFFFFA-Za-z]+ : ([\\w\\u0100-\\uFFFF ]+), [0-9]{4}");
+    public static final String NOT_FOUND = "Not Found";
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
@@ -42,7 +41,7 @@ public class WorldCatBookCreator implements BookCreator {
         return fillInBasicData(book, doc);
     }
 
-    private Book fillInBasicData(Book book, Document doc) {
+    public Book fillInBasicData(Book book, Document doc) {
         book.setAuthor(parseAuthor(doc));
         book.setPublisher(parsePublisher(doc));
         book.setTitle(parseTitle(doc));
@@ -50,12 +49,45 @@ public class WorldCatBookCreator implements BookCreator {
     }
 
     private String parseAuthor(Document doc) {
+
+        var sb = new StringBuilder();
+        try {
+            doc.getElementById("bib-author-cell")
+                    .getElementsByAttributeValue("title", "Search for more by this author")
+                    .stream()
+                    .map(e -> e.ownText().trim())
+                    .forEach( s -> { sb.append(s); sb.append(','); });
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        } catch (Exception e) {
+            return NOT_FOUND;
+        }
     }
 
     private String parsePublisher(Document doc) {
+
+        try {
+
+            var matcher =  PUBLISHER_REGEX.matcher(doc.getElementById("bib-publisher-cell")
+                    .ownText());
+            if(matcher.find())
+                return matcher.group(1).trim();
+            else return NOT_FOUND;
+        } catch (Exception e) {
+            return NOT_FOUND;
+        }
     }
 
     private String parseTitle(Document doc) {
+
+        try {
+            return doc.getElementById("bibdata")
+                    .getElementsByClass("title")
+                    .first()
+                    .ownText().trim();
+        } catch (Exception e) {
+            return NOT_FOUND;
+        }
     }
 
     @Override
