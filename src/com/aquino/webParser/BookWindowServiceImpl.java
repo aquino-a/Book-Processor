@@ -76,4 +76,14 @@ public class BookWindowServiceImpl implements BookWindowService {
         throw new NotImplementedException("TODO");
     }
 
+    @Override
+    public int addAuthor(Author author) {
+        throw new NotImplementedException("");
+    }
+
+    @Override
+    public int addPublisher(Publisher publisher) {
+        throw new NotImplementedException("");
+    }
+
 }

@@ -8,4 +8,7 @@ public interface BookWindowService {
     String findAuthorId(String author);
 
     boolean doesBookExist(String isbn);
+
+    int addAuthor(Author author);
+    int addPublisher(Publisher publisher);
 }
