@@ -17,13 +17,7 @@ public class ExcelReader {
     private final XSSFWorkbook workbook;
     private final XSSFSheet sheet;
     private int startRow = 1;
-    private Map<String, Integer> locationMap = Stream.of(new Object[][] {
-        { "isbn", 0 },
-        { "oclc", 3 },
-        { "author", 9 },
-        { "author2", 10 },
-        { "publisher", 11 }
-    }).collect(Collectors.toMap(data -> (String) data[0],  data -> (int) data[1]));
+    private Map<String, Integer> locationMap;
 
     public ExcelReader(XSSFWorkbook workbook) {
         this.workbook = workbook;
@@ -51,5 +45,9 @@ public class ExcelReader {
 
     public void setStartRow(int startRow) {
         this.startRow = startRow;
+    }
+
+    public void setLocationMap(Map<String, Integer> locationMap) {
+        this.locationMap = locationMap;
     }
 }

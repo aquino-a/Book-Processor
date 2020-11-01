@@ -21,10 +21,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -228,6 +231,14 @@ public class JWPUserInterface extends JPanel {
     private final DocumentListener addNewLine = Handlers.forDocumentUpdate((event) -> {
         if(event.getLength() > 2 ) addNewLine();
     });
+
+    private final Map<String, Integer> excelMap = Stream.of(new Object[][] {
+        { "isbn", 0 },
+        { "oclc", 3 },
+        { "author", 9 },
+        { "author2", 10 },
+        { "publisher", 11 }
+    }).collect(Collectors.toMap(data -> (String) data[0],  data -> (int) data[1]));
     
     public void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
