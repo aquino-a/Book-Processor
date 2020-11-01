@@ -1,5 +1,9 @@
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Author;
+import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.Publisher;
+
 public interface BookWindowService {
     Book findIds(Book book);
 

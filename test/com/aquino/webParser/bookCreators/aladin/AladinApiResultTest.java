@@ -1,6 +1,6 @@
 package com.aquino.webParser.bookCreators.aladin;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 

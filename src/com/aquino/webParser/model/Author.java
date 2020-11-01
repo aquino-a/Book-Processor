@@ -1,4 +1,4 @@
-package com.aquino.webParser;
+package com.aquino.webParser.model;
 
 public class Author {
 

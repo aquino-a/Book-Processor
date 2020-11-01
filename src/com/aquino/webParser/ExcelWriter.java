@@ -6,7 +6,8 @@
 package com.aquino.webParser;
 
 
-import com.aquino.webParser.romanization.Romanizer;
+import com.aquino.webParser.model.Book;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

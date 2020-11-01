@@ -1,14 +1,11 @@
 package com.aquino.webParser.bookCreators.honto;
 
-import com.aquino.webParser.Book;
-import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.model.Book;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public class HontoBookCreatorTest {
 

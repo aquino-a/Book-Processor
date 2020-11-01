@@ -1,5 +1,8 @@
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Author;
+import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.Publisher;
 import com.aquino.webParser.utilities.Login;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jsoup.nodes.Element;

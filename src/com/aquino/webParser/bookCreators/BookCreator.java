@@ -1,7 +1,6 @@
 package com.aquino.webParser.bookCreators;
 
-import com.aquino.webParser.Book;
-import com.aquino.webParser.OldBook;
+import com.aquino.webParser.model.Book;
 
 import java.io.IOException;
 import java.util.List;

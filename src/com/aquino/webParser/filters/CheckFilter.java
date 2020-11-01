@@ -7,7 +7,7 @@ package com.aquino.webParser.filters;
 
 
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.bookCreators.BookCreator;
 
 import java.awt.*;

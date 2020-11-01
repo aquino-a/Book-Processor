@@ -1,18 +1,11 @@
 package com.aquino.webParser.bookCreators.honya;
 
-import com.aquino.webParser.Book;
-import com.aquino.webParser.BookWindowService;
-import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
-import com.aquino.webParser.oclc.OclcService;
+import com.aquino.webParser.model.Book;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public class HonyaClubBookCreatorTest {
 

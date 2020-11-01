@@ -5,9 +5,8 @@
  */
 package com.aquino.webParser.oclc;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.ExcelWriter;
-import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
@@ -20,7 +19,6 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;

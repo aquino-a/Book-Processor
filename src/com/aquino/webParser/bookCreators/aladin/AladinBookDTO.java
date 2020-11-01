@@ -1,15 +1,13 @@
 package com.aquino.webParser.bookCreators.aladin;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 

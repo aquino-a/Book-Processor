@@ -5,6 +5,8 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Book;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

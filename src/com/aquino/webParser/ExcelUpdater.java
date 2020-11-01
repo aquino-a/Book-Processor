@@ -1,5 +1,6 @@
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Book;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 

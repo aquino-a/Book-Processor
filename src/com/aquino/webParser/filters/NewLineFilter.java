@@ -5,14 +5,12 @@
  */
 package com.aquino.webParser.filters;
 
-import com.aquino.webParser.DataType;
-import com.aquino.webParser.JWPUserInterface;
+import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.bookCreators.BookCreator;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.DocumentFilter.FilterBypass;
 import java.util.StringTokenizer;
 
 /**

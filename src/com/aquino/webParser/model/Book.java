@@ -1,4 +1,4 @@
-package com.aquino.webParser;
+package com.aquino.webParser.model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.aquino.webParser;
 
-import org.apache.commons.lang3.NotImplementedException;
+import com.aquino.webParser.model.Book;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -9,8 +9,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ExcelReader {
 
@@ -24,7 +22,7 @@ public class ExcelReader {
         this.sheet = workbook.getSheetAt(0);
     }
 
-    public List<Pair<Integer,Book>> ReadBooks(){
+    public List<Pair<Integer, Book>> ReadBooks(){
         var list = new ArrayList<Pair<Integer,Book>>();
         XSSFRow row = sheet.getRow(startRow);
         for (int i = startRow + 1; row != null; i++, row = sheet.getRow(i)) {

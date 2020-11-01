@@ -1,6 +1,6 @@
 package com.aquino.webParser.bookCreators.honya;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.utilities.Connect;
 import org.jsoup.nodes.Document;

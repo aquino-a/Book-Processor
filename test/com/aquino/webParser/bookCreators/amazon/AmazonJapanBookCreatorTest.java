@@ -1,22 +1,17 @@
 package com.aquino.webParser.bookCreators.amazon;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.BookWindowService;
-import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.parser.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;

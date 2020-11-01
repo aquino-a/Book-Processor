@@ -1,15 +1,14 @@
 package com.aquino.webParser.bookCreators.amazon;
 
-import com.aquino.webParser.Book;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.BookWindowService;
-import com.aquino.webParser.ExtraInfo;
+import com.aquino.webParser.model.ExtraInfo;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -18,7 +17,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;

@@ -6,6 +6,8 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreatorType;
+import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.oclc.OclcProgress;
 import com.aquino.webParser.utilities.Connect;
