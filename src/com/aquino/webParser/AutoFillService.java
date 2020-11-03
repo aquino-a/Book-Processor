@@ -2,10 +2,7 @@ package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
-import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.AutoFillModel;
-import com.aquino.webParser.model.Book;
-import com.aquino.webParser.model.Publisher;
+import com.aquino.webParser.model.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -34,20 +31,55 @@ public class AutoFillService {
                 .collect(Collectors.toList());
     }
 
+    public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books){
+        var updater = new ExcelUpdater(workbook);
+        books.forEach(b ->{
+            updater.UpdateBook(b.getLeft(), b.getRight());
+        });
+    }
+
+
     private boolean containsId(String text) {
         return ID_REGEX.test(text);
     }
 
     private AutoFillModel createAutoFillModel(Pair<Integer, Book> p) {
         try {
-            var wcBook = worldCatBookCreator.bookListFromIsbn(String.valueOf(p.getRight().getOclc()));
+            var book = p.getRight();
+            var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(p.getRight().getOclc()));
             var afm = new AutoFillModel();
-            var author = new Author();
-            return new AutoFillModel();
+            afm.setAuthor(CreateAuthor(book, wcBook));
+            afm.setPublisher(CreatePublisher(book, wcBook));
+            afm.setBookPair(p);
+            return afm;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private Publisher CreatePublisher(Book book, Book wcBook) {
+        if(containsId(book.getPublisher()))
+            return null;
+        var publisher = new Publisher();
+        publisher.setLanguage(Language.Japanese);
+        publisher.setEnglishName(wcBook.getPublisher());
+        publisher.setNativeName(book.getPublisher());
+        return publisher;
+    }
+
+    private Author CreateAuthor(Book book, Book wcBook) {
+        if(containsId(book.getAuthor()))
+            return null;
+        var author = new Author();
+        author.setLanguage(Language.Japanese);
+        author.setNativeFirstName(book.getAuthor().substring(0,2));
+        author.setNativeLastName(book.getAuthor().substring(2,4));
+
+        var split = wcBook.getAuthor().split(",");
+        author.setEnglishFirstName(split[0]);
+        author.setEnglishFirstName(split[1]);
+        return author;
     }
 
     public int insertAuthor(Author author){
