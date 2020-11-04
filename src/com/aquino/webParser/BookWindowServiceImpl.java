@@ -9,9 +9,83 @@ import org.jsoup.nodes.Element;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 //TODO implement
 public class BookWindowServiceImpl implements BookWindowService {
+
+    private static final String ADD_URL = "https://www.bookswindow.com/admin/author/ajax/add";
+    private static final String ADD_LANGUAGE_URL = "https://www.bookswindow.com/admin/shared/ajax/language_obj_add_process";
+    private static final String SET_NATIVE_URL = "https://www.bookswindow.com/admin/shared/ajax/language_obj_set_native_process";
+
+
+    //add author // publisher
+//    first_name: testttt1
+//    middle_name:
+//    last_name: testttt1
+//    contributor_role: 100
+
+    //language
+//    input_arr[prj_language]: 1000
+//    input_arr[first_name]: testttt1
+//    input_arr[first_name_romanized]:
+//    input_arr[last_name]: testttt1
+//    input_arr[last_name_romanized]:
+//    input_arr[description]:
+//    opt_param[table]: author
+//    opt_param[pk]: 33468
+//    opt_param[field]: language_obj
+//    opt_param[has_native]: 1
+//    opt_param[info_arr][0][key]: first_name
+//    opt_param[info_arr][0][label]: First Name
+//    opt_param[info_arr][0][required]: true
+//    opt_param[info_arr][0][class]: input-xlarge
+//    opt_param[info_arr][1][key]: first_name_romanized
+//    opt_param[info_arr][1][label]: Romanized
+//    opt_param[info_arr][1][class]: input-xlarge
+//    opt_param[info_arr][1][input_type]: input_indented
+//    opt_param[info_arr][2][key]: last_name
+//    opt_param[info_arr][2][label]: Last Name
+//    opt_param[info_arr][2][class]: input-xlarge
+//    opt_param[info_arr][3][key]: last_name_romanized
+//    opt_param[info_arr][3][label]: Romanized
+//    opt_param[info_arr][3][class]: input-xlarge
+//    opt_param[info_arr][3][input_type]: input_indented
+//    opt_param[info_arr][4][key]: description
+//    opt_param[info_arr][4][label]: Intro / Description
+//    opt_param[info_arr][4][class]: input-xxlarge
+//    opt_param[info_arr][4][input_type]: textarea
+//    opt_param[sort_arr][]: first_name
+//    opt_param[sort_arr][]: asc
+
+    //native
+//    native_lang: 1000
+//    opt_param[table]: author
+//    opt_param[pk]: 33468
+//    opt_param[field]: language_obj
+//    opt_param[has_native]: 1
+//    opt_param[info_arr][0][key]: first_name
+//    opt_param[info_arr][0][label]: First Name
+//    opt_param[info_arr][0][required]: true
+//    opt_param[info_arr][0][class]: input-xlarge
+//    opt_param[info_arr][1][key]: first_name_romanized
+//    opt_param[info_arr][1][label]: Romanized
+//    opt_param[info_arr][1][class]: input-xlarge
+//    opt_param[info_arr][1][input_type]: input_indented
+//    opt_param[info_arr][2][key]: last_name
+//    opt_param[info_arr][2][label]: Last Name
+//    opt_param[info_arr][2][class]: input-xlarge
+//    opt_param[info_arr][3][key]: last_name_romanized
+//    opt_param[info_arr][3][label]: Romanized
+//    opt_param[info_arr][3][class]: input-xlarge
+//    opt_param[info_arr][3][input_type]: input_indented
+//    opt_param[info_arr][4][key]: description
+//    opt_param[info_arr][4][label]: Intro / Description
+//    opt_param[info_arr][4][class]: input-xxlarge
+//    opt_param[info_arr][4][input_type]: textarea
+//    opt_param[sort_arr][]: first_name
+//    opt_param[sort_arr][]: asc
+//    native_lang_status: 1
 
     @Override
     public Book findIds(Book book){
