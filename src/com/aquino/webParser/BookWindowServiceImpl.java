@@ -8,8 +8,10 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.jsoup.nodes.Element;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 //TODO implement
 public class BookWindowServiceImpl implements BookWindowService {
@@ -17,6 +19,12 @@ public class BookWindowServiceImpl implements BookWindowService {
     private static final String ADD_URL = "https://www.bookswindow.com/admin/author/ajax/add";
     private static final String ADD_LANGUAGE_URL = "https://www.bookswindow.com/admin/shared/ajax/language_obj_add_process";
     private static final String SET_NATIVE_URL = "https://www.bookswindow.com/admin/shared/ajax/language_obj_set_native_process";
+    private static final String AUTHOR_ROLE = "100";
+    private static final String PUBLISHER_ROLE = "100";
+
+    private static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("^https://www.bookswindow.com/admin/author/(\\d+)/edit/main");
+    //add author return url
+    //https://www.bookswindow.com/admin/author/(33521)/edit/main
 
 
     //add author // publisher
@@ -153,10 +161,22 @@ public class BookWindowServiceImpl implements BookWindowService {
         throw new NotImplementedException("TODO");
     }
 
+//    <html>
+// <head></head>
+//    <body>
+//    {"status":"success","message":"Successfully Added Author # 33525","redirect_url":"\/admin\/author\/33525\/edit\/main"}
+// </body>
+//</html>
+
     @Override
     public int addAuthor(Author author) {
 
-        throw new NotImplementedException("");
+        var addAuthorDoc = Login.postDocument(ADD_URL,
+                Map.of("first_name",author.getEnglishFirstName(),"middle_name", "","last_name", author.getEnglishLastName(), "contributor_role", AUTHOR_ROLE));
+        var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.location());
+        if(matcher.find())
+            return Integer.parseInt(matcher.group(1).trim());
+        return -1;
     }
 
     @Override

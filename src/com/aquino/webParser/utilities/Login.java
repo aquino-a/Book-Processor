@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,18 +45,31 @@ public class Login {
     }
     
     public static Document getDocument(String url) {
-        if(cookies == null) login();
-        Document doc;
-        try {
-            doc = Jsoup.connect(url)
-                      .cookies(cookies)
-                      .get();
-        } catch (IOException e) {
-            doc = null;
-        }
-        return doc;
+        return RequestDocument(url, connection -> {
+            try {
+                return connection.get();
+            } catch (IOException e) {
+                return null;
+            }
+        });
     }
-    
+    public static Document postDocument(String url, Map<String, String> data) {
+        return RequestDocument(url, connection -> {
+            try {
+                if(data == null)
+                    return connection.post();
+                else return connection.data(data).followRedirects(true).post();
+            } catch (IOException e) {
+                return null;
+            }
+        });
+    }
+
+    public static Document RequestDocument(String url, Function<Connection, Document> documentFunction){
+        if(cookies == null) login();
+        return documentFunction.apply(Jsoup.connect(url).cookies(cookies));
+    }
+
     private static void setCookieResetTimer() {
         TIMER.schedule(new TimerTask() {
             @Override
