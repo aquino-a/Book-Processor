@@ -21,8 +21,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     private static final String SET_NATIVE_URL = "https://www.bookswindow.com/admin/shared/ajax/language_obj_set_native_process";
     private static final String AUTHOR_ROLE = "100";
     private static final String PUBLISHER_ROLE = "100";
-
-    private static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("^https://www.bookswindow.com/admin/author/(\\d+)/edit/main");
+    public static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/author\\\\/(\\d+)\\\\/edit\\\\/main");
     //add author return url
     //https://www.bookswindow.com/admin/author/(33521)/edit/main
 
@@ -173,7 +172,8 @@ public class BookWindowServiceImpl implements BookWindowService {
 
         var addAuthorDoc = Login.postDocument(ADD_URL,
                 Map.of("first_name",author.getEnglishFirstName(),"middle_name", "","last_name", author.getEnglishLastName(), "contributor_role", AUTHOR_ROLE));
-        var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.location());
+        var text = addAuthorDoc.html();
+        var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.html());
         if(matcher.find())
             return Integer.parseInt(matcher.group(1).trim());
         return -1;
