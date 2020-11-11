@@ -25,6 +25,28 @@ public class BookWindowServiceImpl implements BookWindowService {
     //add author return url
     //https://www.bookswindow.com/admin/author/(33521)/edit/main
 
+//Ignore all empty strings
+    private static final Map<String, String> ADD_LANGUAGE_PARAMS = Map.of(
+            "input_arr[prj_language]", "langCode",
+            "input_arr[first_name]", "firstName",
+            "input_arr[first_name_romanized]", "",
+            "input_arr[last_name]", "lastName",
+            "input_arr[last_name_romanized]", "",
+            "input_arr[description]", "",
+            "opt_param[table]", "author", //don't change
+            "opt_param[pk]", "authorId",
+            "opt_param[field]", "authorId",
+            "opt_param[has_native]", "1"
+            );
+
+    private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
+            "native_lang", "langCode",
+            "opt_param[table]", "author",
+            "opt_param[pk]", "authorId",
+            " opt_param[field]", "language_obj",
+            "opt_param[has_native]", "1"
+    );
+
 
     //add author // publisher
 //    first_name: testttt1
@@ -32,7 +54,7 @@ public class BookWindowServiceImpl implements BookWindowService {
 //    last_name: testttt1
 //    contributor_role: 100
 
-    //language
+    //language - engish
 //    input_arr[prj_language]: 1000
 //    input_arr[first_name]: testttt1
 //    input_arr[first_name_romanized]:
@@ -65,10 +87,71 @@ public class BookWindowServiceImpl implements BookWindowService {
 //    opt_param[sort_arr][]: first_name
 //    opt_param[sort_arr][]: asc
 
-    //native
+    //add language japanese
+//    input_arr[prj_language]: 3000
+//    input_arr[first_name]: testttt1
+//    input_arr[first_name_romanized]:
+//    input_arr[last_name]: testttt1
+//    input_arr[last_name_romanized]:
+//    input_arr[description]:
+//    opt_param[table]: author
+//    opt_param[pk]: 33535
+//    opt_param[field]: language_obj
+//    opt_param[has_native]: 1
+//    opt_param[info_arr][0][key]: first_name
+//    opt_param[info_arr][0][label]: First Name
+//    opt_param[info_arr][0][required]: true
+//    opt_param[info_arr][0][class]: input-xlarge
+//    opt_param[info_arr][1][key]: first_name_romanized
+//    opt_param[info_arr][1][label]: Romanized
+//    opt_param[info_arr][1][class]: input-xlarge
+//    opt_param[info_arr][1][input_type]: input_indented
+//    opt_param[info_arr][2][key]: last_name
+//    opt_param[info_arr][2][label]: Last Name
+//    opt_param[info_arr][2][class]: input-xlarge
+//    opt_param[info_arr][3][key]: last_name_romanized
+//    opt_param[info_arr][3][label]: Romanized
+//    opt_param[info_arr][3][class]: input-xlarge
+//    opt_param[info_arr][3][input_type]: input_indented
+//    opt_param[info_arr][4][key]: description
+//    opt_param[info_arr][4][label]: Intro / Description
+//    opt_param[info_arr][4][class]: input-xxlarge
+//    opt_param[info_arr][4][input_type]: textarea
+//    opt_param[sort_arr][]: first_name
+//    opt_param[sort_arr][]: asc
+
+    //native - english
 //    native_lang: 1000
 //    opt_param[table]: author
 //    opt_param[pk]: 33468
+//    opt_param[field]: language_obj
+//    opt_param[has_native]: 1
+//    opt_param[info_arr][0][key]: first_name
+//    opt_param[info_arr][0][label]: First Name
+//    opt_param[info_arr][0][required]: true
+//    opt_param[info_arr][0][class]: input-xlarge
+//    opt_param[info_arr][1][key]: first_name_romanized
+//    opt_param[info_arr][1][label]: Romanized
+//    opt_param[info_arr][1][class]: input-xlarge
+//    opt_param[info_arr][1][input_type]: input_indented
+//    opt_param[info_arr][2][key]: last_name
+//    opt_param[info_arr][2][label]: Last Name
+//    opt_param[info_arr][2][class]: input-xlarge
+//    opt_param[info_arr][3][key]: last_name_romanized
+//    opt_param[info_arr][3][label]: Romanized
+//    opt_param[info_arr][3][class]: input-xlarge
+//    opt_param[info_arr][3][input_type]: input_indented
+//    opt_param[info_arr][4][key]: description
+//    opt_param[info_arr][4][label]: Intro / Description
+//    opt_param[info_arr][4][class]: input-xxlarge
+//    opt_param[info_arr][4][input_type]: textarea
+//    opt_param[sort_arr][]: first_name
+//    opt_param[sort_arr][]: asc
+//    native_lang_status: 1
+
+//    native_lang: 3000
+//    opt_param[table]: author
+//    opt_param[pk]: 33535
 //    opt_param[field]: language_obj
 //    opt_param[has_native]: 1
 //    opt_param[info_arr][0][key]: first_name
@@ -174,9 +257,22 @@ public class BookWindowServiceImpl implements BookWindowService {
                 Map.of("first_name",author.getEnglishFirstName(),"middle_name", "","last_name", author.getEnglishLastName(), "contributor_role", AUTHOR_ROLE));
         var text = addAuthorDoc.html();
         var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.html());
-        if(matcher.find())
-            return Integer.parseInt(matcher.group(1).trim());
-        return -1;
+        int result = -1;
+        if(!matcher.find()) {
+            return result;
+        }
+        result = Integer.parseInt(matcher.group(1).trim());
+        AddEnglishLanguage(result, author);
+        AddNativeLanguage(result, author);
+        return result;
+    }
+
+    private void AddEnglishLanguage(int result, Author author) {
+//        Login.postDocument(ADD_LANGUAGE_URL,
+//                Map.of("first_name",author.getEnglishFirstName(),"middle_name", "","last_name", author.getEnglishLastName(), "contributor_role", AUTHOR_ROLE));
+    }
+
+    private void AddNativeLanguage(int result, Author author) {
     }
 
     @Override
