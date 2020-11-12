@@ -1,6 +1,7 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.model.Author;
+import com.aquino.webParser.model.Language;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,8 +13,13 @@ public class BookWindowServiceImplTest {
     public void addAuthor() {
         var bws = new BookWindowServiceImpl();
         var author = new Author();
-        author.setEnglishFirstName("test111111");
-        author.setEnglishLastName("test111111");
+        author.setLanguage(Language.Japanese);
+
+        author.setEnglishFirstName("testfirst111111");
+        author.setEnglishLastName("testlast111111");
+
+        author.setNativeFirstName("testfirstnative111111");
+        author.setNativeLastName("testlastnative111111");
         var result = bws.addAuthor(author);
     }
 
