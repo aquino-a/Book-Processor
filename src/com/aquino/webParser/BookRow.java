@@ -28,87 +28,85 @@ public class BookRow extends javax.swing.JPanel {
     private void initComponents() {
 
         jCheckBox1 = new javax.swing.JCheckBox();
-        jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
+        textNativeFirst = new javax.swing.JTextField();
+        textNativeLast = new javax.swing.JTextField();
+        textEnglishFirst = new javax.swing.JTextField();
+        textEnglishLast = new javax.swing.JTextField();
+        buttonAuthorLink = new javax.swing.JButton();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 5), new java.awt.Dimension(40, 20), new java.awt.Dimension(32767, 0));
+        textPublisherNative = new javax.swing.JTextField();
+        textPublisherEnglish = new javax.swing.JTextField();
+        buttonPublisherLink = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(2000, 50));
         setMinimumSize(new java.awt.Dimension(200, 21));
-        setLayout(new java.awt.GridLayout());
+        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jCheckBox1.setMinimumSize(new java.awt.Dimension(10, 10));
         add(jCheckBox1);
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("original author");
-        jLabel1.setMaximumSize(new java.awt.Dimension(100, 50));
-        jLabel1.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jLabel1);
-        jLabel1.getAccessibleContext().setAccessibleName("labelOriginalAuthor");
+        textNativeFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textNativeFirst.setText("native first");
+        textNativeFirst.setMaximumSize(new java.awt.Dimension(500, 50));
+        textNativeFirst.setMinimumSize(new java.awt.Dimension(200, 50));
+        textNativeFirst.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textNativeFirst);
+        textNativeFirst.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
 
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("firstname");
-        jTextField1.setMaximumSize(new java.awt.Dimension(500, 50));
-        jTextField1.setMinimumSize(new java.awt.Dimension(200, 50));
-        jTextField1.setPreferredSize(new java.awt.Dimension(100, 20));
-        add(jTextField1);
-        jTextField1.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
+        textNativeLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textNativeLast.setText("native last");
+        textNativeLast.setMaximumSize(new java.awt.Dimension(500, 50));
+        textNativeLast.setMinimumSize(new java.awt.Dimension(200, 50));
+        textNativeLast.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textNativeLast);
 
-        jTextField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField3.setText("lastname");
-        jTextField3.setMaximumSize(new java.awt.Dimension(100, 50));
-        jTextField3.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jTextField3);
-        jTextField3.getAccessibleContext().setAccessibleName("textAuthorNewLast");
+        textEnglishFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textEnglishFirst.setText("english first");
+        textEnglishFirst.setMaximumSize(new java.awt.Dimension(500, 50));
+        textEnglishFirst.setMinimumSize(new java.awt.Dimension(200, 50));
+        textEnglishFirst.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textEnglishFirst);
 
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("new number link");
-        jLabel3.setMaximumSize(new java.awt.Dimension(100, 50));
-        jLabel3.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jLabel3);
+        textEnglishLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textEnglishLast.setText("english last");
+        textEnglishLast.setMaximumSize(new java.awt.Dimension(500, 50));
+        textEnglishLast.setMinimumSize(new java.awt.Dimension(200, 50));
+        textEnglishLast.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textEnglishLast);
 
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("link");
-        jLabel4.setMaximumSize(new java.awt.Dimension(100, 50));
-        jLabel4.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jLabel4);
+        buttonAuthorLink.setText("Link");
+        add(buttonAuthorLink);
+        add(filler2);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("original publisher");
-        jLabel2.setMaximumSize(new java.awt.Dimension(100, 50));
-        jLabel2.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jLabel2);
-        jLabel2.getAccessibleContext().setAccessibleName("labelPublisherOld");
+        textPublisherNative.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textPublisherNative.setText("native");
+        textPublisherNative.setMaximumSize(new java.awt.Dimension(500, 50));
+        textPublisherNative.setMinimumSize(new java.awt.Dimension(200, 50));
+        textPublisherNative.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textPublisherNative);
 
-        jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField2.setText("new publisher");
-        jTextField2.setMaximumSize(new java.awt.Dimension(100, 50));
-        jTextField2.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jTextField2);
-        jTextField2.getAccessibleContext().setAccessibleName("textPublisherNew");
+        textPublisherEnglish.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        textPublisherEnglish.setText("english");
+        textPublisherEnglish.setMaximumSize(new java.awt.Dimension(500, 50));
+        textPublisherEnglish.setMinimumSize(new java.awt.Dimension(200, 50));
+        textPublisherEnglish.setPreferredSize(new java.awt.Dimension(100, 20));
+        add(textPublisherEnglish);
 
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("new number link");
-        jLabel5.setMaximumSize(new java.awt.Dimension(100, 50));
-        jLabel5.setMinimumSize(new java.awt.Dimension(50, 50));
-        add(jLabel5);
+        buttonPublisherLink.setText("Link");
+        add(buttonPublisherLink);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonAuthorLink;
+    private javax.swing.JButton buttonPublisherLink;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField textEnglishFirst;
+    private javax.swing.JTextField textEnglishLast;
+    private javax.swing.JTextField textNativeFirst;
+    private javax.swing.JTextField textNativeLast;
+    private javax.swing.JTextField textPublisherEnglish;
+    private javax.swing.JTextField textPublisherNative;
     // End of variables declaration//GEN-END:variables
 }

@@ -22,7 +22,6 @@ import javax.swing.JTextField;
  */
 public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
-    private Function<Integer, String> editUrl;
     private AutoFillService autoFillService;
 
     /**
@@ -30,10 +29,6 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
      */
     public AuthorPublisherAutoFill() {
         initComponents();
-    }
-
-    public void setEditUrl(Function<Integer, String> editUrl) {
-        this.editUrl = editUrl;
     }
 
     /**
@@ -47,8 +42,18 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         autoFillButton = new javax.swing.JButton();
+        bookRowContainer = new javax.swing.JScrollPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        textFileName = new javax.swing.JTextPane();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jScrollPane1 = new javax.swing.JScrollPane();
-        rowContainer = new javax.swing.JPanel();
+        textConsole = new javax.swing.JTextPane();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        openMenuItem = new javax.swing.JMenuItem();
+        saveMenuItem = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,11 +61,29 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         autoFillButton.setText("Auto Fill");
         jPanel1.add(autoFillButton, java.awt.BorderLayout.PAGE_END);
+        jPanel1.add(bookRowContainer, java.awt.BorderLayout.CENTER);
 
-        rowContainer.setLayout(new javax.swing.BoxLayout(rowContainer, javax.swing.BoxLayout.Y_AXIS));
-        jScrollPane1.setViewportView(rowContainer);
+        jScrollPane2.setViewportView(textFileName);
 
-        jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        jScrollPane1.setViewportView(textConsole);
+
+        fileMenu.setText("File");
+
+        openMenuItem.setText("Open");
+        fileMenu.add(openMenuItem);
+
+        saveMenuItem.setText("Save");
+        fileMenu.add(saveMenuItem);
+
+        closeMenuItem.setText("Close");
+        fileMenu.add(closeMenuItem);
+
+        jMenuBar1.add(fileMenu);
+
+        editMenu.setText("Edit");
+        jMenuBar1.add(editMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -68,14 +91,26 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 970, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -128,10 +163,18 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton autoFillButton;
+    private javax.swing.JScrollPane bookRowContainer;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JPanel rowContainer;
-
-
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JTextPane textConsole;
+    private javax.swing.JTextPane textFileName;
     // End of variables declaration//GEN-END:variables
 }
