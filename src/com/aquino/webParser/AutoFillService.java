@@ -16,10 +16,14 @@ public class AutoFillService {
 
     private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+ [\u0100-\uFFFF\\w ]+$").asPredicate();
 
-    private ExcelUpdater excelUpdater;
 
     private BookCreator worldCatBookCreator;
     private BookWindowService bookWindowService;
+
+    public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService) {
+        this.worldCatBookCreator = worldCatBookCreator;
+        this.bookWindowService = bookWindowService;
+    }
 
     public List<AutoFillModel> readBooks(XSSFWorkbook workbook){
         var reader = new ExcelReader(workbook);

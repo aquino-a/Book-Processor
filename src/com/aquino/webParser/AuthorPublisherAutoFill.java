@@ -9,6 +9,7 @@ import com.aquino.webParser.model.Book;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.util.function.Function;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -21,26 +22,18 @@ import javax.swing.JTextField;
  */
 public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
+    private Function<Integer, String> editUrl;
+    private AutoFillService autoFillService;
+
     /**
      * Creates new form AuthorPublisherAutoFill2
      */
     public AuthorPublisherAutoFill() {
         initComponents();
     }
-   
-    
-    public void addRow(Book book){
-        rowContainer.add(CreateRow(book));
-    }
 
-    private Component CreateRow(Book book) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel.add(new JCheckBox());
-        panel.add(new JLabel());
-        panel.add(new JTextField());
-        panel.add(new JLabel());
-        panel.add(new JButton());
-        return panel;
+    public void setEditUrl(Function<Integer, String> editUrl) {
+        this.editUrl = editUrl;
     }
 
     /**
@@ -138,5 +131,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel rowContainer;
+
+
     // End of variables declaration//GEN-END:variables
 }
