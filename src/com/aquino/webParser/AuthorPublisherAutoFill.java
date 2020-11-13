@@ -6,15 +6,16 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.model.Book;
+import com.aquino.webParser.utilities.Connect;
+import com.aquino.webParser.utilities.FileUtility;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.function.Function;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.util.stream.Stream;
+import javax.swing.*;
 
 /**
  *
@@ -22,6 +23,7 @@ import javax.swing.JTextField;
  */
 public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
+    private XSSFWorkbook workbook;
     private AutoFillService autoFillService;
 
     /**
@@ -29,6 +31,11 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
      */
     public AuthorPublisherAutoFill() {
         initComponents();
+    }
+
+    public AuthorPublisherAutoFill(AutoFillService autoFillService) throws HeadlessException {
+        this();
+        this.autoFillService = autoFillService;
     }
 
     /**
@@ -151,10 +158,9 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                 AuthorPublisherAutoFill frame =  new AuthorPublisherAutoFill();
                 frame.setSize(1400, 600);
                 frame.setLocationRelativeTo(null);
-                BookRow ro = new BookRow();
-                frame.rowContainer.add(new BookRow()); 
-                frame.rowContainer.add(new BookRow());               
-                frame.rowContainer.add(new BookRow());
+                frame.bookRowContainer.add(new BookRow());
+                frame.bookRowContainer.add(new BookRow());
+                frame.bookRowContainer.add(new BookRow());
 
                 frame.setVisible(true);
             }
@@ -177,4 +183,61 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JTextPane textConsole;
     private javax.swing.JTextPane textFileName;
     // End of variables declaration//GEN-END:variables
+
+    private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
+        try {
+            File file = FileUtility.openFile(bookRowContainer);
+            workbook = Connect.openExistingWorkbook(file);
+            autoFillService.readBooks(workbook)
+                    .stream()
+                    .forEach(model -> {
+                        bookRowContainer.add(new BookRow(model));
+                    });
+            setFileLabel(file.getName());
+//            enableActions();
+        } catch (IllegalArgumentException | NullPointerException | FileNotFoundException e) {
+            textConsole.setText(String.format("Open failed: {0}", e.getMessage()));
+        }
+    });
+
+   private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
+        try {
+            Stream.of(bookRowContainer.getComponents())
+                    .filter(c -> c instanceof BookRow)
+                    .map(c -> (BookRow) c)
+                    .forEach(br ->{
+                        var afm = br.getAutoFillModel();
+                        var id = autoFillService.insertAuthor(afm.getAuthor());
+                        var link = autoFillService.getAuthorLink(id);
+                        br.setAuthorLink(id, link);
+                        afm.UpdateBook();
+                        //TODO insert pub and add link
+                    });
+//            enableActions();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            textConsole.setText(String.format("Auto Fill fail: {0}", e.getMessage()));
+        }
+    });
+
+    private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
+        try {
+            var updater = new ExcelUpdater(workbook);
+            Stream.of(bookRowContainer.getComponents())
+                    .filter(c -> c instanceof BookRow)
+                    .map(c -> (BookRow) c)
+                    .forEach(br ->{
+                        var afm = br.getAutoFillModel();
+                        updater.UpdateBook(afm.getBookPair().getLeft(), afm.getBookPair().getRight());
+                    });
+//            enableActions();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            textConsole.setText(String.format("save fail: {0}", e.getMessage()));
+            e.printStackTrace();
+        }
+    });
+
+
+    private void setFileLabel(String fileName) {
+        textFileName.setText(fileName);
+    }
 }

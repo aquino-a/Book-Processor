@@ -107,8 +107,9 @@ public class BookWindowServiceImpl implements BookWindowService {
         return m;
     }
 
-    public static String GetEditAuthorUrl(int id){
-        return String.format(AUTHOR_EDIT_URL_FORMAT, String.valueOf(id));
+    @Override
+    public String getAuthorLink(String id) {
+        return String.format(AUTHOR_EDIT_URL_FORMAT, id);
     }
 
     private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(

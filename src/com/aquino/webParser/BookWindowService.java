@@ -15,4 +15,6 @@ public interface BookWindowService {
 
     int addAuthor(Author author);
     int addPublisher(Publisher publisher);
+
+    String getAuthorLink(String id);
 }

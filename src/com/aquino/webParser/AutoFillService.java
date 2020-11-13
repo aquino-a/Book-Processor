@@ -95,4 +95,7 @@ public class AutoFillService {
     }
 
 
+    public String getAuthorLink(int id) {
+        return bookWindowService.getAuthorLink(String.valueOf(id));
+    }
 }

@@ -5,17 +5,36 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.AutoFillModel;
+
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+
 /**
  *
  * @author alex
  */
 public class BookRow extends javax.swing.JPanel {
 
+    private AutoFillModel autoFillModel;
+
     /**
      * Creates new form BookRow
      */
     public BookRow() {
         initComponents();
+    }
+
+    public BookRow(AutoFillModel model) {
+        this();
+        this.autoFillModel = model;
+        textEnglishFirst.setText(autoFillModel.getAuthor().getEnglishFirstName());
+        textEnglishLast.setText(autoFillModel.getAuthor().getEnglishLastName());
+        textNativeFirst.setText(autoFillModel.getAuthor().getNativeFirstName());
+        textNativeLast.setText(autoFillModel.getAuthor().getNativeLastName());
+        textPublisherEnglish.setText(autoFillModel.getPublisher().getEnglishName());
+        textPublisherNative.setText(autoFillModel.getPublisher().getNativeName());
     }
 
     /**
@@ -108,5 +127,24 @@ public class BookRow extends javax.swing.JPanel {
     private javax.swing.JTextField textNativeLast;
     private javax.swing.JTextField textPublisherEnglish;
     private javax.swing.JTextField textPublisherNative;
+
     // End of variables declaration//GEN-END:variables
+
+
+    public AutoFillModel getAutoFillModel() {
+        return autoFillModel;
+    }
+
+    public void setAuthorLink(int id, String link) {
+        buttonAuthorLink.setAction(Handlers.anonymousEventClass(String.valueOf(id), actionEvent -> OpenLink(link)));
+    }
+
+    private void OpenLink(String link) {
+        try {
+            Desktop.getDesktop().browse(URI.create(link));
+        } catch (IOException e) {
+            //TODO send event to parent form to display error.
+            e.printStackTrace();
+        }
+    }
 }

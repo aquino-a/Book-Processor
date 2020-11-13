@@ -30,4 +30,9 @@ public class AutoFillModel {
     public void setBookPair(Pair<Integer, Book> bookPair) {
         this.bookPair = bookPair;
     }
+
+    public void UpdateBook() {
+        bookPair.getRight().setAuthor(String.valueOf(author.getId()));
+        //TODO set publisher
+    }
 }

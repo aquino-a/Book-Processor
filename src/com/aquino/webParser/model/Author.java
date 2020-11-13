@@ -7,6 +7,7 @@ public class Author {
     private String englishLastName;
     private String nativeFirstName;
     private String nativeLastName;
+    private int id;
 
     public Language getLanguage() {
         return language;
@@ -46,5 +47,13 @@ public class Author {
 
     public void setNativeLastName(String nativeLastName) {
         this.nativeLastName = nativeLastName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
