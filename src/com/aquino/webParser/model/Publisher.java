@@ -4,6 +4,7 @@ public class Publisher {
     private Language language;
     private String englishName;
     private String nativeName;
+    private String id;
 
     public Language getLanguage() {
         return language;
@@ -27,5 +28,13 @@ public class Publisher {
 
     public void setNativeName(String nativeName) {
         this.nativeName = nativeName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

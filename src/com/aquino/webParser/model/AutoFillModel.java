@@ -32,7 +32,9 @@ public class AutoFillModel {
     }
 
     public void UpdateBook() {
-        bookPair.getRight().setAuthor(String.valueOf(author.getId()));
-        //TODO set publisher
+        if(author != null)
+            bookPair.getRight().setAuthor(String.valueOf(author.getId()));
+        if(publisher != null)
+            bookPair.getRight().setPublisher(publisher.getId());
     }
 }

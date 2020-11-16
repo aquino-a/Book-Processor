@@ -25,7 +25,7 @@ public class ExcelReader {
     public List<Pair<Integer, Book>> ReadBooks(){
         var list = new ArrayList<Pair<Integer,Book>>();
         XSSFRow row = sheet.getRow(startRow);
-        for (int i = startRow + 1; row != null; i++, row = sheet.getRow(i)) {
+        for (int i = startRow + 1; row != null && row.getPhysicalNumberOfCells() > 2; i++, row = sheet.getRow(i)) {
             list.add(Pair.of(i, CreateBook(row)));
         }
         return list;
@@ -33,10 +33,12 @@ public class ExcelReader {
 
     private Book CreateBook(XSSFRow row) {
         var book = new Book();
-        book.setIsbn(Long.parseLong(row.getCell(locationMap.get("isbn")).getStringCellValue()));
-        book.setOclc(Long.parseLong(row.getCell(locationMap.get("oclc")).getStringCellValue()));
+        book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
+        book.setOclc((long) row.getCell(locationMap.get("oclc")).getNumericCellValue());
         book.setAuthor(row.getCell(locationMap.get("author")).getStringCellValue());
-        book.setAuthor2(row.getCell(locationMap.get("author2")).getStringCellValue());
+        var authorCell = row.getCell(locationMap.get("author2"));
+        if(authorCell != null)
+            book.setAuthor2(authorCell.getStringCellValue());
         book.setPublisher(row.getCell(locationMap.get("publisher")).getStringCellValue());
         return book;
     }

@@ -5,15 +5,23 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 import javax.swing.*;
 
@@ -31,11 +39,33 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
      */
     public AuthorPublisherAutoFill() {
         initComponents();
+        setupActions();
+        disableActions();
     }
 
     public AuthorPublisherAutoFill(AutoFillService autoFillService) throws HeadlessException {
         this();
         this.autoFillService = autoFillService;
+        this.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if(workbook != null) {
+                    try {
+                        workbook.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+
+        });
+    }
+
+    private void setupActions() {
+        openMenuItem.setAction(openAction);
+        saveMenuItem.setAction(saveAction);
+        closeMenuItem.setAction(closeAction);
     }
 
     /**
@@ -186,41 +216,55 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
     private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
         try {
-            File file = FileUtility.openFile(bookRowContainer);
+            File file = FileUtility.openFile(jPanel1);
             workbook = Connect.openExistingWorkbook(file);
             autoFillService.readBooks(workbook)
                     .stream()
                     .forEach(model -> {
                         bookRowContainer.add(new BookRow(model));
                     });
-            setFileLabel(file.getName());
-//            enableActions();
-        } catch (IllegalArgumentException | NullPointerException | FileNotFoundException e) {
-            textConsole.setText(String.format("Open failed: {0}", e.getMessage()));
+            if(Arrays.stream(bookRowContainer.getComponents()).filter(c -> c instanceof BookRow).count() > 0){
+                setFileLabel(file.getName());
+                enableActions();
+            } else {
+                closeWorkbook();
+                textConsole.setText("No data to change");
+            }
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
         }
     });
 
-   private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
+    private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
         try {
             Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
                     .forEach(br ->{
                         var afm = br.getAutoFillModel();
-                        var id = autoFillService.insertAuthor(afm.getAuthor());
-                        var link = autoFillService.getAuthorLink(id);
-                        br.setAuthorLink(id, link);
-                        afm.UpdateBook();
+                        InsertAuthor(br, afm.getAuthor());
                         //TODO insert pub and add link
+                        afm.UpdateBook();
                     });
 //            enableActions();
         } catch (IllegalArgumentException | NullPointerException e) {
-            textConsole.setText(String.format("Auto Fill fail: {0}", e.getMessage()));
+            textConsole.setText(String.format("Auto Fill fail: %s", e.getMessage()));
         }
     });
 
+    private void InsertAuthor(BookRow br, Author author) {
+        if(author == null)
+            return;
+        var id = autoFillService.insertAuthor(author);
+        var link = autoFillService.getAuthorLink(id);
+        br.setAuthorLink(id, link);
+    }
+
     private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
         try {
+            File file = FileUtility.openFile(jPanel1);
+            if(file == null)
+                return;
             var updater = new ExcelUpdater(workbook);
             Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
@@ -229,12 +273,43 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                         var afm = br.getAutoFillModel();
                         updater.UpdateBook(afm.getBookPair().getLeft(), afm.getBookPair().getRight());
                     });
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            }
 //            enableActions();
-        } catch (IllegalArgumentException | NullPointerException e) {
-            textConsole.setText(String.format("save fail: {0}", e.getMessage()));
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            textConsole.setText(String.format("save fail: %s", e.getMessage()));
             e.printStackTrace();
         }
     });
+
+    private final Action closeAction = Handlers.anonymousEventClass("Close", (event) -> {
+        try {
+            closeWorkbook();
+            textFileName.setText("");
+            disableActions();
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            textConsole.setText(String.format("close fail: %s", e.getMessage()));
+            e.printStackTrace();
+        }
+    });
+
+    private void closeWorkbook() throws IOException {
+        if(workbook != null)
+            workbook.close();
+        workbook = null;
+    }
+
+    private void enableActions() {
+        saveAction.setEnabled(true);
+        closeAction.setEnabled(true);
+    }
+
+    private void disableActions() {
+        saveAction.setEnabled(false);
+        closeAction.setEnabled(false);
+    }
 
 
     private void setFileLabel(String fileName) {

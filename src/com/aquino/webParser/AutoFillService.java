@@ -1,13 +1,13 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.model.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,19 +17,25 @@ public class AutoFillService {
     private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+ [\u0100-\uFFFF\\w ]+$").asPredicate();
 
 
-    private BookCreator worldCatBookCreator;
-    private BookWindowService bookWindowService;
+    private final BookCreator worldCatBookCreator;
+    private final BookWindowService bookWindowService;
+    private final Map<String, Integer> locationMap;
 
-    public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService) {
+    private Language language;
+
+    public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService, Map<String, Integer> locationMap) {
         this.worldCatBookCreator = worldCatBookCreator;
         this.bookWindowService = bookWindowService;
+        this.locationMap = locationMap;
+        this.language = Language.Japanese;
     }
 
     public List<AutoFillModel> readBooks(XSSFWorkbook workbook){
         var reader = new ExcelReader(workbook);
+        reader.setLocationMap(locationMap);
         return reader.ReadBooks()
                 .stream()
-                .filter(p -> containsId(p.getRight().getAuthor()) || containsId(p.getRight().getPublisher()))
+                .filter(p -> !containsId(p.getRight().getAuthor()) || !containsId(p.getRight().getPublisher()))
                 .map(p -> createAutoFillModel(p))
                 .filter(afm -> afm != null)
                 .collect(Collectors.toList());
@@ -37,6 +43,7 @@ public class AutoFillService {
 
     public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books){
         var updater = new ExcelUpdater(workbook);
+        updater.setLocationMap(locationMap);
         books.forEach(b ->{
             updater.UpdateBook(b.getLeft(), b.getRight());
         });
@@ -50,10 +57,12 @@ public class AutoFillService {
     private AutoFillModel createAutoFillModel(Pair<Integer, Book> p) {
         try {
             var book = p.getRight();
-            var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(p.getRight().getOclc()));
-            var afm = new AutoFillModel();
-            afm.setAuthor(CreateAuthor(book, wcBook));
-            afm.setPublisher(CreatePublisher(book, wcBook));
+            AutoFillModel afm;
+            if(book.getOclc() > 0){
+                afm = getWorldCatModel(book);
+            } else{
+                afm = getNoOclcModel(book);
+            }
             afm.setBookPair(p);
             return afm;
         } catch (IOException e) {
@@ -62,11 +71,40 @@ public class AutoFillService {
         }
     }
 
+    private AutoFillModel getWorldCatModel(Book book) throws IOException {
+        var afm = new AutoFillModel();
+        var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
+        afm.setAuthor(CreateAuthor(book, wcBook));
+        afm.setPublisher(CreatePublisher(book, wcBook));
+        return afm;
+    }
+
+    private AutoFillModel getNoOclcModel(Book book) {
+        var afm = new AutoFillModel();
+        afm.setAuthor(CreateAuthor(book));
+        afm.setPublisher(CreatePublisher(book));
+        return afm;
+    }
+
+    private Publisher CreatePublisher(Book book) {
+        var author = new Publisher();
+        author.setLanguage(language);
+        author.setNativeName(book.getPublisher());
+        return author;
+    }
+
+    private Author CreateAuthor(Book book) {
+        var author = new Author();
+        author.setLanguage(language);
+        author.setNativeFirstName(book.getAuthor());
+        return author;
+    }
+
     private Publisher CreatePublisher(Book book, Book wcBook) {
         if(containsId(book.getPublisher()))
             return null;
         var publisher = new Publisher();
-        publisher.setLanguage(Language.Japanese);
+        publisher.setLanguage(language);
         publisher.setEnglishName(wcBook.getPublisher());
         publisher.setNativeName(book.getPublisher());
         return publisher;
@@ -76,7 +114,7 @@ public class AutoFillService {
         if(containsId(book.getAuthor()))
             return null;
         var author = new Author();
-        author.setLanguage(Language.Japanese);
+        author.setLanguage(language);
         author.setNativeFirstName(book.getAuthor().substring(0,2));
         author.setNativeLastName(book.getAuthor().substring(2,4));
 
@@ -97,5 +135,9 @@ public class AutoFillService {
 
     public String getAuthorLink(int id) {
         return bookWindowService.getAuthorLink(String.valueOf(id));
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

@@ -6,6 +6,7 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreatorType;
+import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
@@ -112,6 +113,7 @@ public class JWPUserInterface extends JPanel {
         JMenu tools = new JMenu("Tools");
         tools.add(new JMenuItem(scrapeOclc));
         tools.add(new JMenuItem(scrapeBestOclc));
+        tools.add(new JMenuItem(autoFillTool));
         language = new JMenu("Language");
         language.add(new JMenuItem(koreanAction));
         language.add(new JMenuItem(japaneseAction));
@@ -166,15 +168,31 @@ public class JWPUserInterface extends JPanel {
     private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
         getAddWorker().execute();
     });
-    
+
     private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
         getOclcWorker(Links.Type.NEW).execute();
     });
-    
+
     private final Action scrapeBestOclc = Handlers.anonymousEventClass("Scrape BEST OCLCs", (event) ->{
         getOclcWorker(Links.Type.BEST).execute();
     });
-    
+
+    private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) ->{
+        openAutoFillTool();
+    });
+
+    private void openAutoFillTool() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                var autoFillTool = new AuthorPublisherAutoFill(new AutoFillService(new WorldCatBookCreator(), processorFactory.CreateWindowService(), excelMap));
+                autoFillTool.setSize(1400, 600);
+                autoFillTool.setLocationRelativeTo(null);
+                autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                autoFillTool.setVisible(true);
+            }
+        });
+    }
+
     private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
         try {
             //if(saveFile == null) saveFile = FileUtility.saveLocation(mainPanel);
@@ -187,18 +205,18 @@ public class JWPUserInterface extends JPanel {
             saveFile = null;
         }
     });
-    
+
     private final Action saveAsAction = Handlers.anonymousEventClass("Save As", (event) ->{
         try {
             askSaveFile();
             writer.saveFile(saveFile);
             desWriter.saveBooks(saveFile);
-            
+
         } catch (NullPointerException e) {
             saveFile = null;
         }
     });
-    
+
     private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
         try {
             File file = FileUtility.openFile(mainPanel);
@@ -213,7 +231,7 @@ public class JWPUserInterface extends JPanel {
             timer.start();
         }
     });
-    
+
     private final Action newAction = Handlers.anonymousEventClass("New", (event) -> {
         writer = new ExcelWriter(Connect.newWorkbookFromTemplate());
         setFileLabel("");
@@ -229,7 +247,7 @@ public class JWPUserInterface extends JPanel {
     private final Action useAction = Handlers.anonymousEventClass("Use", (event) -> {
         textArea.append(checkedLink);
     });
-    
+
     private final DocumentListener addNewLine = Handlers.forDocumentUpdate((event) -> {
         if(event.getLength() > 2 ) addNewLine();
     });
@@ -241,15 +259,15 @@ public class JWPUserInterface extends JPanel {
         { "author2", 10 },
         { "publisher", 11 }
     }).collect(Collectors.toMap(data -> (String) data[0],  data -> (int) data[1]));
-    
+
     public void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        
+
         //content pane
         frame.setContentPane(this);
         frame.setJMenuBar(menuBar);
-        
+
         //pack
         frame.pack();
         frame.setLocation((int)
@@ -288,7 +306,7 @@ public class JWPUserInterface extends JPanel {
         newAction.setEnabled(false);
         addAction.setEnabled(false);
     }
-    
+
     private SwingWorker getAddWorker() {
         return new SwingWorker<Void,Void>() {
             @Override

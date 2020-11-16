@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-//TODO implement
 public class BookWindowServiceImpl implements BookWindowService {
 
     private static final String ADD_URL = "https://www.bookswindow.com/admin/author/ajax/add";
