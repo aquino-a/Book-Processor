@@ -5,8 +5,11 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.DataType;
+import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -293,6 +296,16 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             textConsole.setText(String.format("close fail: %s", e.getMessage()));
             e.printStackTrace();
         }
+    });
+
+    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
+        autoFillService.setLanguage(Language.Japanese);
+//        language.setText("Japanese");
+    });
+
+    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
+        textConsole.setText("Korean not ready at the moment");
+//        autoFillService.setLanguage(Language.Korean);
     });
 
     private void closeWorkbook() throws IOException {
