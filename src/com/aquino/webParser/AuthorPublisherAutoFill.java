@@ -69,6 +69,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         openMenuItem.setAction(openAction);
         saveMenuItem.setAction(saveAction);
         closeMenuItem.setAction(closeAction);
+        autoFillButton.setAction(autoFillAction);
     }
 
     /**

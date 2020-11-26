@@ -39,7 +39,7 @@ public class ExcelReader {
         try {
             book.setAuthor(row.getCell(locationMap.get("author")).getStringCellValue());
         } catch (Exception e) {
-            book.setAuthor(String.valueOf(row.getCell(locationMap.get("author")).getNumericCellValue()));
+            book.setAuthor(String.valueOf((int)row.getCell(locationMap.get("author")).getNumericCellValue()));
         }
         var authorCell = row.getCell(locationMap.get("author2"));
         if(authorCell != null)

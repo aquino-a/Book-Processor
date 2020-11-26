@@ -149,7 +149,21 @@ public class BookRow extends javax.swing.JPanel {
 
 
     public AutoFillModel getAutoFillModel() {
+        updateModel();
         return autoFillModel;
+    }
+
+    private void updateModel() {
+        if(autoFillModel.getAuthor() != null){
+            autoFillModel.getAuthor().setEnglishFirstName(textEnglishFirst.getText());
+            autoFillModel.getAuthor().setEnglishLastName(textEnglishLast.getText());
+            autoFillModel.getAuthor().setNativeFirstName(textNativeFirst.getText());
+            autoFillModel.getAuthor().setNativeLastName(textNativeLast.getText());
+        }
+        if(autoFillModel.getPublisher() != null){
+            autoFillModel.getPublisher().setEnglishName(textPublisherEnglish.getText());
+            autoFillModel.getPublisher().setNativeName(textPublisherNative.getText());
+        }
     }
 
     public void setAuthorLink(int id, String link) {
