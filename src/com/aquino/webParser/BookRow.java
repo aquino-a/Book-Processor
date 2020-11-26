@@ -29,12 +29,16 @@ public class BookRow extends javax.swing.JPanel {
     public BookRow(AutoFillModel model) {
         this();
         this.autoFillModel = model;
-        textEnglishFirst.setText(autoFillModel.getAuthor().getEnglishFirstName());
-        textEnglishLast.setText(autoFillModel.getAuthor().getEnglishLastName());
-        textNativeFirst.setText(autoFillModel.getAuthor().getNativeFirstName());
-        textNativeLast.setText(autoFillModel.getAuthor().getNativeLastName());
-        textPublisherEnglish.setText(autoFillModel.getPublisher().getEnglishName());
-        textPublisherNative.setText(autoFillModel.getPublisher().getNativeName());
+        if(autoFillModel.getAuthor() != null){
+            textEnglishFirst.setText(autoFillModel.getAuthor().getEnglishFirstName());
+            textEnglishLast.setText(autoFillModel.getAuthor().getEnglishLastName());
+            textNativeFirst.setText(autoFillModel.getAuthor().getNativeFirstName());
+            textNativeLast.setText(autoFillModel.getAuthor().getNativeLastName());
+        }
+        if(autoFillModel.getPublisher() != null){
+            textPublisherEnglish.setText(autoFillModel.getPublisher().getEnglishName());
+            textPublisherNative.setText(autoFillModel.getPublisher().getNativeName());
+        }
     }
 
     /**

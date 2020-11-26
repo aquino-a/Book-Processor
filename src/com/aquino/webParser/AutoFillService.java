@@ -115,12 +115,14 @@ public class AutoFillService {
             return null;
         var author = new Author();
         author.setLanguage(language);
-        author.setNativeFirstName(book.getAuthor().substring(0,2));
-        author.setNativeLastName(book.getAuthor().substring(2,4));
+        var split = book.getAuthor().split(" ");
+        author.setNativeFirstName(split[0]);
+        author.setNativeLastName(split[1]);
 
-        var split = wcBook.getAuthor().split(",");
+        split = wcBook.getAuthor().split(" ");
         author.setEnglishFirstName(split[0]);
-        author.setEnglishFirstName(split[1]);
+        if(split.length > 1)
+            author.setEnglishLastName(split[1]);
         return author;
     }
 
