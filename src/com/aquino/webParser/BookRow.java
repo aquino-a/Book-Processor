@@ -67,7 +67,7 @@ public class BookRow extends javax.swing.JPanel {
         jCheckBox1.setMinimumSize(new java.awt.Dimension(10, 10));
         add(jCheckBox1);
 
-        textNativeFirst.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textNativeFirst.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textNativeFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeFirst.setText("native first");
         textNativeFirst.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -81,7 +81,7 @@ public class BookRow extends javax.swing.JPanel {
         add(textNativeFirst);
         textNativeFirst.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
 
-        textNativeLast.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textNativeLast.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textNativeLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeLast.setText("native last");
         textNativeLast.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -89,7 +89,7 @@ public class BookRow extends javax.swing.JPanel {
         textNativeLast.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textNativeLast);
 
-        textEnglishFirst.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textEnglishFirst.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textEnglishFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishFirst.setText("english first");
         textEnglishFirst.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -97,7 +97,7 @@ public class BookRow extends javax.swing.JPanel {
         textEnglishFirst.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textEnglishFirst);
 
-        textEnglishLast.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textEnglishLast.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textEnglishLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishLast.setText("english last");
         textEnglishLast.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -109,7 +109,7 @@ public class BookRow extends javax.swing.JPanel {
         add(buttonAuthorLink);
         add(filler2);
 
-        textPublisherNative.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textPublisherNative.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textPublisherNative.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherNative.setText("native");
         textPublisherNative.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -117,7 +117,7 @@ public class BookRow extends javax.swing.JPanel {
         textPublisherNative.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textPublisherNative);
 
-        textPublisherEnglish.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
+        textPublisherEnglish.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
         textPublisherEnglish.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherEnglish.setText("english");
         textPublisherEnglish.setMaximumSize(new java.awt.Dimension(500, 50));

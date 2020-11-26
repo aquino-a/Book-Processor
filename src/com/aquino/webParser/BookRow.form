@@ -34,7 +34,7 @@
     <Component class="javax.swing.JTextField" name="textNativeFirst">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="native first"/>
@@ -58,7 +58,7 @@
     <Component class="javax.swing.JTextField" name="textNativeLast">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="native last"/>
@@ -76,7 +76,7 @@
     <Component class="javax.swing.JTextField" name="textEnglishFirst">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="english first"/>
@@ -94,7 +94,7 @@
     <Component class="javax.swing.JTextField" name="textEnglishLast">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="english last"/>
@@ -133,7 +133,7 @@
     <Component class="javax.swing.JTextField" name="textPublisherNative">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="native"/>
@@ -151,7 +151,7 @@
     <Component class="javax.swing.JTextField" name="textPublisherEnglish">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Hancom Gothic" size="18" style="0"/>
+          <Font name="Candara" size="18" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="english"/>
