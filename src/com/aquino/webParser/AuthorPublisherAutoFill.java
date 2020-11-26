@@ -82,10 +82,27 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         autoFillButton = new javax.swing.JButton();
-        bookRowContainer = new javax.swing.JScrollPane();
+        bookRowContainer1 = new javax.swing.JPanel();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(130, 0), new java.awt.Dimension(20, 32767));
+        jLabel1 = new javax.swing.JLabel();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(20, 32767));
+        jLabel2 = new javax.swing.JLabel();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(20, 32767));
+        jLabel3 = new javax.swing.JLabel();
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(50, 0), new java.awt.Dimension(20, 32767));
+        jLabel4 = new javax.swing.JLabel();
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(20, 32767));
+        jLabel5 = new javax.swing.JLabel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(10, 32767));
+        jLabel6 = new javax.swing.JLabel();
+        filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 0), new java.awt.Dimension(20, 32767));
+        jLabel7 = new javax.swing.JLabel();
+        filler9 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(30, 0), new java.awt.Dimension(20, 32767));
+        jLabel8 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        textFileName = new javax.swing.JTextPane();
+        bookRowContainer = new javax.swing.JPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        textFileName = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         textConsole = new javax.swing.JTextPane();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -101,9 +118,55 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         autoFillButton.setText("Auto Fill");
         jPanel1.add(autoFillButton, java.awt.BorderLayout.PAGE_END);
-        jPanel1.add(bookRowContainer, java.awt.BorderLayout.CENTER);
 
-        jScrollPane2.setViewportView(textFileName);
+        bookRowContainer1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        bookRowContainer1.add(filler3);
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("native first");
+        bookRowContainer1.add(jLabel1);
+        bookRowContainer1.add(filler4);
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("native last");
+        bookRowContainer1.add(jLabel2);
+        bookRowContainer1.add(filler5);
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("english first");
+        bookRowContainer1.add(jLabel3);
+        bookRowContainer1.add(filler6);
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("english last");
+        bookRowContainer1.add(jLabel4);
+        bookRowContainer1.add(filler7);
+
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("author link");
+        bookRowContainer1.add(jLabel5);
+        bookRowContainer1.add(filler2);
+
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("native publisher");
+        bookRowContainer1.add(jLabel6);
+        bookRowContainer1.add(filler8);
+
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("english publisher");
+        bookRowContainer1.add(jLabel7);
+        bookRowContainer1.add(filler9);
+
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("publisher link");
+        bookRowContainer1.add(jLabel8);
+
+        jPanel1.add(bookRowContainer1, java.awt.BorderLayout.PAGE_START);
+
+        bookRowContainer.setLayout(new javax.swing.BoxLayout(bookRowContainer, javax.swing.BoxLayout.Y_AXIS));
+        jScrollPane2.setViewportView(bookRowContainer);
+
+        jPanel1.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         jScrollPane1.setViewportView(textConsole);
 
@@ -134,7 +197,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 970, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(textFileName, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -144,11 +207,10 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                    .addComponent(textFileName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
                 .addContainerGap())
@@ -202,11 +264,28 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton autoFillButton;
-    private javax.swing.JScrollPane bookRowContainer;
+    private javax.swing.JPanel bookRowContainer;
+    private javax.swing.JPanel bookRowContainer1;
     private javax.swing.JMenuItem closeMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.Box.Filler filler7;
+    private javax.swing.Box.Filler filler8;
+    private javax.swing.Box.Filler filler9;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -214,7 +293,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JTextPane textConsole;
-    private javax.swing.JTextPane textFileName;
+    private javax.swing.JLabel textFileName;
     // End of variables declaration//GEN-END:variables
 
     private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {

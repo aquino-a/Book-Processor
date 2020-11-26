@@ -63,61 +63,75 @@ public class BookRow extends javax.swing.JPanel {
 
         setMaximumSize(new java.awt.Dimension(2000, 50));
         setMinimumSize(new java.awt.Dimension(200, 21));
-        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jCheckBox1.setMinimumSize(new java.awt.Dimension(10, 10));
         add(jCheckBox1);
 
+        textNativeFirst.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textNativeFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeFirst.setText("native first");
         textNativeFirst.setMaximumSize(new java.awt.Dimension(500, 50));
         textNativeFirst.setMinimumSize(new java.awt.Dimension(200, 50));
-        textNativeFirst.setPreferredSize(new java.awt.Dimension(100, 20));
+        textNativeFirst.setPreferredSize(new java.awt.Dimension(120, 40));
+        textNativeFirst.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textNativeFirstActionPerformed(evt);
+            }
+        });
         add(textNativeFirst);
         textNativeFirst.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
 
+        textNativeLast.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textNativeLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeLast.setText("native last");
         textNativeLast.setMaximumSize(new java.awt.Dimension(500, 50));
         textNativeLast.setMinimumSize(new java.awt.Dimension(200, 50));
-        textNativeLast.setPreferredSize(new java.awt.Dimension(100, 20));
+        textNativeLast.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textNativeLast);
 
+        textEnglishFirst.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textEnglishFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishFirst.setText("english first");
         textEnglishFirst.setMaximumSize(new java.awt.Dimension(500, 50));
         textEnglishFirst.setMinimumSize(new java.awt.Dimension(200, 50));
-        textEnglishFirst.setPreferredSize(new java.awt.Dimension(100, 20));
+        textEnglishFirst.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textEnglishFirst);
 
+        textEnglishLast.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textEnglishLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishLast.setText("english last");
         textEnglishLast.setMaximumSize(new java.awt.Dimension(500, 50));
         textEnglishLast.setMinimumSize(new java.awt.Dimension(200, 50));
-        textEnglishLast.setPreferredSize(new java.awt.Dimension(100, 20));
+        textEnglishLast.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textEnglishLast);
 
         buttonAuthorLink.setText("Link");
         add(buttonAuthorLink);
         add(filler2);
 
+        textPublisherNative.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textPublisherNative.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherNative.setText("native");
         textPublisherNative.setMaximumSize(new java.awt.Dimension(500, 50));
         textPublisherNative.setMinimumSize(new java.awt.Dimension(200, 50));
-        textPublisherNative.setPreferredSize(new java.awt.Dimension(100, 20));
+        textPublisherNative.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textPublisherNative);
 
+        textPublisherEnglish.setFont(new java.awt.Font("Hancom Gothic", 0, 18)); // NOI18N
         textPublisherEnglish.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherEnglish.setText("english");
         textPublisherEnglish.setMaximumSize(new java.awt.Dimension(500, 50));
         textPublisherEnglish.setMinimumSize(new java.awt.Dimension(200, 50));
-        textPublisherEnglish.setPreferredSize(new java.awt.Dimension(100, 20));
+        textPublisherEnglish.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textPublisherEnglish);
 
         buttonPublisherLink.setText("Link");
         add(buttonPublisherLink);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void textNativeFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textNativeFirstActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textNativeFirstActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -131,7 +145,6 @@ public class BookRow extends javax.swing.JPanel {
     private javax.swing.JTextField textNativeLast;
     private javax.swing.JTextField textPublisherEnglish;
     private javax.swing.JTextField textPublisherNative;
-
     // End of variables declaration//GEN-END:variables
 
 

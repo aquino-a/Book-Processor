@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class AutoFillService {
 
-    private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+ [\u0100-\uFFFF\\w ]+$").asPredicate();
+    private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
 
 
     private final BookCreator worldCatBookCreator;
@@ -117,7 +117,8 @@ public class AutoFillService {
         author.setLanguage(language);
         var split = book.getAuthor().split(" ");
         author.setNativeFirstName(split[0]);
-        author.setNativeLastName(split[1]);
+        if(split.length > 1)
+            author.setNativeLastName(split[1]);
 
         split = wcBook.getAuthor().split(" ");
         author.setEnglishFirstName(split[0]);

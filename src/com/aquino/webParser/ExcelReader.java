@@ -35,7 +35,12 @@ public class ExcelReader {
         var book = new Book();
         book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
         book.setOclc((long) row.getCell(locationMap.get("oclc")).getNumericCellValue());
-        book.setAuthor(row.getCell(locationMap.get("author")).getStringCellValue());
+
+        try {
+            book.setAuthor(row.getCell(locationMap.get("author")).getStringCellValue());
+        } catch (Exception e) {
+            book.setAuthor(String.valueOf(row.getCell(locationMap.get("author")).getNumericCellValue()));
+        }
         var authorCell = row.getCell(locationMap.get("author2"));
         if(authorCell != null)
             book.setAuthor2(authorCell.getStringCellValue());
