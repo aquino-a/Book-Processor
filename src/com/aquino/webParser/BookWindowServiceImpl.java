@@ -259,20 +259,26 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     private void SetAuthor(Book book) {
         var parts = findAuthorId(book.getAuthor());
-        book.setAuthorId(Integer.parseInt(parts[0]));
+        if(parts.length > 0)
+            book.setAuthorId(Integer.parseInt(parts[0]));
+        if(parts.length > 2)
         book.setAuthorBooks(String.join(" ", parts[1], parts[2]));
     }
 
     private void SetAuthor2(Book book) {
         var parts = findAuthorId(book.getAuthor2());
-        book.setAuthor2Id(Integer.parseInt(parts[0]));
-        book.setAuthor2Books(String.join(" ", parts[1], parts[2]));
+        if(parts.length > 0)
+            book.setAuthor2Id(Integer.parseInt(parts[0]));
+        if(parts.length > 2)
+            book.setAuthor2Books(String.join(" ", parts[1], parts[2]));
     }
 
     private void SetPublisher(Book book) {
         var parts = findPublisherId(book.getPublisher());
-        book.setPublisherId(Integer.parseInt(parts[0]));
-        book.setPublisherBooks(parts[1]);
+        if(parts.length > 0)
+            book.setPublisherId(Integer.parseInt(parts[0]));
+        if(parts.length > 1)
+            book.setPublisherBooks(parts[1]);
     }
 
     @Override
