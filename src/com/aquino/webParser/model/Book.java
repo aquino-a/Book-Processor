@@ -9,11 +9,15 @@ public class Book {
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, authorOriginal,
-            locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "";
+            locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
+            authorBooks, author2Books, publisherBooks;
     private long isbn, oclc;
     private boolean titleExists;
 
     private int pages;
+    private int authorId = -1;
+    private int author2Id = -1;
+    private int publisherId = -1;
     private int weight;
 
     private int originalPriceNumber;
@@ -268,6 +272,54 @@ public class Book {
 
     public void setVendorName(String vendorName) {
         this.vendorName = vendorName;
+    }
+
+    public String getAuthorBooks() {
+        return authorBooks;
+    }
+
+    public void setAuthorBooks(String authorBooks) {
+        this.authorBooks = authorBooks;
+    }
+
+    public String getPublisherBooks() {
+        return publisherBooks;
+    }
+
+    public void setPublisherBooks(String publisherBooks) {
+        this.publisherBooks = publisherBooks;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
+    }
+
+    public int getPublisherId() {
+        return publisherId;
+    }
+
+    public void setPublisherId(int publisherId) {
+        this.publisherId = publisherId;
+    }
+
+    public String getAuthor2Books() {
+        return author2Books;
+    }
+
+    public void setAuthor2Books(String author2Books) {
+        this.author2Books = author2Books;
+    }
+
+    public int getAuthor2Id() {
+        return author2Id;
+    }
+
+    public void setAuthor2Id(int author2Id) {
+        this.author2Id = author2Id;
     }
 
     public List<ExtraInfo> getMiscellaneous() {

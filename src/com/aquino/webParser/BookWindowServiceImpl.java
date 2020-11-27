@@ -5,11 +5,11 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Publisher;
 import com.aquino.webParser.utilities.Login;
 import org.apache.commons.lang3.NotImplementedException;
-import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -251,39 +251,57 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     @Override
     public Book findIds(Book book){
-        book.setAuthor(findAuthorId(book.getAuthor()));
-        book.setAuthor2(findAuthorId(book.getAuthor2()));
-        book.setPublisher(findPublisherId(book.getPublisher()));
+        SetAuthor(book);
+        SetAuthor2(book);
+        SetPublisher(book);
         return book;
     }
 
+    private void SetAuthor(Book book) {
+        var parts = findAuthorId(book.getAuthor());
+        book.setAuthorId(Integer.parseInt(parts[0]));
+        book.setAuthorBooks(String.join(" ", parts[1], parts[2]));
+    }
+
+    private void SetAuthor2(Book book) {
+        var parts = findAuthorId(book.getAuthor2());
+        book.setAuthor2Id(Integer.parseInt(parts[0]));
+        book.setAuthor2Books(String.join(" ", parts[1], parts[2]));
+    }
+
+    private void SetPublisher(Book book) {
+        var parts = findPublisherId(book.getPublisher());
+        book.setPublisherId(Integer.parseInt(parts[0]));
+        book.setPublisherBooks(parts[1]);
+    }
+
     @Override
-    public String findPublisherId(String publisher){
+    public String[] findPublisherId(String publisher){
         String url = makeURL("https://www.bookswindow.com/admin/mfg/manage/keyword/",publisher);
-        Element element = retrieveElementAuthorPublisher(url);
-        if (element != null) {
-            return element.text() + ' ' + publisher;
-        } else return publisher;
+        var elements = retrieveElementAuthorPublisher(url);
+        if (elements != null) {
+            return elements.stream().map((e -> e.text())).toArray(String[]::new);
+        } else return new String[]{ "-1", "", ""};
     }
 
     @Override
-    public String findAuthorId(String author){
+    public String[] findAuthorId(String author){
         if(author == null || author.equals("") || author.equals("1494"))
-            return author;
-        Element element = retrieveElementAuthorPublisher(makeURLAuthor(author));
-        if (element != null) {
-            return element.text() + ' ' + author;
-        } else return author;
+            return new String[]{ "-1", "", ""};
+        var elements = retrieveElementAuthorPublisher(makeURLAuthor(author));
+        if (elements != null) {
+            return elements.stream().map((e -> e.text())).toArray(String[]::new);
+        } else return new String[]{ "-1", "", ""};
     }
 
-    private Element retrieveElementAuthorPublisher(String url) {
-        return retrieveElement(url, "style", "max-width:256px; max-height:256px; overflow:auto; whitespace:nowrap;");
+    private Elements retrieveElementAuthorPublisher(String url) {
+        return retrieveElements(url, "style", "max-width:256px; max-height:256px; overflow:auto; whitespace:nowrap;");
     }
 
-    private Element retrieveElement(String url, String attr, String value) {
+    private Elements retrieveElements(String url, String attr, String value) {
         try{
             return Login.getDocument(url).
-                    getElementsByAttributeValueMatching(attr, value).first();
+                    getElementsByAttributeValueMatching(attr, value);
         } catch (NullPointerException e){
             return null;
         }

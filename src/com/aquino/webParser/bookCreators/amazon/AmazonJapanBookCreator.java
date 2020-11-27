@@ -333,7 +333,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book hontoBook = hontoBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            ExtraInfo ei = new ExtraInfo(39, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ExtraInfo ei = new ExtraInfo(45, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Honto");
             book.getMiscellaneous().add(ei);
         } catch (IOException e) {
@@ -348,7 +348,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book honyaBook = honyaClubBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            ExtraInfo ei = new ExtraInfo(40, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ExtraInfo ei = new ExtraInfo(46, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Honya");
             book.getMiscellaneous().add(ei);
         } catch (IOException e) {
@@ -364,7 +364,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         try {
             Book yahooBook = yahooBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
-            ExtraInfo ei = new ExtraInfo(41, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ExtraInfo ei = new ExtraInfo(47, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Yahoo");
             book.getMiscellaneous().add(ei);
         } catch (IOException e) {

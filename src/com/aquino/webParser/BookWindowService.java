@@ -7,9 +7,9 @@ import com.aquino.webParser.model.Publisher;
 public interface BookWindowService {
     Book findIds(Book book);
 
-    String findPublisherId(String publisher);
+    String[] findPublisherId(String publisher);
 
-    String findAuthorId(String author);
+    String[] findAuthorId(String author);
 
     boolean doesBookExist(String isbn);
 
