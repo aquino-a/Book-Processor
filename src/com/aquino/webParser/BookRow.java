@@ -50,7 +50,7 @@ public class BookRow extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jCheckBox1 = new javax.swing.JCheckBox();
+        checkBox = new javax.swing.JCheckBox();
         textNativeFirst = new javax.swing.JTextField();
         textNativeLast = new javax.swing.JTextField();
         textEnglishFirst = new javax.swing.JTextField();
@@ -64,12 +64,12 @@ public class BookRow extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(2000, 50));
         setMinimumSize(new java.awt.Dimension(200, 21));
 
-        jCheckBox1.setMinimumSize(new java.awt.Dimension(10, 10));
-        add(jCheckBox1);
+        checkBox.setMinimumSize(new java.awt.Dimension(10, 10));
+        add(checkBox);
 
-        textNativeFirst.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textNativeFirst.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textNativeFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        textNativeFirst.setText("native first");
+        textNativeFirst.setText("native firstマガジンハウス");
         textNativeFirst.setMaximumSize(new java.awt.Dimension(500, 50));
         textNativeFirst.setMinimumSize(new java.awt.Dimension(200, 50));
         textNativeFirst.setPreferredSize(new java.awt.Dimension(120, 40));
@@ -81,15 +81,20 @@ public class BookRow extends javax.swing.JPanel {
         add(textNativeFirst);
         textNativeFirst.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
 
-        textNativeLast.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textNativeLast.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textNativeLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        textNativeLast.setText("native last");
+        textNativeLast.setText("native last(후지오카 요오코");
         textNativeLast.setMaximumSize(new java.awt.Dimension(500, 50));
         textNativeLast.setMinimumSize(new java.awt.Dimension(200, 50));
         textNativeLast.setPreferredSize(new java.awt.Dimension(120, 40));
+        textNativeLast.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textNativeLastActionPerformed(evt);
+            }
+        });
         add(textNativeLast);
 
-        textEnglishFirst.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textEnglishFirst.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textEnglishFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishFirst.setText("english first");
         textEnglishFirst.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -97,7 +102,7 @@ public class BookRow extends javax.swing.JPanel {
         textEnglishFirst.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textEnglishFirst);
 
-        textEnglishLast.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textEnglishLast.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textEnglishLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishLast.setText("english last");
         textEnglishLast.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -109,7 +114,7 @@ public class BookRow extends javax.swing.JPanel {
         add(buttonAuthorLink);
         add(filler2);
 
-        textPublisherNative.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textPublisherNative.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textPublisherNative.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherNative.setText("native");
         textPublisherNative.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -117,7 +122,7 @@ public class BookRow extends javax.swing.JPanel {
         textPublisherNative.setPreferredSize(new java.awt.Dimension(120, 40));
         add(textPublisherNative);
 
-        textPublisherEnglish.setFont(new java.awt.Font("Candara", 0, 18)); // NOI18N
+        textPublisherEnglish.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
         textPublisherEnglish.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherEnglish.setText("english");
         textPublisherEnglish.setMaximumSize(new java.awt.Dimension(500, 50));
@@ -133,12 +138,16 @@ public class BookRow extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_textNativeFirstActionPerformed
 
+    private void textNativeLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textNativeLastActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_textNativeLastActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAuthorLink;
     private javax.swing.JButton buttonPublisherLink;
+    private javax.swing.JCheckBox checkBox;
     private javax.swing.Box.Filler filler2;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JTextField textEnglishFirst;
     private javax.swing.JTextField textEnglishLast;
     private javax.swing.JTextField textNativeFirst;
@@ -177,5 +186,13 @@ public class BookRow extends javax.swing.JPanel {
             //TODO send event to parent form to display error.
             e.printStackTrace();
         }
+    }
+    
+    public void toggleIsChecked(boolean enable){
+        this.checkBox.setSelected(enable); 
+    }
+
+    public boolean isSelected() {
+        return this.checkBox.isSelected();
     }
 }

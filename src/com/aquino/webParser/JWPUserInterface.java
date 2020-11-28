@@ -255,9 +255,9 @@ public class JWPUserInterface extends JPanel {
     private final Map<String, Integer> excelMap = Stream.of(new Object[][] {
         { "isbn", 0 },
         { "oclc", 3 },
-        { "author", 9 },
-        { "author2", 10 },
-        { "publisher", 11 }
+        { "author", 10 },
+        { "author2", 13 },
+        { "publisher", 16 }
     }).collect(Collectors.toMap(data -> (String) data[0],  data -> (int) data[1]));
 
     public void createAndShowGUI() {

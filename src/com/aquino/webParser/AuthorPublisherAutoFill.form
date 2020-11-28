@@ -103,7 +103,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Container class="javax.swing.JPanel" name="bookRowContainer1">
+        <Container class="javax.swing.JPanel" name="tableHeader">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
               <BorderConstraints direction="First"/>
@@ -114,6 +114,14 @@
             <Property name="alignment" type="int" value="0"/>
           </Layout>
           <SubComponents>
+            <Component class="javax.swing.JCheckBox" name="checkSelectAll">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Select All"/>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="checkSelectAllItemStateChanged"/>
+              </Events>
+            </Component>
             <Component class="javax.swing.Box$Filler" name="filler3">
               <Properties>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

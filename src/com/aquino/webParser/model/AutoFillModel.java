@@ -33,8 +33,8 @@ public class AutoFillModel {
 
     public void UpdateBook() {
         if(author != null)
-            bookPair.getRight().setAuthor(String.valueOf(author.getId()));
+            bookPair.getRight().setAuthorId(author.getId());
         if(publisher != null)
-            bookPair.getRight().setPublisher(publisher.getId());
+            bookPair.getRight().setPublisherId(publisher.getId());
     }
 }

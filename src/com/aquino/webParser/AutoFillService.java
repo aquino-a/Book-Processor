@@ -35,7 +35,9 @@ public class AutoFillService {
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
                 .stream()
-                .filter(p -> !containsId(p.getRight().getAuthor()) || !containsId(p.getRight().getPublisher()))
+//                .filter(p -> !containsId(p.getRight().getAuthor()) || !containsId(p.getRight().getPublisher()))
+//                .filter(p -> p.getRight().getAuthorId() != -1 || p.getRight().getPublisherId() != -1)
+                .filter(p -> p.getRight().getAuthorId() == -1 && p.getRight().getAuthor() != null)
                 .map(p -> createAutoFillModel(p))
                 .filter(afm -> afm != null)
                 .collect(Collectors.toList());

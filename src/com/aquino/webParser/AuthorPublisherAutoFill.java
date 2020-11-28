@@ -5,26 +5,20 @@
  */
 package com.aquino.webParser;
 
-import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.Book;
-import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 import javax.swing.*;
 
@@ -83,7 +77,8 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         autoFillButton = new javax.swing.JButton();
-        bookRowContainer1 = new javax.swing.JPanel();
+        tableHeader = new javax.swing.JPanel();
+        checkSelectAll = new javax.swing.JCheckBox();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(130, 0), new java.awt.Dimension(20, 32767));
         jLabel1 = new javax.swing.JLabel();
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(20, 0), new java.awt.Dimension(40, 0), new java.awt.Dimension(20, 32767));
@@ -120,49 +115,57 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         autoFillButton.setText("Auto Fill");
         jPanel1.add(autoFillButton, java.awt.BorderLayout.PAGE_END);
 
-        bookRowContainer1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        bookRowContainer1.add(filler3);
+        tableHeader.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        checkSelectAll.setText("Select All");
+        checkSelectAll.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                checkSelectAllItemStateChanged(evt);
+            }
+        });
+        tableHeader.add(checkSelectAll);
+        tableHeader.add(filler3);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("native first");
-        bookRowContainer1.add(jLabel1);
-        bookRowContainer1.add(filler4);
+        tableHeader.add(jLabel1);
+        tableHeader.add(filler4);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("native last");
-        bookRowContainer1.add(jLabel2);
-        bookRowContainer1.add(filler5);
+        tableHeader.add(jLabel2);
+        tableHeader.add(filler5);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("english first");
-        bookRowContainer1.add(jLabel3);
-        bookRowContainer1.add(filler6);
+        tableHeader.add(jLabel3);
+        tableHeader.add(filler6);
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("english last");
-        bookRowContainer1.add(jLabel4);
-        bookRowContainer1.add(filler7);
+        tableHeader.add(jLabel4);
+        tableHeader.add(filler7);
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("author link");
-        bookRowContainer1.add(jLabel5);
-        bookRowContainer1.add(filler2);
+        tableHeader.add(jLabel5);
+        tableHeader.add(filler2);
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("native publisher");
-        bookRowContainer1.add(jLabel6);
-        bookRowContainer1.add(filler8);
+        tableHeader.add(jLabel6);
+        tableHeader.add(filler8);
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("english publisher");
-        bookRowContainer1.add(jLabel7);
-        bookRowContainer1.add(filler9);
+        tableHeader.add(jLabel7);
+        tableHeader.add(filler9);
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("publisher link");
-        bookRowContainer1.add(jLabel8);
+        tableHeader.add(jLabel8);
 
-        jPanel1.add(bookRowContainer1, java.awt.BorderLayout.PAGE_START);
+        jPanel1.add(tableHeader, java.awt.BorderLayout.PAGE_START);
 
         bookRowContainer.setLayout(new javax.swing.BoxLayout(bookRowContainer, javax.swing.BoxLayout.Y_AXIS));
         jScrollPane2.setViewportView(bookRowContainer);
@@ -220,6 +223,20 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void checkSelectAllItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkSelectAllItemStateChanged
+        if(evt.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
+            setIsChecked(true);
+        } else {//checkbox has been deselected
+            setIsChecked(false);
+        };
+    }//GEN-LAST:event_checkSelectAllItemStateChanged
+
+    private void setIsChecked(boolean enable){
+        Stream.of(bookRowContainer.getComponents())
+                    .filter(c -> c instanceof BookRow)
+                    .map(c -> (BookRow) c)
+                    .forEach(br -> br.toggleIsChecked(enable));
+    }
     /**
      * @param args the command line arguments
      */
@@ -266,7 +283,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton autoFillButton;
     private javax.swing.JPanel bookRowContainer;
-    private javax.swing.JPanel bookRowContainer1;
+    private javax.swing.JCheckBox checkSelectAll;
     private javax.swing.JMenuItem closeMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
@@ -293,6 +310,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JPanel tableHeader;
     private javax.swing.JTextPane textConsole;
     private javax.swing.JLabel textFileName;
     // End of variables declaration//GEN-END:variables
@@ -320,9 +338,15 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
     private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
         try {
+            var result = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
+            if(result != JOptionPane.OK_OPTION)
+                return;
+
             Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
+                    .filter(br -> br.isSelected())
                     .forEach(br ->{
                         var afm = br.getAutoFillModel();
                         InsertAuthor(br, afm.getAuthor());
@@ -352,6 +376,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
+                    .filter(br -> br.isSelected())
                     .forEach(br ->{
                         var afm = br.getAutoFillModel();
                         updater.UpdateBook(afm.getBookPair().getLeft(), afm.getBookPair().getRight());
