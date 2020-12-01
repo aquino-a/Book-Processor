@@ -1,4 +1,4 @@
-package com.aquino.webParser.bookCreators.aladin;
+package com.aquino.webParser.bookCreators.aladin.api;
 
 import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,10 +84,10 @@ public class AladinApiResultTest {
         ObjectMapper mapper = new ObjectMapper();
         AladinApiResult a =  mapper.readValue(json, AladinApiResult.class);
         AladinBookDTO bookDTO = a.getResult();
-        assertEquals(bookDTO.getTitle(),"\uc544\uc8fc \uc791\uc740 \uc2b5\uad00\uc758 \ud798");
-        assertEquals(bookDTO.getIsbn(),9791162540640l);
-        assertEquals(bookDTO.getPubDate(),"02/25/2019");
-        assertEquals(bookDTO.getPrice(), 16000);
+        Assert.assertEquals(bookDTO.getTitle(),"\uc544\uc8fc \uc791\uc740 \uc2b5\uad00\uc758 \ud798");
+        Assert.assertEquals(bookDTO.getIsbn(),9791162540640l);
+        Assert.assertEquals(bookDTO.getPubDate(),"02/25/2019");
+        Assert.assertEquals(bookDTO.getPrice(), 16000);
 
     }
 
@@ -164,20 +164,20 @@ public class AladinApiResultTest {
         ObjectMapper mapper = new ObjectMapper();
         AladinApiResult a =  mapper.readValue(json2, AladinApiResult.class);
         Book book = a.getResult().asBook();
-        assertEquals(13500, book.getOriginalPriceNumber());
-        assertEquals("여행의 이유", book.getTitle());
-        assertEquals("문학동네", book.getPublisher());
-        assertEquals("04/17/2019", book.getPublishDateFormatted());
-        assertEquals("김영하", book.getAuthor());
-        assertEquals("", book.getAuthor2());
-        assertEquals("PB", book.getType());
-        assertEquals(216, book.getPages());
-        assertEquals("13 x 20", book.getBookSizeFormatted());
-        assertEquals(1, book.getWeight());
-        assertEquals(9788954655972L, book.getIsbn());
-        assertEquals("에세이", book.getCategory());
-        assertEquals("https://image.aladin.co.kr/product/18827/60/letslook/8954655971_f.jpg",book.getImageURL());
-        assertEquals("", book.getTranslator());
-        assertEquals("8954655971",book.getkIsbn());
+        Assert.assertEquals(13500, book.getOriginalPriceNumber());
+        Assert.assertEquals("여행의 이유", book.getTitle());
+        Assert.assertEquals("문학동네", book.getPublisher());
+        Assert.assertEquals("04/17/2019", book.getPublishDateFormatted());
+        Assert.assertEquals("김영하", book.getAuthor());
+        Assert.assertEquals("", book.getAuthor2());
+        Assert.assertEquals("PB", book.getType());
+        Assert.assertEquals(216, book.getPages());
+        Assert.assertEquals("13 x 20", book.getBookSizeFormatted());
+        Assert.assertEquals(1, book.getWeight());
+        Assert.assertEquals(9788954655972L, book.getIsbn());
+        Assert.assertEquals("에세이", book.getCategory());
+        Assert.assertEquals("https://image.aladin.co.kr/product/18827/60/letslook/8954655971_f.jpg",book.getImageURL());
+        Assert.assertEquals("", book.getTranslator());
+        Assert.assertEquals("8954655971",book.getkIsbn());
     }
 }

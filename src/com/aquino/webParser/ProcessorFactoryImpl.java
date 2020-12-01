@@ -7,7 +7,7 @@ import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.bookCreators.aladin.AladinBookCreator;
+import com.aquino.webParser.bookCreators.aladin.api.AladinBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

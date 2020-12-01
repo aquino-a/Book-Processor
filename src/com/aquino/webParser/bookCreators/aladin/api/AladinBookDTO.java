@@ -1,4 +1,4 @@
-package com.aquino.webParser.bookCreators.aladin;
+package com.aquino.webParser.bookCreators.aladin.api;
 
 import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.annotation.JsonCreator;

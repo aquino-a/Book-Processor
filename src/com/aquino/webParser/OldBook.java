@@ -29,7 +29,7 @@ import org.jsoup.nodes.Node;
  *
  * @author alex
  */
-public class OldBook {
+public class  OldBook {
 
     private Document doc;
     private String title, publishDate, originalPrice, bookSize,
