@@ -5,6 +5,7 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Publisher;
 import com.aquino.webParser.utilities.Login;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
@@ -333,10 +334,19 @@ public class BookWindowServiceImpl implements BookWindowService {
         return unicodeName;
     }
 
-    //TODO
     @Override
     public boolean doesBookExist(String isbn){
-        throw new NotImplementedException("TODO");
+        return retrieveElementISBN(isbn) != null;
+    }
+
+    private Element retrieveElementISBN(String keyword) {
+        return retrieveElements(
+                makeURLTitle(keyword),
+                "style", "margin-top:10px; margin-bottom:10px;").first();
+    }
+
+    private String makeURLTitle(String title) {
+        return makeURL("https://www.bookswindow.com/admin/product_core/manage/keyword/", title);
     }
 
     @Override

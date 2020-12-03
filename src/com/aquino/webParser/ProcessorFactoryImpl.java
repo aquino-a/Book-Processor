@@ -7,7 +7,7 @@ import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.bookCreators.aladin.api.AladinBookCreator;
+import com.aquino.webParser.bookCreators.aladin.web.AladinBookCreator;
 import com.aquino.webParser.oclc.OclcService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,7 +33,7 @@ public class ProcessorFactoryImpl {
         if(!bookCreatorHashMap.containsKey(creatorType)) {
             BookCreator newCreator;
             switch(creatorType){
-                case AladinApi: newCreator = new AladinBookCreator(getAladinApiKey(), CreateWindowService(), CreateOclcService(),CreateObjectMapper()); break;
+                case AladinApi: newCreator = new AladinBookCreator(CreateWindowService(), CreateOclcService()); break;
                 case AmazonJapan: {
                     AmazonJapanBookCreator abc = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService());
                     abc.setHontoBookCreator(new HontoBookCreator());

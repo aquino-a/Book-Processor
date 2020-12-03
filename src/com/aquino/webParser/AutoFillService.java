@@ -123,9 +123,10 @@ public class AutoFillService {
             author.setNativeLastName(split[1]);
 
         split = wcBook.getAuthor().split(" ");
-        author.setEnglishFirstName(split[0]);
-        if(split.length > 1)
-            author.setEnglishLastName(split[1]);
+        author.setEnglishLastName(split[0]);
+        if(split.length > 1) {
+            author.setEnglishFirstName(split[1]);
+        }
         return author;
     }
 

@@ -2,6 +2,7 @@ package com.aquino.webParser.bookCreators.aladin.api;
 
 import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
