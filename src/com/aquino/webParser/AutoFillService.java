@@ -2,6 +2,7 @@ package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
+import com.aquino.webParser.romanization.Romanizer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -98,7 +99,16 @@ public class AutoFillService {
     private Author CreateAuthor(Book book) {
         var author = new Author();
         author.setLanguage(language);
-        author.setNativeFirstName(book.getAuthor());
+        if(language.equals(Language.Korean)){
+            var first = book.getAuthor().substring(0,1);
+            var last = book.getAuthor().substring(1,3);
+            author.setNativeFirstName(book.getAuthor());
+            author.setNativeLastName(book.getAuthor());
+            author.setEnglishFirstName(Romanizer.hangulToRoman(first));
+            author.setEnglishLastName(Romanizer.hangulToRoman(last));
+        } else {
+            author.setNativeFirstName(book.getAuthor());
+        }
         return author;
     }
 

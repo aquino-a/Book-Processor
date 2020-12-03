@@ -5,7 +5,9 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.model.Author;
+import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
@@ -64,6 +66,8 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         saveMenuItem.setAction(saveAction);
         closeMenuItem.setAction(closeAction);
         autoFillButton.setAction(autoFillAction);
+        languageMenu.add(new JMenuItem(japaneseAction));
+        languageMenu.add(new JMenuItem(koreanAction));
     }
 
     /**
@@ -107,6 +111,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         saveMenuItem = new javax.swing.JMenuItem();
         closeMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
+        languageMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -189,6 +194,9 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
         editMenu.setText("Edit");
         jMenuBar1.add(editMenu);
+
+        languageMenu.setText("Language");
+        jMenuBar1.add(languageMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -308,6 +316,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JMenu languageMenu;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JPanel tableHeader;
@@ -359,6 +368,16 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         }
     });
 
+    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
+        languageMenu.setText("Japanese");
+        autoFillService.setLanguage(Language.Japanese);
+    });
+
+    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
+        languageMenu.setText("Korean");
+        autoFillService.setLanguage(Language.Korean);
+    });
+
     private void InsertAuthor(BookRow br, Author author) {
         if(author == null)
             return;
@@ -401,16 +420,6 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             textConsole.setText(String.format("close fail: %s", e.getMessage()));
             e.printStackTrace();
         }
-    });
-
-    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
-        autoFillService.setLanguage(Language.Japanese);
-//        language.setText("Japanese");
-    });
-
-    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
-        textConsole.setText("Korean not ready at the moment");
-//        autoFillService.setLanguage(Language.Korean);
     });
 
     private void closeWorkbook() throws IOException {
