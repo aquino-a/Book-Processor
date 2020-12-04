@@ -30,7 +30,7 @@ public class ExcelReader {
     public List<Pair<Integer, Book>> ReadBooks(){
         var list = new ArrayList<Pair<Integer,Book>>();
         XSSFRow row = sheet.getRow(startRow);
-        for (int i = startRow + 1; row != null && row.getPhysicalNumberOfCells() > 2; i++, row = sheet.getRow(i)) {
+        for (int i = startRow; row != null && row.getPhysicalNumberOfCells() > 2; i++, row = sheet.getRow(i)) {
             list.add(Pair.of(i, CreateBook(row)));
         }
         return list;
