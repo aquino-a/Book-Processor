@@ -364,6 +364,7 @@ public class BookWindowServiceImpl implements BookWindowService {
         AddEnglishLanguage(result, author);
         AddNativeLanguage(result, author);
         SetNativeLanguage(result, author);
+        author.setId(result);
         return result;
     }
 

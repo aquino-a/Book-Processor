@@ -7,6 +7,7 @@ package com.aquino.webParser;
 
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.model.Author;
+import com.aquino.webParser.model.AutoFillModel;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.*;
 
@@ -391,15 +393,13 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             File file = FileUtility.openFile(jPanel1);
             if(file == null)
                 return;
-            var updater = new ExcelUpdater(workbook);
-            Stream.of(bookRowContainer.getComponents())
+            var books = Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
                     .filter(br -> br.isSelected())
-                    .forEach(br ->{
-                        var afm = br.getAutoFillModel();
-                        updater.UpdateBook(afm.getBookPair().getLeft(), afm.getBookPair().getRight());
-                    });
+                    .map(br ->  br.getAutoFillModel().getBookPair())
+                    .collect(Collectors.toList());
+            autoFillService.updateBook(workbook, books);
 
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 workbook.write(fos);
