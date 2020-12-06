@@ -416,6 +416,8 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             closeWorkbook();
             textFileName.setText("");
             disableActions();
+            var bookRows = Stream.of(bookRowContainer.getComponents()).filter(c -> c instanceof BookRow).collect(Collectors.toList());
+            bookRows.forEach(br -> bookRowContainer.remove(br));
         } catch (IllegalArgumentException | NullPointerException | IOException e) {
             textConsole.setText(String.format("close fail: %s", e.getMessage()));
             e.printStackTrace();
