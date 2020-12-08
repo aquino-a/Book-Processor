@@ -100,12 +100,16 @@ public class AutoFillService {
         var author = new Author();
         author.setLanguage(language);
         if(language.equals(Language.Korean)){
-            var first = book.getAuthor().substring(0,1);
-            var last = book.getAuthor().substring(1,3);
             author.setNativeFirstName(book.getAuthor());
             author.setNativeLastName(book.getAuthor());
-            author.setEnglishFirstName(Romanizer.hangulToRoman(first));
-            author.setEnglishLastName(Romanizer.hangulToRoman(last));
+            if(!book.getAuthor().isBlank()){
+                var first = book.getAuthor().isBlank() ? book.getAuthor() : book.getAuthor().substring(0,1);
+                author.setEnglishFirstName(Romanizer.hangulToRoman(first));
+                if(book.getAuthor().length() > 1){
+                    var last = book.getAuthor().isBlank() ? book.getAuthor() : book.getAuthor().substring(1);
+                    author.setEnglishLastName(Romanizer.hangulToRoman(last));
+                }
+            }
         } else {
             author.setNativeFirstName(book.getAuthor());
         }

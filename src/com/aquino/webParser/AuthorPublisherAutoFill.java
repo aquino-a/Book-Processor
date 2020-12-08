@@ -329,6 +329,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
         try {
             File file = FileUtility.openFile(jPanel1);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             workbook = Connect.openExistingWorkbook(file);
             autoFillService.readBooks(workbook)
                     .stream()
@@ -345,6 +346,9 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
         } catch (IllegalArgumentException | NullPointerException | IOException e) {
             textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
         }
+        finally {
+            this.setCursor(null);
+        }
     });
 
     private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
@@ -354,6 +358,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             if(result != JOptionPane.OK_OPTION)
                 return;
 
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             Stream.of(bookRowContainer.getComponents())
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
@@ -367,6 +372,9 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 //            enableActions();
         } catch (IllegalArgumentException | NullPointerException e) {
             textConsole.setText(String.format("Auto Fill fail: %s", e.getMessage()));
+        }
+        finally {
+            this.setCursor(null);
         }
     });
 
