@@ -20,9 +20,12 @@ public class ExcelUpdater {
 
     public void UpdateBook(int rowNum, Book book){
         var row = sheet.getRow(rowNum);
-        row.getCell(locationMap.get("author") - 1).setCellValue(book.getAuthorId());
-        row.getCell(locationMap.get("author2") - 1).setCellValue(book.getAuthor2Id());
-        row.getCell(locationMap.get("publisher") -1).setCellValue(book.getPublisherId());
+        if(book.getAuthorId() > 0)
+            row.getCell(locationMap.get("author") - 1).setCellValue(book.getAuthorId());
+        if(book.getAuthor2Id() > 0)
+            row.getCell(locationMap.get("author2") - 1).setCellValue(book.getAuthor2Id());
+        if(book.getPublisherId() > 0)
+            row.getCell(locationMap.get("publisher") -1).setCellValue(book.getPublisherId());
     }
 
     public void setLocationMap(Map<String, Integer> locationMap) {
