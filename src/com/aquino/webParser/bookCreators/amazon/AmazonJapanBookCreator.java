@@ -45,7 +45,6 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final Pattern imageUrlScriptPattern = Pattern.compile(
             "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%\\-]+.jpg)");
 
-
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
 
@@ -282,6 +281,13 @@ public class AmazonJapanBookCreator implements BookCreator {
                 if(e.text().contains("ソフトカバー"))
                     return "PB";
             }
+            var ps = doc.getElementById("productSubtitle");
+            if(ps.wholeText().contains("単行本"))
+                return "HC";
+            if(ps.wholeText().contains("新書"))
+                return "PB";
+            if(ps.wholeText().contains("文庫"))
+                return "PB";
             return "";
         } catch (Exception e){
             logger.log(Level.WARNING, String.format("Couldn't no book type found: %s", e.getMessage()));
