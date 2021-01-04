@@ -357,6 +357,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(46, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Honya");
             book.getMiscellaneous().add(ei);
+            book.setDescription(honyaBook.getDescription());
         } catch (IOException e) {
             e.printStackTrace();
             return;

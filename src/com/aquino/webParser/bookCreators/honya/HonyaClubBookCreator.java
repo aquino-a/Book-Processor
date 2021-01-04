@@ -33,6 +33,14 @@ public class HonyaClubBookCreator implements BookCreator {
     public Book createBookFromBookPage(String bookPageUrl) throws IOException {
         Book book = new Book();
         book.setBookPageUrl(bookPageUrl);
+        Document doc = Connect.connectToURL(bookPageUrl);
+        if(doc == null)
+            throw new IOException(String.format("Document wasn't loaded: %s",bookPageUrl));
+        return fillInBasicData(book, doc);
+    }
+
+    private Book fillInBasicData(Book book, Document doc) {
+        book.setDescription(doc.getElementsByClass("detail-comment02").first().wholeText());
         return book;
     }
 
