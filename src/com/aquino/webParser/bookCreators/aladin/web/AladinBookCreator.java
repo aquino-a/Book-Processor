@@ -291,36 +291,56 @@ public class AladinBookCreator implements BookCreator {
         if(!imageCheck(book.getImageURL())){
             book.setImageURL("Problem with image");
         }
+        book.setDescription(parseDescription(book));
         scrapeLazyAuthor(book);
         book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
-        book.setDescription(parseDescription(book));
 
         return book;
 
     }
 
     private Book scrapeLazyAuthor(Book book) {
+        Map<String, String> map = new HashMap<>();
+        map.put("Referer", book.getBookPageUrl());
+
+        var doc = Connect.connectToURLwithHeaders(
+                createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
+        addPrizes(book, doc);
 
         if (book.getEnglishTitle() == "") {
             book.setAuthorOriginal("");
             return book;
         }
-
-        Map<String, String> map = new HashMap<>();
-        Document doc;
-
-        map.put("Referer", book.getLocationUrl());
-        doc = Connect.connectToURLwithHeaders(
-                createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
         book.setAuthorOriginal(findAuthorOriginal(doc));
         return book;
     }
 
+    private void addPrizes(Book book, Document doc) {
+        var prizeOption = doc.getElementsByClass("conts_info_list2").first()
+                .getElementsByTag("ul").first()
+                .children().stream()
+                .filter(e -> e.wholeText().contains("수상"))
+                .findFirst();
+        if(prizeOption.isEmpty())
+            return;
+
+        var sb = new StringBuilder(book.getDescription());
+        sb.append(System.lineSeparator());
+        sb.append(System.lineSeparator());
+        Arrays.stream(prizeOption.get()
+                .getElementsByClass("Ere_sub_blue")
+                .first().wholeText()
+                .trim().split(","))
+            .map(s -> s.trim())
+            .forEach(s -> { sb.append(s); sb.append(System.lineSeparator());});
+
+        book.setDescription(sb.toString());
+    }
+
     private String createLazyAuthorUrl(String details) {
-        return "https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN="
-                + details + "&name=AuthorInfo&type=0&date=11";
+        return String.format("https://www.aladin.co.kr/shop/product/getContents.aspx?ISBN=%s&name=AuthorInfo&type=0&date=13", details);
     }
 
     private String findAuthorOriginal(Document doc) {
