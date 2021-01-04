@@ -64,6 +64,7 @@ public class AladinBookCreator implements BookCreator {
         book.setOriginalPriceNumber(parsePrice(doc));
         book.setTitle(parseTitle(doc));
         book.setImageURL(parseImageUrl(doc));
+        book.setCategory(parseCategory(doc));
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
         book = setWeight(book);
@@ -150,6 +151,7 @@ public class AladinBookCreator implements BookCreator {
         return doc.getElementsByAttributeValueMatching(
                 "property", "og:image").attr("content");
     }
+
     private boolean imageCheck(String url){
         try {
             ImageIO.read(new URL(url));
@@ -157,6 +159,10 @@ public class AladinBookCreator implements BookCreator {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private String parseCategory(Document doc) {
+        return doc.getElementById("ulCategory").getElementsByTag("li").first().getElementsByTag("a").get(1).text();
     }
 
     private Book parseAuthorDetails(Book book, Document doc) {
