@@ -110,7 +110,7 @@ public class ExcelReader {
         if(cell == null)
             throw new NullPointerException("Not found");
 
-        var type = cell.getCellType();
+        var type = cell.getCellTypeEnum();
         switch (type)  {
             case STRING:
                 return Integer.parseInt(cell.getStringCellValue());
