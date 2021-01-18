@@ -343,7 +343,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                 closeWorkbook();
                 textConsole.setText("No data to change");
             }
-        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+        } catch (Exception e) {
             textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
         }
         finally {

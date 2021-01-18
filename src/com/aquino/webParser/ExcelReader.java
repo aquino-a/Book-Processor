@@ -57,29 +57,32 @@ public class ExcelReader {
         var authorCell = locationMap.get("author");
         var authorIdCell = authorCell - 1;
 
+        try {
+            var id = GetNum(row, authorIdCell);
+            book.setAuthorId(id);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, String.format("Problem with author id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
+        }
+
         var cell = row.getCell(authorCell);
         if(cell != null) {
             book.setAuthor(cell.getStringCellValue());
         }
         else logger.log(Level.WARNING, String.format("Problem with author. Isbn: %d", book.getIsbn()));
-
-        cell = row.getCell(authorIdCell);
-        if(cell != null)
-            book.setAuthorId((int)cell.getNumericCellValue());
-        else logger.log(Level.WARNING, String.format("Problem with author id. Isbn: %d", book.getIsbn()));
     }
 
     private void SetAuthor2(XSSFRow row, Book book) {
         var author2Cell = locationMap.get("author2");
         var author2IdCell = author2Cell - 1;
 
-        var cell = row.getCell(author2IdCell);
-        if(cell != null)
-            book.setAuthor2Id((int)cell.getNumericCellValue());
-        else logger.log(Level.WARNING, String.format("Problem with author2 id. Isbn: %d", book.getIsbn()));
+        try {
+            var id = GetNum(row, author2IdCell);
+            book.setAuthor2Id(id);
+        } catch (Exception e) {
+             logger.log(Level.WARNING, String.format("Problem with author2 id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
+        }
 
-
-        cell = row.getCell(author2Cell);
+        var cell = row.getCell(author2Cell);
         if(cell != null)
             book.setAuthor2(cell.getStringCellValue());
         else logger.log(Level.WARNING, String.format("Problem with author2. Isbn: %d", book.getIsbn()));
@@ -90,15 +93,32 @@ public class ExcelReader {
         var publisherCell = locationMap.get("publisher");
         var publisherIdCell = publisherCell - 1;
 
-        var cell = row.getCell(publisherIdCell);
-        if(cell != null)
-            book.setPublisherId((int)cell.getNumericCellValue());
-        else logger.log(Level.WARNING, String.format("Problem with publisher id. Isbn: %d", book.getIsbn()));
-
-        cell = row.getCell(publisherCell);
+        try {
+            var id = GetNum(row, publisherIdCell);
+            book.setPublisherId(id);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, String.format("Problem with author2 id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
+        }
+        var cell = row.getCell(publisherCell);
         if(cell != null)
             book.setPublisher(cell.getStringCellValue());
         else logger.log(Level.WARNING, String.format("Problem with publisher. Isbn: %d", book.getIsbn()));
+    }
+
+    private int GetNum(XSSFRow row, int cellNum){
+        var cell = row.getCell(cellNum);
+        if(cell == null)
+            throw new NullPointerException("Not found");
+
+        var type = cell.getCellType();
+        switch (type)  {
+            case STRING:
+                return Integer.parseInt(cell.getStringCellValue());
+            case NUMERIC:
+                return (int)cell.getNumericCellValue();
+            default:
+                throw new NullPointerException("Wrong cell type");
+        }
     }
 
     public void setStartRow(int startRow) {
