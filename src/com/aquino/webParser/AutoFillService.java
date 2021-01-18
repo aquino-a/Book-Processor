@@ -3,10 +3,12 @@ package com.aquino.webParser;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
 import com.aquino.webParser.romanization.Romanizer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -96,24 +98,41 @@ public class AutoFillService {
         return author;
     }
 
-    private Author CreateAuthor(Book book) {
+    public Author CreateAuthor(Book book) {
         var author = new Author();
         author.setLanguage(language);
-        if(language.equals(Language.Korean)){
-            author.setNativeFirstName(book.getAuthor());
-            author.setNativeLastName(book.getAuthor());
-            if(!book.getAuthor().isBlank()){
-                var first = book.getAuthor().isBlank() ? book.getAuthor() : book.getAuthor().substring(0,1);
-                author.setEnglishFirstName(Romanizer.hangulToRoman(first));
-                if(book.getAuthor().length() > 1){
-                    var last = book.getAuthor().isBlank() ? book.getAuthor() : book.getAuthor().substring(1);
-                    author.setEnglishLastName(Romanizer.hangulToRoman(last));
-                }
-            }
-        } else {
-            author.setNativeFirstName(book.getAuthor());
+        switch (language){
+            case Korean:
+                SetKoreanNames(author, book);
+            case Japanese:
+            default:
+                SetJapNames(author, book);
         }
         return author;
+    }
+
+    private void SetKoreanNames(Author author, Book book) {
+        author.setNativeFirstName(book.getAuthor());
+        author.setNativeLastName(book.getAuthor());
+
+        if(book.getAuthor().isBlank())
+            return;
+
+        var first = book.getAuthor().substring(0,1);
+        author.setEnglishFirstName(Romanizer.hangulToRoman(first));
+
+        if(book.getAuthor().length() > 1){
+
+            var last = Arrays.stream(book.getAuthor().substring(1)
+                    .split(""))
+                    .map(s ->  StringUtils.capitalize(Romanizer.hangulToRoman(s)) )
+                    .collect(Collectors.joining(" "));
+            author.setEnglishLastName(last);
+        }
+    }
+
+    private void SetJapNames(Author author, Book book) {
+        author.setNativeFirstName(book.getAuthor());
     }
 
     private Publisher CreatePublisher(Book book, Book wcBook) {
