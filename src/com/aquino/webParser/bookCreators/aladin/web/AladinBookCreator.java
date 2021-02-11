@@ -93,12 +93,12 @@ public class AladinBookCreator implements BookCreator {
     }
 
     private int parsePrice(Document doc) {
-        var originalPrice = doc.getElementsByClass("info_list").first().getElementsByClass("Ritem").first().text();
-        var sb = new StringBuilder(originalPrice);
-        sb.deleteCharAt(sb.length() - 1);
         try {
+            var originalPrice = doc.getElementsByClass("info_list").first().getElementsByClass("Ritem").first().text();
+            var sb = new StringBuilder(originalPrice);
+            sb.deleteCharAt(sb.length() - 1);
             return NumberFormat.getInstance(Locale.KOREA).parse(sb.toString()).intValue();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -162,17 +162,27 @@ public class AladinBookCreator implements BookCreator {
     }
 
     private String parseCategory(Document doc) {
-        return doc.getElementById("ulCategory").getElementsByTag("li").first().getElementsByTag("a").get(1).text();
+        try {
+            return doc.getElementById("ulCategory").getElementsByTag("li").first().getElementsByTag("a").get(1).text();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     private Book parseAuthorDetails(Book book, Document doc) {
-        String authorSection = doc.getElementsByClass("Ere_sub2_title").first().text();
 
-        book.setTranslator(FindTranslator(authorSection));
-        book.setEnglishTitle(FindOriginalTitle(authorSection));
-        book.setPublisher(FindPublisher(authorSection));
-        book.setPublishDateFormatted(formatDate(FindPublishDate(authorSection)));
-        SetAuthors(book, authorSection);
+        try {
+            String authorSection = doc.getElementsByClass("Ere_sub2_title").first().text();
+
+            book.setTranslator(FindTranslator(authorSection));
+            book.setEnglishTitle(FindOriginalTitle(authorSection));
+            book.setPublisher(FindPublisher(authorSection));
+            book.setPublishDateFormatted(formatDate(FindPublishDate(authorSection)));
+            SetAuthors(book, authorSection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return book;
     }
 
@@ -245,18 +255,22 @@ public class AladinBookCreator implements BookCreator {
     }
 
     private Book parseSecondDetailSection(Book book, Document doc) {
-        String bookDetailSection = doc.getElementsByClass("conts_info_list1").first().text();
-        var stringTokenizer = new StringTokenizer(bookDetailSection," ");
-        while(stringTokenizer.hasMoreTokens()){
-            String s = stringTokenizer.nextToken();
-            if(s.contains("반양장본"))
-                book.setCover("PB");
-            else if(s.contains("양장본"))
-                book.setCover("HC");
-            else if(s.contains("쪽"))
-                book.setPages(Integer.parseInt(s.substring(0,s.length()-1)));
-            else if(s.contains("m") || s.contains("*"))
-                book.setBookSizeFormatted(formatBookSize(s));
+        try {
+            String bookDetailSection = doc.getElementsByClass("conts_info_list1").first().text();
+            var stringTokenizer = new StringTokenizer(bookDetailSection," ");
+            while(stringTokenizer.hasMoreTokens()){
+                String s = stringTokenizer.nextToken();
+                if(s.contains("반양장본"))
+                    book.setCover("PB");
+                else if(s.contains("양장본"))
+                    book.setCover("HC");
+                else if(s.contains("쪽"))
+                    book.setPages(Integer.parseInt(s.substring(0,s.length()-1)));
+                else if(s.contains("m") || s.contains("*"))
+                    book.setBookSizeFormatted(formatBookSize(s));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return book;
     }
