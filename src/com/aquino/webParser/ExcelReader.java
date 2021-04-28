@@ -42,7 +42,7 @@ public class ExcelReader {
 
         try {
             book.setOclc((long) row.getCell(locationMap.get("oclc")).getNumericCellValue());
-        } catch (NullPointerException e) {
+        } catch (Exception  e) {
             book.setOclc(-1);
         }
 

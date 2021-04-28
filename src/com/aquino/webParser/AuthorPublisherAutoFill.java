@@ -344,6 +344,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                 textConsole.setText("No data to change");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
         }
         finally {
