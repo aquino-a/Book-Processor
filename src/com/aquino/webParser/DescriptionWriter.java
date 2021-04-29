@@ -5,15 +5,16 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.model.Book;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,9 +27,9 @@ public class DescriptionWriter {
     private static final Logger logger = Logger.getLogger(DescriptionWriter.class.getName());
     private String bookDescriptions = "";
     
-    public boolean writeBooks(Book[] books) {
+    public boolean writeBooks(List<Book> books) {
         StringBuilder sb = new StringBuilder(bookDescriptions);
-        for (Book book : books) { 
+        for (Book book : books) {
                 sb.append(String.format("%s%n%s%s%s%n%n%n%n",
                         book.getTitle(),originalTitle(book.getEnglishTitle())
                         ,originalAuthor(book.getAuthorOriginal()),

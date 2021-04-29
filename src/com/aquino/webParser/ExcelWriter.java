@@ -6,13 +6,18 @@
 package com.aquino.webParser;
 
 
-import com.aquino.webParser.romanization.Romanizer;
+import com.aquino.webParser.model.Book;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -47,61 +52,97 @@ public class ExcelWriter {
         }
     }
     private void writeEntry(int rowNumber, Book book) {
-        if(book.getDoc() == null) return;
         XSSFRow row = sheet.createRow(rowNumber);
         XSSFCellStyle isbnNumberFormat = workbook.createCellStyle();
         isbnNumberFormat.setDataFormat(workbook.createDataFormat().getFormat("#####"));
         XSSFCellStyle yellowBackground = workbook.createCellStyle();
         yellowBackground.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
         yellowBackground.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        if(book.getISBN() == -1) {
+        if(book.getIsbn() == -1) {
             row.createCell(0).setCellValue(book.getIsbnString());
             row.createCell(1).setCellValue(book.getIsbnString());
         } else {
-            row.createCell(0).setCellValue(book.getISBN());
+            row.createCell(0).setCellValue(book.getIsbn());
             row.getCell(0).setCellStyle(isbnNumberFormat);
-            row.createCell(1).setCellValue(book.getISBN());
+            row.createCell(1).setCellValue(book.getIsbn());
             row.getCell(1).setCellStyle(isbnNumberFormat);
         }
-        if(book.getOCLC() != -1)
-            row.createCell(3).setCellValue(book.getOCLC());
+        row.createCell(2).setHyperlink(createHyperLink(book.getBookPageUrl()));
+        row.getCell(2).setCellValue("Book page");
+        if(book.getOclc() != -1)
+            row.createCell(3).setCellValue(book.getOclc());
         if(!book.getEnglishTitle().equals(""))
             row.createCell(4).setCellValue(book.getEnglishTitle());
-        row.createCell(6).setCellValue(Romanizer.hangulToRoman(book.getTitle()));
+        row.createCell(6).setCellValue(book.getRomanizedTitle());
         row.createCell(7).setCellValue(book.getTitle());
-        if(Character.isDigit(book.getAuthor().charAt(0)))
-            row.createCell(9).setCellValue(Integer.parseInt(book.getAuthor()));
-        else row.createCell(9).setCellValue(book.getAuthor());
-        if(!book.getAuthor2().equals("")){
-            if(Character.isDigit(book.getAuthor2().charAt(0)))
-                row.createCell(10).setCellValue(Integer.parseInt(book.getAuthor2()));
-            else row.createCell(10).setCellValue(book.getAuthor2());
-        }
-        if (Character.isDigit(book.getPublisher().charAt(0)))
-            row.createCell(11).setCellValue(Integer.parseInt(book.getPublisher()));
-        else row.createCell(11).setCellValue(book.getPublisher());
-        row.createCell(12).setCellValue(book.getCategory());
+
+        row.createCell(9).setCellValue(book.getAuthorId());
+        row.createCell(10).setCellValue(book.getAuthor());
+        row.createCell(11).setCellValue(book.getAuthorBooks());
+
+        row.createCell(12).setCellValue(book.getAuthor2Id());
+        row.createCell(13).setCellValue(book.getAuthor2());
+        row.createCell(14).setCellValue(book.getAuthor2Books());
+
+        row.createCell(15).setCellValue(book.getPublisherId());
+        row.createCell(16).setCellValue(book.getPublisher());
+        row.createCell(17).setCellValue(book.getPublisherBooks());
+
+        row.createCell(18).setCellValue(book.getCategory());
         if(!book.getEnglishTitle().equals(""))
-            row.createCell(13).setCellValue(book.getAuthorOriginal());
-        row.createCell(15).setCellValue("Opes");
-        row.createCell(16).setCellValue("KOR");
-        row.createCell(19).setCellValue(book.getPublishDateFortmatted());
-        row.createCell(20).setCellValue("Won");
-        row.createCell(21).setCellValue(book.getOriginalPriceNumber());
+            row.createCell(19).setCellValue(book.getAuthorOriginal());
+        row.createCell(21).setCellValue(book.getVendorName());
+        row.createCell(22).setCellValue(book.getLanguageCode());
+        row.createCell(25).setCellValue(book.getPublishDateFormatted());
+        row.createCell(26).setCellValue(book.getCurrencyType());
+        row.createCell(27).setCellValue(book.getOriginalPriceNumber());
 //        row.getCell(21).setCellStyle(yellowBackground);
-        row.createCell(22).setCellValue(book.getImageUrl());
+        row.createCell(28).setCellValue(book.getImageURL());
+        row.getCell(28).setCellStyle(workbook.createCellStyle());
         if(!book.getTranslator().equals(""))
-            row.createCell(23).setCellValue(book.getTranslator());
-        row.createCell(26).setCellValue(book.getBookSizeFormatted());
-        row.createCell(27).setCellValue(book.getType());
-        row.createCell(28).setCellValue(book.getPages());
-        row.createCell(31).setCellValue(book.getWeight());
-        row.createCell(32).setCellValue("Books");
-        row.createCell(34).setCellValue(0);
-        row.createCell(35).setCellValue(1);
-        row.createCell(37).setCellValue(1);
-        row.createCell(38).setCellValue(0);
+            row.createCell(29).setCellValue(book.getTranslator());
+        row.createCell(30).setHyperlink(createHyperLink(book.getImageURL()));
+        row.getCell(30).setCellValue("Image");
+        row.createCell(32).setCellValue(book.getBookSizeFormatted());
+        row.createCell(33).setCellValue(book.getType());
+        row.createCell(34).setCellValue(book.getPages());
+        row.createCell(37).setCellValue(book.getWeight());
+        row.createCell(38).setCellValue("Books");
+        row.createCell(40).setCellValue(0);
+        row.createCell(41).setCellValue(1);
+        row.createCell(43).setCellValue(1);
+        row.createCell(44).setCellValue(0);
+        book.getMiscellaneous().forEach(ei -> {
+            if(ei.getColumnNumber() <= 44){
+                return;
+            }
+            switch (ei.getType()){
+                case HyperLink: {
+                    row.createCell(ei.getColumnNumber()).setHyperlink(createHyperLink(ei.getValue()));
+                    row.getCell(ei.getColumnNumber()).setCellValue(ei.getName());
+                }
+                break;
+                default: break;
+            }
+        });
     }
+
+    private boolean IsStringAllNum(String str) {
+        for (char c: str.toCharArray()) {
+            if(!Character.isDigit(c))
+                return false;
+        }
+        return true;
+    }
+
+    private Hyperlink createHyperLink(String imageURL) {
+        if(imageURL == null || imageURL.equals(""))
+            return null;
+        XSSFHyperlink result = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
+        result.setAddress(imageURL);
+        return result;
+    }
+
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
             logger.log(Level.INFO, "Saving file");
@@ -110,16 +151,16 @@ public class ExcelWriter {
             System.out.println(e.getMessage());
         }
     }
-    public void writeDemo(Book book) {
-        writeEntry(startRow, book);
+    public void writeDemo(Book oldBook) {
+        writeEntry(startRow, oldBook);
     }
-    private void writeEntries(Book[] books) {
+    private void writeEntries(List<Book> books) {
         int i = startRow;
         for (Book book : books) {
             writeEntry(i++, book);
         }
     }
-    public void writeBooks(Book[] books) {
+    public void writeBooks(List<Book> books) {
         retrieveStartRow();
         writeEntries(books);
     }

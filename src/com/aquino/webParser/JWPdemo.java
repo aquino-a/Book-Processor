@@ -9,10 +9,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.*;
+
+import com.aquino.webParser.bookCreators.BookCreatorType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -31,9 +30,15 @@ public class JWPdemo {
         
         
         
-        
+        ProcessorFactoryImpl processorFactory = new ProcessorFactoryImpl();
         java.awt.EventQueue.invokeLater(() ->
-                (new JWPUserInterface()).createAndShowGUI());
+        {
+            try {
+                (new JWPUserInterface(processorFactory,processorFactory.CreateBookCreator(BookCreatorType.AladinApi))).createAndShowGUI();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         
         
