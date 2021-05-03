@@ -89,10 +89,12 @@ public class ExcelWriter {
         row.createCell(17).setCellValue(book.getPublisherBooks());
 
         row.createCell(18).setCellValue(book.getCategory());
-        if(!book.getEnglishTitle().equals(""))
-            row.createCell(19).setCellValue(book.getAuthorOriginal());
         row.createCell(21).setCellValue(book.getVendorName());
         row.createCell(22).setCellValue(book.getLanguageCode());
+        if(!book.getEnglishTitle().equals("")){
+            row.createCell(19).setCellValue(book.getAuthorOriginal());
+            row.createCell(24).setCellValue(book.getAuthorOriginal());
+        }
         row.createCell(25).setCellValue(book.getPublishDateFormatted());
         row.createCell(26).setCellValue(book.getCurrencyType());
         row.createCell(27).setCellValue(book.getOriginalPriceNumber());
