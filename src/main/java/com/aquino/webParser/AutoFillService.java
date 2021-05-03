@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 
 public class AutoFillService {
 
-    private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
-
-
+    private static final Predicate<String> ID_REGEX =
+        Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
     private final BookCreator worldCatBookCreator;
     private final BookWindowService bookWindowService;
     private final Map<String, Integer> locationMap;
-
+    private Map<String, String> koreanLastNames;
     private Language language;
 
     public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService, Map<String, Integer> locationMap) {
@@ -33,23 +32,23 @@ public class AutoFillService {
         this.language = Language.Japanese;
     }
 
-    public List<AutoFillModel> readBooks(XSSFWorkbook workbook){
+    public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
         var reader = new ExcelReader(workbook);
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
-                .stream()
+            .stream()
 //                .filter(p -> !containsId(p.getRight().getAuthor()) || !containsId(p.getRight().getPublisher()))
 //                .filter(p -> p.getRight().getAuthorId() != -1 || p.getRight().getPublisherId() != -1)
-                .filter(p -> p.getRight().getAuthorId() == -1 && p.getRight().getAuthor() != null)
-                .map(p -> createAutoFillModel(p))
-                .filter(afm -> afm != null)
-                .collect(Collectors.toList());
+            .filter(p -> p.getRight().getAuthorId() == -1 && p.getRight().getAuthor() != null)
+            .map(p -> createAutoFillModel(p))
+            .filter(afm -> afm != null)
+            .collect(Collectors.toList());
     }
 
-    public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books){
+    public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books) {
         var updater = new ExcelUpdater(workbook);
         updater.setLocationMap(locationMap);
-        books.forEach(b ->{
+        books.forEach(b -> {
             updater.UpdateBook(b.getLeft(), b.getRight());
         });
     }
@@ -63,14 +62,16 @@ public class AutoFillService {
         try {
             var book = p.getRight();
             AutoFillModel afm;
-            if(book.getOclc() > 0){
+            if (book.getOclc() > 0) {
                 afm = getWorldCatModel(book);
-            } else{
+            }
+            else {
                 afm = getNoOclcModel(book);
             }
             afm.setBookPair(p);
             return afm;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -101,7 +102,7 @@ public class AutoFillService {
     public Author CreateAuthor(Book book) {
         var author = new Author();
         author.setLanguage(language);
-        switch (language){
+        switch (language) {
             case Korean:
                 SetKoreanNames(author, book);
             case Japanese:
@@ -111,22 +112,36 @@ public class AutoFillService {
         return author;
     }
 
+
+    /**
+     * Sets the korean name of the {@link Author} from the {@link Book}.
+     * Bookswindows puts the korean last name as the first name.
+     * The author's native first and last name are set as the full korean name.
+     *
+     * @param author the author to set the names of.
+     * @param book   the book to use to get the names.
+     */
     private void SetKoreanNames(Author author, Book book) {
         author.setNativeFirstName(book.getAuthor());
         author.setNativeLastName(book.getAuthor());
 
-        if(book.getAuthor().isBlank())
+        if (book.getAuthor().isBlank())
             return;
 
-        var first = book.getAuthor().substring(0,1);
-        author.setEnglishFirstName(Romanizer.hangulToRoman(first));
+        var first = book.getAuthor().substring(0, 1);
+        first = koreanLastNames.containsKey(first)
+            ? koreanLastNames.get(first)
+            : Romanizer.hangulToRoman(first);
 
-        if(book.getAuthor().length() > 1){
+        author.setEnglishFirstName(first);
+
+
+        if (book.getAuthor().length() > 1) {
 
             var last = Arrays.stream(book.getAuthor().substring(1)
-                    .split(""))
-                    .map(s ->  StringUtils.capitalize(Romanizer.hangulToRoman(s)) )
-                    .collect(Collectors.joining(" "));
+                .split(""))
+                .map(s -> StringUtils.capitalize(Romanizer.hangulToRoman(s)))
+                .collect(Collectors.joining(" "));
             author.setEnglishLastName(last);
         }
     }
@@ -136,7 +151,7 @@ public class AutoFillService {
     }
 
     private Publisher CreatePublisher(Book book, Book wcBook) {
-        if(containsId(book.getPublisher()))
+        if (containsId(book.getPublisher()))
             return null;
         var publisher = new Publisher();
         publisher.setLanguage(language);
@@ -146,28 +161,28 @@ public class AutoFillService {
     }
 
     private Author CreateAuthor(Book book, Book wcBook) {
-        if(containsId(book.getAuthor()))
+        if (containsId(book.getAuthor()))
             return null;
         var author = new Author();
         author.setLanguage(language);
         var split = book.getAuthor().split(" ");
         author.setNativeFirstName(split[0]);
-        if(split.length > 1)
+        if (split.length > 1)
             author.setNativeLastName(split[1]);
 
         split = wcBook.getAuthor().split(" ");
         author.setEnglishLastName(split[0]);
-        if(split.length > 1) {
+        if (split.length > 1) {
             author.setEnglishFirstName(split[1]);
         }
         return author;
     }
 
-    public int insertAuthor(Author author){
+    public int insertAuthor(Author author) {
         return bookWindowService.addAuthor(author);
     }
 
-    public int insertPublisher(Publisher publisher){
+    public int insertPublisher(Publisher publisher) {
         return bookWindowService.addPublisher(publisher);
     }
 
@@ -178,5 +193,9 @@ public class AutoFillService {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public void setKoreanLastNames(Map<String, String> koreanLastNames) {
+        this.koreanLastNames = koreanLastNames;
     }
 }

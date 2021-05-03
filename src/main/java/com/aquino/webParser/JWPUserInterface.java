@@ -5,47 +5,42 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
+import com.aquino.webParser.filters.CheckFilter;
+import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.oclc.OclcProgress;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
-import com.aquino.webParser.filters.CheckFilter;
 
+import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.*;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument;
 
 /**
- *
  * @author alex
  */
 public class JWPUserInterface extends JPanel {
-    
+
     private static final Logger logger = Logger.getLogger(JWPUserInterface.class.getName());
-    
-    private  JFrame frame;
+    private JFrame frame;
     private JButton addButton, saveButton;
-    private JPanel mainPanel,buttonPanel,checkPanel;
+    private JPanel mainPanel, buttonPanel, checkPanel;
     private JMenuBar menuBar;
     private JMenu file;
     private JTextArea textArea;
@@ -59,11 +54,102 @@ public class JWPUserInterface extends JPanel {
     private JMenu language;
     private OclcProgress oclcProgress;
     private NewLineFilter newLineFilter;
-
-    private ProcessorFactoryImpl processorFactory;
+    private final ProcessorFactoryImpl processorFactory;
     private DataType dataType = DataType.BookPage;
     private BookCreator bookCreator;
-    
+
+    private final DocumentListener addNewLine = Handlers.forDocumentUpdate((event) -> {
+        if (event.getLength() > 2) addNewLine();
+    });
+    private final Action clearText = Handlers.anonymousEventClass("Clear", (event) -> {
+        textArea.setText("");
+    });
+    private final Action saveAsAction = Handlers.anonymousEventClass("Save As", (event) -> {
+        try {
+            askSaveFile();
+            writer.saveFile(saveFile);
+            desWriter.saveBooks(saveFile);
+
+        }
+        catch (NullPointerException e) {
+            saveFile = null;
+        }
+    });
+    private final Action newAction = Handlers.anonymousEventClass("New", (event) -> {
+        writer = new ExcelWriter(Connect.newWorkbookFromTemplate());
+        setFileLabel("");
+        saveFile = null;
+        enableActions();
+    });
+    private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
+        try {
+            //if(saveFile == null) saveFile = FileUtility.saveLocation(mainPanel);
+            if (saveFile == null) askSaveFile();
+            writer.saveFile(saveFile);
+            desWriter.saveBooks(saveFile);
+            state.setText("Saved!");
+            timer.start();
+        }
+        catch (NullPointerException e) {
+            saveFile = null;
+        }
+    });
+    private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
+        try {
+            File file = FileUtility.openFile(mainPanel);
+            writer = new ExcelWriter(
+                Connect.openExistingWorkbook(file));
+            setFileLabel(file.getName());
+            setSaveFile(file);
+            enableActions();
+        }
+        catch (IllegalArgumentException | NullPointerException | FileNotFoundException e) {
+            writer = null;
+            state.setText("Open failed.");
+            timer.start();
+        }
+    });
+
+    private final Action scrapeBestOclc = Handlers.anonymousEventClass("Scrape BEST OCLCs", (event) -> {
+        getOclcWorker(Links.Type.BEST).execute();
+    });
+    private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) -> {
+        getOclcWorker(Links.Type.NEW).execute();
+    });
+    private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) -> {
+        openAutoFillTool();
+    });
+
+    private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
+        getAddWorker().execute();
+    });
+    private final Action useAction = Handlers.anonymousEventClass("Use", (event) -> {
+        textArea.append(checkedLink);
+    });
+    private final Action deleteState = Handlers.anonymousEventClass("", (event) -> {
+        state.setText("");
+    });
+    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AmazonJapan);
+            changeDataType(DataType.Isbn);
+            language.setText("Japanese");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    });
+    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AladinApi);
+            changeDataType(DataType.BookPage);
+            language.setText("Korean");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    });
+
     public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) throws IOException {
         this.processorFactory = processorFactory;
         this.bookCreator = defaultCreator;
@@ -79,30 +165,30 @@ public class JWPUserInterface extends JPanel {
         mainPanel = new JPanel();
         buttonPanel = new JPanel();
         checkPanel = new JPanel();
-        textArea = new JTextArea(37,35);
+        textArea = new JTextArea(37, 35);
         textArea.setLineWrap(true);
         newLineFilter = new NewLineFilter(dataType, bookCreator);
         ((AbstractDocument) textArea.getDocument()).
-                setDocumentFilter(newLineFilter);
+            setDocumentFilter(newLineFilter);
         addButton = new JButton(addAction);
         saveButton = new JButton(saveAction);
-        fileName = new JLabel("",SwingConstants.LEFT);
-        state = new JLabel("",SwingConstants.RIGHT);
-        
+        fileName = new JLabel("", SwingConstants.LEFT);
+        state = new JLabel("", SwingConstants.RIGHT);
+
         //Textfield checker
         checkField = new JTextField(25);
-        ((AbstractDocument)checkField.getDocument()).
-                setDocumentFilter(new CheckFilter(new Consumer() {
-            @Override
-            public void accept(Object t) {
-                checkedLink = (String) t;
-            }
-        }, frame, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
-        
+        ((AbstractDocument) checkField.getDocument()).
+            setDocumentFilter(new CheckFilter(new Consumer() {
+                @Override
+                public void accept(Object t) {
+                    checkedLink = (String) t;
+                }
+            }, frame, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
+
         //timer for state
         timer = new Timer(2000, deleteState);
         timer.setRepeats(true);
-        
+
         //menu
         menuBar = new JMenuBar();
         file = new JMenu("File");
@@ -123,7 +209,7 @@ public class JWPUserInterface extends JPanel {
         menuBar.add(tools);
         menuBar.add(language);
         //panel
-        mainPanel.add(new JScrollPane(textArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+        mainPanel.add(new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
         buttonPanel.add(fileName);
         buttonPanel.add(addButton);
         buttonPanel.add(saveButton);
@@ -134,57 +220,21 @@ public class JWPUserInterface extends JPanel {
         this.add(checkPanel);
         this.add(buttonPanel);
         this.add(mainPanel);
-        
-        
+
+
         //states
         saveAction.setEnabled(false);
         saveAsAction.setEnabled(false);
         addAction.setEnabled(false);
-        
-        
-        
+
+
     }
-
-    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
-        try {
-            changeBookCreator(BookCreatorType.AmazonJapan);
-            changeDataType(DataType.Isbn);
-            language.setText("Japanese");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    });
-
-    private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
-        try {
-            changeBookCreator(BookCreatorType.AladinApi);
-            changeDataType(DataType.BookPage);
-            language.setText("Korean");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    });
-
-    private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
-        getAddWorker().execute();
-    });
-
-    private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) ->{
-        getOclcWorker(Links.Type.NEW).execute();
-    });
-
-    private final Action scrapeBestOclc = Handlers.anonymousEventClass("Scrape BEST OCLCs", (event) ->{
-        getOclcWorker(Links.Type.BEST).execute();
-    });
-
-    private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) ->{
-        openAutoFillTool();
-    });
 
     private void openAutoFillTool() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                var autoFillTool = new AuthorPublisherAutoFill(new AutoFillService(new WorldCatBookCreator(), processorFactory.CreateWindowService(), excelMap));
+                var autoFillTool = new AuthorPublisherAutoFill(
+                    processorFactory.GetAutoFillService());
                 autoFillTool.setSize(1400, 600);
                 autoFillTool.setLocationRelativeTo(null);
                 autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -192,73 +242,6 @@ public class JWPUserInterface extends JPanel {
             }
         });
     }
-
-    private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
-        try {
-            //if(saveFile == null) saveFile = FileUtility.saveLocation(mainPanel);
-            if(saveFile == null) askSaveFile();
-            writer.saveFile(saveFile);
-            desWriter.saveBooks(saveFile);
-            state.setText("Saved!");
-            timer.start();
-        } catch (NullPointerException e) {
-            saveFile = null;
-        }
-    });
-
-    private final Action saveAsAction = Handlers.anonymousEventClass("Save As", (event) ->{
-        try {
-            askSaveFile();
-            writer.saveFile(saveFile);
-            desWriter.saveBooks(saveFile);
-
-        } catch (NullPointerException e) {
-            saveFile = null;
-        }
-    });
-
-    private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
-        try {
-            File file = FileUtility.openFile(mainPanel);
-            writer = new ExcelWriter(
-                Connect.openExistingWorkbook(file));
-            setFileLabel(file.getName());
-            setSaveFile(file);
-            enableActions();
-        } catch (IllegalArgumentException | NullPointerException | FileNotFoundException e) {
-            writer = null;
-            state.setText("Open failed.");
-            timer.start();
-        }
-    });
-
-    private final Action newAction = Handlers.anonymousEventClass("New", (event) -> {
-        writer = new ExcelWriter(Connect.newWorkbookFromTemplate());
-        setFileLabel("");
-        saveFile = null;
-        enableActions();
-    });
-    private final Action clearText = Handlers.anonymousEventClass("Clear", (event) -> {
-        textArea.setText("");
-    });
-    private final Action deleteState = Handlers.anonymousEventClass("", (event) -> {
-        state.setText("");
-    });
-    private final Action useAction = Handlers.anonymousEventClass("Use", (event) -> {
-        textArea.append(checkedLink);
-    });
-
-    private final DocumentListener addNewLine = Handlers.forDocumentUpdate((event) -> {
-        if(event.getLength() > 2 ) addNewLine();
-    });
-
-    private final Map<String, Integer> excelMap = Stream.of(new Object[][] {
-        { "isbn", 0 },
-        { "oclc", 3 },
-        { "author", 10 },
-        { "author2", 13 },
-        { "publisher", 16 }
-    }).collect(Collectors.toMap(data -> (String) data[0],  data -> (int) data[1]));
 
     public void createAndShowGUI() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -271,10 +254,11 @@ public class JWPUserInterface extends JPanel {
         //pack
         frame.pack();
         frame.setLocation((int)
-                java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().
-                        getMaximumWindowBounds().getWidth()-frame.getWidth(), 0);
+            java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().
+                getMaximumWindowBounds().getWidth() - frame.getWidth(), 0);
         frame.setVisible(true);
     }
+
     private void enableActions() {
         scrapeOclc.setEnabled(true);
         scrapeBestOclc.setEnabled(true);
@@ -284,19 +268,24 @@ public class JWPUserInterface extends JPanel {
         newAction.setEnabled(true);
         addAction.setEnabled(true);
     }
-    private void askSaveFile() throws NullPointerException{
+
+    private void askSaveFile() throws NullPointerException {
         setSaveFile(FileUtility.saveLocation(mainPanel));
         setFileLabel(saveFile.getName());
     }
+
     private void setSaveFile(File file) {
         saveFile = file;
     }
+
     private void setFileLabel(String openedFileName) {
         fileName.setText(openedFileName);
     }
+
     private void setStateLabel(String state) {
         this.state.setText(state);
     }
+
     private void disableActions() {
         scrapeOclc.setEnabled(false);
         scrapeBestOclc.setEnabled(false);
@@ -308,24 +297,26 @@ public class JWPUserInterface extends JPanel {
     }
 
     private SwingWorker getAddWorker() {
-        return new SwingWorker<Void,Void>() {
+        return new SwingWorker<Void, Void>() {
             @Override
             public Void doInBackground() {
                 try {
                     disableActions();
 //                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
-                    if(textArea.getText().trim().equals(""))
+                    if (textArea.getText().trim().equals(""))
                         return null;
                     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     List<Book> books = fetchBooks();
                     writer.writeBooks(books);
                     desWriter.writeBooks(books);
-                } catch (Exception e ) {
+                }
+                catch (Exception e) {
                     logger.log(Level.SEVERE, "Problem adding.");
                     e.printStackTrace();
                 }
                 return null;
             }
+
             @Override
             public void done() {
                 frame.setCursor(null);
@@ -338,7 +329,7 @@ public class JWPUserInterface extends JPanel {
 
     private List<Book> fetchBooks() throws IOException {
         List<Book> books = null;
-        if(dataType == DataType.BookPage)
+        if (dataType == DataType.BookPage)
             books = bookCreator.bookListFromLink(textArea.getText());
         else if (dataType == DataType.Isbn)
             books = GetBookListFromIsbns(textArea.getText());
@@ -349,15 +340,15 @@ public class JWPUserInterface extends JPanel {
     private List<Book> GetBookListFromIsbns(String text) {
         List<Book> list = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(text);
-        while(st.hasMoreTokens()) {
+        while (st.hasMoreTokens()) {
             String isbn = st.nextToken();
             try {
                 Book book = bookCreator.createBookFromIsbn(isbn);
-                if(book.getIsbn() == 0)
+                if (book.getIsbn() == 0)
                     throw new Exception(String.format("ISBN is 0"));
                 list.add(book);
             }
-            catch (Exception e){
+            catch (Exception e) {
                 JOptionPane.showMessageDialog(frame, String.format("Problem with isbn: %s", isbn));
                 logger.log(Level.SEVERE, String.format("Problem with isbn: %s", isbn));
                 logger.log(Level.SEVERE, e.getMessage());
@@ -368,29 +359,30 @@ public class JWPUserInterface extends JPanel {
     }
 
     private SwingWorker getOclcWorker(Links.Type type) {
-        return new SwingWorker<Void,Void>() {
+        return new SwingWorker<Void, Void>() {
             @Override
             public Void doInBackground() {
                 try {
                     disableActions();
                     Links.setType(type);
                     OCLCChecker checker = new OCLCChecker(processorFactory.CreateBookCreator(BookCreatorType.AladinApi));
-                    if(oclcProgress == null)
+                    if (oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
                     checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
                     logger.log(Level.INFO, "Done scraping for oclc numbers.");
                 }
-                catch(IOException ex){
-                    JOptionPane.showMessageDialog(frame,"Reached end of pages", "Done",JOptionPane.INFORMATION_MESSAGE);
+                catch (IOException ex) {
+                    JOptionPane.showMessageDialog(frame, "Reached end of pages", "Done", JOptionPane.INFORMATION_MESSAGE);
                 }
-                catch (Exception e ) {
+                catch (Exception e) {
                     Logger.getLogger("oclc").log(Level.SEVERE, "oclc problems");
-                    JOptionPane.showMessageDialog(frame,"Error occured during oclc scraping", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Error occured during oclc scraping", "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                 }
                 return null;
             }
+
             @Override
             public void done() {
                 state.setText("Done scraping!");
@@ -399,11 +391,13 @@ public class JWPUserInterface extends JPanel {
             }
         };
     }
+
     private void addNewLine() {
-        SwingUtilities.invokeLater( () -> {
+        SwingUtilities.invokeLater(() -> {
             textArea.append(System.lineSeparator());
         });
     }
+
     private void setCheckField(String str) {
         checkField.setText(str);
     }
@@ -418,15 +412,4 @@ public class JWPUserInterface extends JPanel {
         newLineFilter.setDataType(dataType);
 
     }
-    
-    
-
-
-    
-
-  
-    
-    
-    
-    
 }
