@@ -25,6 +25,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -233,12 +234,16 @@ public class JWPUserInterface extends JPanel {
     private void openAutoFillTool() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                var autoFillTool = new AuthorPublisherAutoFill(
-                    processorFactory.GetAutoFillService());
-                autoFillTool.setSize(1400, 600);
-                autoFillTool.setLocationRelativeTo(null);
-                autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                autoFillTool.setVisible(true);
+                try {
+                    var autoFillTool = new AuthorPublisherAutoFill(
+                        processorFactory.GetAutoFillService());
+                    autoFillTool.setSize(1400, 600);
+                    autoFillTool.setLocationRelativeTo(null);
+                    autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    autoFillTool.setVisible(true);
+                } catch (URISyntaxException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

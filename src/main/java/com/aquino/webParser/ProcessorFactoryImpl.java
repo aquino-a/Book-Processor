@@ -13,6 +13,9 @@ import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -33,16 +36,13 @@ public class ProcessorFactoryImpl {
         {"publisher", 16}
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (int) data[1]));
 
+    private final HashMap<BookCreatorType, BookCreator> bookCreatorHashMap = new HashMap<>();
+
     /**
      * A map containing the most common Korean last names and their transliteration.
      */
-    private static final Map<String, String> KOREAN_LAST_NAMES = Map.of(
-        "이", "Lee",
-        "김", "Kim"
-    );
-
+    private Map<String, String> koreanLastNames;
     private BookWindowService bookWindowService;
-    private final HashMap<BookCreatorType, BookCreator> bookCreatorHashMap = new HashMap<>();
     private OclcService oclcService;
     private ObjectMapper mapper;
     private String aladinApiKey;
@@ -107,12 +107,24 @@ public class ProcessorFactoryImpl {
         return BOOK_PROPERTY_EXCEL_MAP;
     }
 
-    public AutoFillService GetAutoFillService() {
+    public AutoFillService GetAutoFillService() throws IOException, URISyntaxException {
         var autoFillService = new AutoFillService(
             new WorldCatBookCreator(),
             this.CreateWindowService(),
             this.GetExcelMap());
-        autoFillService.setKoreanLastNames(KOREAN_LAST_NAMES);
+        autoFillService.setKoreanLastNames(GetKoreanLastNames());
         return autoFillService;
+    }
+
+    public Map<String, String> GetKoreanLastNames() throws URISyntaxException, IOException {
+        if (koreanLastNames == null) {
+            var lastNamesUrl = this.getClass().getClassLoader()
+                .getResource("korean-last-names.csv");
+            koreanLastNames = Files.lines(Path.of(lastNamesUrl.toURI()))
+                .map(name -> name.split(","))
+                .filter(array -> array.length == 2)
+                .collect(Collectors.toMap(array -> array[0], array -> array[1]));
+        }
+        return koreanLastNames;
     }
 }
