@@ -1,9 +1,9 @@
 package com.aquino.webParser.bookCreators.aladin.web;
 
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.bookCreators.DocumentCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.oclc.OclcService;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +13,6 @@ import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -21,6 +20,7 @@ import java.util.Arrays;
 @RunWith(Parameterized.class)
 public class AladinBookCreatorTest {
 
+    private static final DocumentCreator DOCUMENT_CREATOR = new DocumentCreator(AladinBookCreatorTest.class);
     private final Document doc;
     private final Book expected;
     @Mock
@@ -37,9 +37,9 @@ public class AladinBookCreatorTest {
     public static Iterable<Object[]> bookData() throws IOException, URISyntaxException {
         return Arrays.asList(
             new Object[][]{
-                {createDocument("future.html"), createFutureBookTest() },
-                {createDocument("rural-setting.html"), createRuralSettingsBookTest() },
-                {createDocument("social.html"), createSocialBookTest() },
+                {DOCUMENT_CREATOR.createDocument("future.html"), createFutureBookTest() },
+                {DOCUMENT_CREATOR.createDocument("rural-setting.html"), createRuralSettingsBookTest() },
+                {DOCUMENT_CREATOR.createDocument("social.html"), createSocialBookTest() },
             }
         );
     }
@@ -113,26 +113,6 @@ public class AladinBookCreatorTest {
         book.setTranslator("");
         book.setEnglishTitle("");
         return book;
-    }
-
-
-    /**
-     * Creates a {@link Document} for testing.
-     * The file should be located in the same package as the test class.
-     *
-     * @param fileName the name of the file to test.
-     * @return
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    private static Document createDocument(String fileName) throws URISyntaxException, IOException {
-        var url = AladinBookCreatorTest.class.getResource(fileName);
-        if(url == null){
-            throw new IllegalArgumentException(
-                String.format("File doesn't exist or path is wrong: %s", fileName));
-        }
-        File f = new File(url.toURI());
-        return Jsoup.parse(f, "UTF-8");
     }
 
     @Before
