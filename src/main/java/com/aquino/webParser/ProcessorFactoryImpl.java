@@ -123,7 +123,7 @@ public class ProcessorFactoryImpl {
             koreanLastNames = Files.lines(Path.of(lastNamesUrl.toURI()))
                 .map(name -> name.split(","))
                 .filter(array -> array.length == 2)
-                .collect(Collectors.toMap(array -> array[0], array -> array[1]));
+                .collect(Collectors.toMap(array -> array[0].strip(), array -> array[1].strip()));
         }
         return koreanLastNames;
     }
