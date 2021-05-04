@@ -7,11 +7,14 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class HonyaClubBookCreator implements BookCreator {
 
     private static final String HONYA_CLUB_URL = "https://www.honyaclub.com";
-    private static final String SEARCH_URL_FORMAT = "https://www.honyaclub.com/shop/goods/search.aspx?cat_p=&search=x&keyw=%s";
+    private static final String SEARCH_URL_FORMAT =
+        "https://www.honyaclub.com/shop/goods/search.aspx?cat_p=&search=x&keyw=%s";
+    private static final Pattern PRICE_PATTERN = Pattern.compile("([\\d,]+)円");
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
@@ -39,9 +42,20 @@ public class HonyaClubBookCreator implements BookCreator {
         return fillInBasicData(book, doc);
     }
 
-    private Book fillInBasicData(Book book, Document doc) {
+    public Book fillInBasicData(Book book, Document doc) {
         book.setDescription(doc.getElementsByClass("detail-comment02").first().wholeText());
+        book.setOriginalPriceNumber(parsePrice(doc));
         return book;
+    }
+
+    private int parsePrice(Document doc) {
+        var priceSection = doc.select("dl.item-price")
+            .first().wholeText();
+        var priceMatcher = PRICE_PATTERN.matcher(priceSection);
+        if(priceMatcher.find()){
+            return Integer.parseInt(priceMatcher.group(1).strip().replace(",", ""));
+        }
+        return -1;
     }
 
     @Override
