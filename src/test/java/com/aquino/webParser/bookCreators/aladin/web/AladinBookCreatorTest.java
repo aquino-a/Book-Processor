@@ -1,6 +1,7 @@
 package com.aquino.webParser.bookCreators.aladin.web;
 
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.bookCreators.BasicBookCreatorTest;
 import com.aquino.webParser.bookCreators.DocumentCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.oclc.OclcService;
@@ -18,20 +19,20 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 
 @RunWith(Parameterized.class)
-public class AladinBookCreatorTest {
+public final class AladinBookCreatorTest extends BasicBookCreatorTest {
 
     private static final DocumentCreator DOCUMENT_CREATOR = new DocumentCreator(AladinBookCreatorTest.class);
-    private final Document doc;
-    private final Book expected;
+
     @Mock
     BookWindowService bookWindowService;
     @Mock
     OclcService oclcService;
     private AladinBookCreator bookCreator;
+
     public AladinBookCreatorTest(Document doc, Book expected) {
-        this.doc = doc;
-        this.expected = expected;
+        super(doc, expected);
     }
+
 
     @Parameterized.Parameters(name = "{index}: {1}")
     public static Iterable<Object[]> bookData() throws IOException, URISyntaxException {
