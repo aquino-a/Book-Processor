@@ -3,26 +3,53 @@ package com.aquino.webParser;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import java.util.Map;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
-import static org.junit.Assert.*;
-
+@RunWith(Parameterized.class)
 public class AutoFillServiceTest {
+
+    private final String koreanName, englishLast, englishFirst;
+    private AutoFillService autoFillService;
+
+    public AutoFillServiceTest(String koreanName, String englishLast, String englishFirst) {
+        this.koreanName = koreanName;
+        this.englishLast = englishLast;
+        this.englishFirst = englishFirst;
+    }
+
+    @Parameterized.Parameters(name = "{index}: {0}-{1}")
+    public static Iterable<Object[]> authorData() throws IOException, URISyntaxException {
+        return Arrays.asList(
+            new Object[][]{
+                {"이장무", "Lee", "Jang Mu"},
+                {"김정은", "Kim", "Jeong Un"},
+            }
+        );
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        var factory = new ProcessorFactoryImpl();
+
+        this.autoFillService = new AutoFillService(null, null, null);
+        this.autoFillService.setLanguage(Language.Korean);
+        this.autoFillService.setKoreanLastNames(factory.GetKoreanLastNames());
+    }
 
     @Test
     public void createAuthor() {
-        var afs = new AutoFillService(null, null, null);
-        afs.setLanguage(Language.Korean);
-        afs.setKoreanLastNames(Map.of("이","Lee"));
+        var book = new Book();
+        book.setAuthor(this.koreanName);
+        var a = this.autoFillService.CreateAuthor(book);
 
-        var b = new Book();
-        b.setAuthor("이장무");
-        var a = afs.CreateAuthor(b);
-
-        Assert.assertEquals("Lee", a.getEnglishFirstName());
-        Assert.assertEquals("Jang Mu", a.getEnglishLastName());
-
+        Assert.assertEquals(this.englishLast, a.getEnglishFirstName());
+        Assert.assertEquals(this.englishFirst, a.getEnglishLastName());
     }
 }
