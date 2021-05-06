@@ -29,7 +29,7 @@ public class AutoFillServiceTest {
         return Arrays.asList(
             new Object[][]{
                 {"이장무", "Lee", "Jang Mu"},
-                {"김정은", "Kim", "Jeong Un"},
+                {"김정은", "Kim", "Jeong Eun"},
             }
         );
     }
