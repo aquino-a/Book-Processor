@@ -13,6 +13,6 @@ public class JapaneseAuthorStrategyIntegratedTest {
         var book = new Book();
         book.setAuthor("ハンス・ロスリング");
         var result = strategy.createAuthor(book);
-        Assert.assertEquals("hansu rosurin gu", result.getEnglishLastName());
+        Assert.assertEquals("Hansu Rosurin Gu", result.getEnglishLastName());
     }
 }

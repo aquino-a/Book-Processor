@@ -4,10 +4,13 @@ import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class JapaneseAuthorStrategy implements AuthorStrategy {
 
@@ -28,7 +31,11 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
 
     private void SetJapNames(Author author, Book book) {
         try {
-            author.setEnglishLastName(AmazonJapanBookCreator.RomanizeJapanese(book.getAuthor()));
+            var split = StringUtils.split(AmazonJapanBookCreator.RomanizeJapanese(book.getAuthor()));
+            var romanized = Arrays.stream(split)
+                .map(word -> StringUtils.capitalize(word))
+                .collect(Collectors.joining(" "));
+            author.setEnglishLastName(romanized);
         }
         catch (IOException e) {
             //Don't set if fails.
