@@ -5,9 +5,9 @@
  */
 package com.aquino.webParser;
 
+import com.aquino.webParser.autofill.AuthorPublisherAutoFill;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
-import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.filters.CheckFilter;
 import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.model.Book;

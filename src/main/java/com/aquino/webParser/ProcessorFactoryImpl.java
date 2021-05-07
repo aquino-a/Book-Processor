@@ -1,5 +1,6 @@
 package com.aquino.webParser;
 
+import com.aquino.webParser.autofill.AutoFillService;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.bookCreators.aladin.web.AladinBookCreator;

@@ -1,5 +1,7 @@
-package com.aquino.webParser;
+package com.aquino.webParser.autofill;
 
+import com.aquino.webParser.ProcessorFactoryImpl;
+import com.aquino.webParser.autofill.AutoFillService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.junit.Assert;

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser;
+package com.aquino.webParser.autofill;
 
+import com.aquino.webParser.Handlers;
 import com.aquino.webParser.model.AutoFillModel;
 
 import java.awt.*;

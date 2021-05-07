@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser;
+package com.aquino.webParser.autofill;
 
-import com.aquino.webParser.bookCreators.BookCreatorType;
+import com.aquino.webParser.Handlers;
 import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.AutoFillModel;
-import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;

@@ -1,5 +1,8 @@
-package com.aquino.webParser;
+package com.aquino.webParser.autofill;
 
+import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.ExcelReader;
+import com.aquino.webParser.ExcelUpdater;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
 import com.aquino.webParser.romanization.Romanizer;
@@ -23,13 +26,13 @@ public class AutoFillService {
     private final BookWindowService bookWindowService;
     private final Map<String, Integer> locationMap;
     private Map<String, String> koreanLastNames;
-    private Language language;
+    private AuthorStrategy authorStrategy;
 
     public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService, Map<String, Integer> locationMap) {
         this.worldCatBookCreator = worldCatBookCreator;
         this.bookWindowService = bookWindowService;
         this.locationMap = locationMap;
-        this.language = Language.Japanese;
+        this.authorStrategy = getAuthorStrategy(Language.Japanese);
     }
 
     public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
@@ -94,22 +97,23 @@ public class AutoFillService {
 
     private Publisher CreatePublisher(Book book) {
         var author = new Publisher();
-        author.setLanguage(language);
+        author.setLanguage(authorStrategy.getLanguage());
         author.setNativeName(book.getPublisher());
         return author;
     }
 
     public Author CreateAuthor(Book book) {
-        var author = new Author();
-        author.setLanguage(language);
-        switch (language) {
-            case Korean:
-                SetKoreanNames(author, book);
-            case Japanese:
-            default:
-                SetJapNames(author, book);
-        }
-        return author;
+        return authorStrategy.createAuthor(book);
+//        var author = new Author();
+//        author.setLanguage(language);
+//        switch (language) {
+//            case Korean:
+//                SetKoreanNames(author, book);
+//            case Japanese:
+//            default:
+//                SetJapNames(author, book);
+//        }
+//        return author;
     }
 
 
@@ -154,7 +158,7 @@ public class AutoFillService {
         if (containsId(book.getPublisher()))
             return null;
         var publisher = new Publisher();
-        publisher.setLanguage(language);
+        publisher.setLanguage(authorStrategy.getLanguage());
         publisher.setEnglishName(wcBook.getPublisher());
         publisher.setNativeName(book.getPublisher());
         return publisher;
@@ -164,7 +168,7 @@ public class AutoFillService {
         if (containsId(book.getAuthor()))
             return null;
         var author = new Author();
-        author.setLanguage(language);
+        author.setLanguage(authorStrategy.getLanguage());
         var split = book.getAuthor().split(" ");
         author.setNativeFirstName(split[0]);
         if (split.length > 1)
@@ -192,10 +196,49 @@ public class AutoFillService {
     }
 
     public void setLanguage(Language language) {
-        this.language = language;
+        this.authorStrategy = getAuthorStrategy(language);
     }
 
     public void setKoreanLastNames(Map<String, String> koreanLastNames) {
         this.koreanLastNames = koreanLastNames;
+    }
+
+    private AuthorStrategy getAuthorStrategy(Language language) {
+        switch (language){
+            case Korean: return new KoreanAuthorStrategy();
+            case Japanese:
+            default: return new JapaneseAuthorStrategy();
+        }
+    }
+
+    private static final class KoreanAuthorStrategy implements AuthorStrategy {
+
+        @Override
+        public Author createAuthor(Book book) {
+            return null;
+        }
+
+        @Override
+        public Language getLanguage() {
+            return Language.Korean;
+        }
+    }
+
+    private static final class JapaneseAuthorStrategy implements AuthorStrategy {
+
+        @Override
+        public Author createAuthor(Book book) {
+            return null;
+        }
+
+        @Override
+        public Language getLanguage() {
+            return Language.Japanese;
+        }
+    }
+
+    private static interface AuthorStrategy{
+        Author createAuthor(Book book);
+        Language getLanguage();
     }
 }
