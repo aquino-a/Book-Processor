@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -114,8 +115,8 @@ public class ProcessorFactoryImpl {
 
     private Map<Language, AuthorStrategy> getAuthorStrategies() throws IOException, URISyntaxException {
         return Map.of(
-          Language.Korean, new KoreanAuthorStrategy(GetKoreanLastNames()),
-          Language.Japanese, new JapaneseAuthorStrategy()
+            Language.Korean, new KoreanAuthorStrategy(GetKoreanLastNames()),
+            Language.Japanese, new JapaneseAuthorStrategy()
         );
     }
 
@@ -126,8 +127,17 @@ public class ProcessorFactoryImpl {
             koreanLastNames = Files.lines(Path.of(lastNamesUrl.toURI()))
                 .map(name -> name.split(","))
                 .filter(array -> array.length == 2)
-                .collect(Collectors.toMap(array -> array[0].strip(), array -> array[1].strip()));
+                .collect(Collectors.toMap(array -> stripBom(array[0].strip()), array -> array[1].strip()));
         }
         return koreanLastNames;
+    }
+
+    private String stripBom(String text) {
+        byte[] bytes = text.getBytes();
+        if (bytes[0] == (byte) 0xef && bytes[1] == (byte) 0xbb && bytes[2] == (byte) 0xbf) // BOM
+        {
+            return new String(Arrays.copyOfRange(bytes, 3, bytes.length));
+        }
+        return text;
     }
 }
