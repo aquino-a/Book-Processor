@@ -30,6 +30,7 @@ public class AutoFillServiceTest {
             new Object[][]{
                 {"이장무", "Lee", "Jang Mu"},
                 {"김정은", "Kim", "Jeong Eun"},
+                {"박근혜", "Park", "Geun Hye"},
             }
         );
     }
