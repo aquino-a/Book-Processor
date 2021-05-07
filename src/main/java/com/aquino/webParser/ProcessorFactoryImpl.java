@@ -1,6 +1,9 @@
 package com.aquino.webParser;
 
+import com.aquino.webParser.autofill.AuthorStrategy;
 import com.aquino.webParser.autofill.AutoFillService;
+import com.aquino.webParser.autofill.JapaneseAuthorStrategy;
+import com.aquino.webParser.autofill.KoreanAuthorStrategy;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.bookCreators.aladin.web.AladinBookCreator;
@@ -9,6 +12,7 @@ import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,9 +116,15 @@ public class ProcessorFactoryImpl {
         var autoFillService = new AutoFillService(
             new WorldCatBookCreator(),
             this.CreateWindowService(),
-            this.GetExcelMap());
-        autoFillService.setKoreanLastNames(GetKoreanLastNames());
+            this.GetExcelMap(), getAuthorStrategies());
         return autoFillService;
+    }
+
+    private Map<Language, AuthorStrategy> getAuthorStrategies() throws IOException, URISyntaxException {
+        return Map.of(
+          Language.Korean, new KoreanAuthorStrategy(GetKoreanLastNames()),
+          Language.Japanese, new JapaneseAuthorStrategy()
+        );
     }
 
     public Map<String, String> GetKoreanLastNames() throws URISyntaxException, IOException {

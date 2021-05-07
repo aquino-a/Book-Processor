@@ -1,7 +1,6 @@
 package com.aquino.webParser.autofill;
 
 import com.aquino.webParser.ProcessorFactoryImpl;
-import com.aquino.webParser.autofill.AutoFillService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.junit.Assert;
@@ -13,6 +12,7 @@ import org.junit.runners.Parameterized;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Tests the romanization of the korean authors' names.
@@ -44,9 +44,9 @@ public class AutoFillServiceTest {
     public void setUp() throws Exception {
         var factory = new ProcessorFactoryImpl();
 
-        this.autoFillService = new AutoFillService(null, null, null);
+        this.autoFillService = new AutoFillService(null, null, null,
+            Map.of(Language.Korean, new KoreanAuthorStrategy(factory.GetKoreanLastNames())));
         this.autoFillService.setLanguage(Language.Korean);
-        this.autoFillService.setKoreanLastNames(factory.GetKoreanLastNames());
     }
 
     @Test

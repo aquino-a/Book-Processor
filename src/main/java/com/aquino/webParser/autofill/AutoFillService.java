@@ -5,13 +5,10 @@ import com.aquino.webParser.ExcelReader;
 import com.aquino.webParser.ExcelUpdater;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
-import com.aquino.webParser.romanization.Romanizer;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -25,14 +22,17 @@ public class AutoFillService {
     private final BookCreator worldCatBookCreator;
     private final BookWindowService bookWindowService;
     private final Map<String, Integer> locationMap;
-    private Map<String, String> koreanLastNames;
-    private AuthorStrategy authorStrategy;
+    private final Map<Language, AuthorStrategy> authorStrategies;
+    private AuthorStrategy currentAuthorStrategy;
 
-    public AutoFillService(BookCreator worldCatBookCreator, BookWindowService bookWindowService, Map<String, Integer> locationMap) {
+    public AutoFillService(
+        BookCreator worldCatBookCreator,
+        BookWindowService bookWindowService,
+        Map<String, Integer> locationMap, Map<Language, AuthorStrategy> authorStrategies) {
         this.worldCatBookCreator = worldCatBookCreator;
         this.bookWindowService = bookWindowService;
         this.locationMap = locationMap;
-        this.authorStrategy = getAuthorStrategy(Language.Japanese);
+        this.authorStrategies = authorStrategies;
     }
 
     public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
@@ -97,68 +97,20 @@ public class AutoFillService {
 
     private Publisher CreatePublisher(Book book) {
         var author = new Publisher();
-        author.setLanguage(authorStrategy.getLanguage());
+        author.setLanguage(currentAuthorStrategy.getLanguage());
         author.setNativeName(book.getPublisher());
         return author;
     }
 
     public Author CreateAuthor(Book book) {
-        return authorStrategy.createAuthor(book);
-//        var author = new Author();
-//        author.setLanguage(language);
-//        switch (language) {
-//            case Korean:
-//                SetKoreanNames(author, book);
-//            case Japanese:
-//            default:
-//                SetJapNames(author, book);
-//        }
-//        return author;
-    }
-
-
-    /**
-     * Sets the korean name of the {@link Author} from the {@link Book}.
-     * Bookswindows puts the korean last name as the first name.
-     * The author's native first and last name are set as the full korean name.
-     *
-     * @param author the author to set the names of.
-     * @param book   the book to use to get the names.
-     */
-    private void SetKoreanNames(Author author, Book book) {
-        author.setNativeFirstName(book.getAuthor());
-        author.setNativeLastName(book.getAuthor());
-
-        if (book.getAuthor().isBlank())
-            return;
-
-        var first = book.getAuthor().substring(0, 1);
-        first = koreanLastNames.containsKey(first)
-            ? koreanLastNames.get(first)
-            : Romanizer.hangulToRoman(first);
-
-        author.setEnglishFirstName(first);
-
-
-        if (book.getAuthor().length() > 1) {
-
-            var last = Arrays.stream(book.getAuthor().substring(1)
-                .split(""))
-                .map(s -> StringUtils.capitalize(Romanizer.hangulToRoman(s)))
-                .collect(Collectors.joining(" "));
-            author.setEnglishLastName(last);
-        }
-    }
-
-    private void SetJapNames(Author author, Book book) {
-        author.setNativeFirstName(book.getAuthor());
+        return currentAuthorStrategy.createAuthor(book);
     }
 
     private Publisher CreatePublisher(Book book, Book wcBook) {
         if (containsId(book.getPublisher()))
             return null;
         var publisher = new Publisher();
-        publisher.setLanguage(authorStrategy.getLanguage());
+        publisher.setLanguage(currentAuthorStrategy.getLanguage());
         publisher.setEnglishName(wcBook.getPublisher());
         publisher.setNativeName(book.getPublisher());
         return publisher;
@@ -168,7 +120,7 @@ public class AutoFillService {
         if (containsId(book.getAuthor()))
             return null;
         var author = new Author();
-        author.setLanguage(authorStrategy.getLanguage());
+        author.setLanguage(currentAuthorStrategy.getLanguage());
         var split = book.getAuthor().split(" ");
         author.setNativeFirstName(split[0]);
         if (split.length > 1)
@@ -190,55 +142,11 @@ public class AutoFillService {
         return bookWindowService.addPublisher(publisher);
     }
 
-
     public String getAuthorLink(int id) {
         return bookWindowService.getAuthorLink(String.valueOf(id));
     }
 
     public void setLanguage(Language language) {
-        this.authorStrategy = getAuthorStrategy(language);
-    }
-
-    public void setKoreanLastNames(Map<String, String> koreanLastNames) {
-        this.koreanLastNames = koreanLastNames;
-    }
-
-    private AuthorStrategy getAuthorStrategy(Language language) {
-        switch (language){
-            case Korean: return new KoreanAuthorStrategy();
-            case Japanese:
-            default: return new JapaneseAuthorStrategy();
-        }
-    }
-
-    private static final class KoreanAuthorStrategy implements AuthorStrategy {
-
-        @Override
-        public Author createAuthor(Book book) {
-            return null;
-        }
-
-        @Override
-        public Language getLanguage() {
-            return Language.Korean;
-        }
-    }
-
-    private static final class JapaneseAuthorStrategy implements AuthorStrategy {
-
-        @Override
-        public Author createAuthor(Book book) {
-            return null;
-        }
-
-        @Override
-        public Language getLanguage() {
-            return Language.Japanese;
-        }
-    }
-
-    private static interface AuthorStrategy{
-        Author createAuthor(Book book);
-        Language getLanguage();
+        this.currentAuthorStrategy = this.authorStrategies.get(language);
     }
 }
