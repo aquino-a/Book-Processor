@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
+/**
+ * Tests the romanization of the korean authors' names.
+ */
 @RunWith(Parameterized.class)
 public class AutoFillServiceTest {
 
