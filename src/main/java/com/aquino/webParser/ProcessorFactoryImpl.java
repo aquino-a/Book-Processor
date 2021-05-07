@@ -15,7 +15,6 @@ import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,7 +48,6 @@ public class ProcessorFactoryImpl {
     private Map<String, String> koreanLastNames;
     private BookWindowService bookWindowService;
     private OclcService oclcService;
-    private ObjectMapper mapper;
     private String aladinApiKey;
 
 
@@ -81,12 +79,6 @@ public class ProcessorFactoryImpl {
             bookCreatorHashMap.put(creatorType, newCreator);
         }
         return bookCreatorHashMap.get(creatorType);
-    }
-
-    private ObjectMapper CreateObjectMapper() {
-        if (mapper == null)
-            mapper = new ObjectMapper();
-        return mapper;
     }
 
     public OclcService CreateOclcService() {
