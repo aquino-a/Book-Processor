@@ -6,6 +6,7 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.romanization.Romanizer;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -359,10 +360,14 @@ public class AladinBookCreator implements BookCreator {
         var sb = new StringBuilder(book.getDescription());
         sb.append(System.lineSeparator());
         sb.append(System.lineSeparator());
-        Arrays.stream(prizeOption.get()
+
+        var prizes = prizeOption.get()
             .getElementsByClass("Ere_sub_blue")
             .first().wholeText()
-            .trim().split(","))
+            .trim().split(",");
+
+        ArrayUtils.reverse(prizes);
+        Arrays.stream(prizes)
             .map(s -> s.trim())
             .forEach(s -> {
                 sb.append(s);
