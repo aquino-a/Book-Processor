@@ -416,7 +416,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private void SetWorldCatLink(Book book) {
-        if(worldCatBookCreator == null){
+        if (worldCatBookCreator == null) {
             return;
         }
         try {
@@ -432,7 +432,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private void SetKinoLink(Book book) {
-        if(kinoBookCreator == null){
+        if (kinoBookCreator == null) {
             return;
         }
         try {
@@ -446,7 +446,6 @@ public class AmazonJapanBookCreator implements BookCreator {
             return;
         }
     }
-
 
 
     private String lookupRomanizedTitle(String title) {

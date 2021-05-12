@@ -14,7 +14,6 @@ public class WorldCatBookCreator implements BookCreator {
     private static final String SEARCH_URL_FORMAT = "https://www.worldcat.org/search?qt=worldcat_org_all&q=%s";
     private static final String WORLD_CAT_URL = "https://www.worldcat.org";
     private static final Pattern PUBLISHER_REGEX = Pattern.compile("[\\u0100-\\uFFFFA-Za-z]+ : ([\\w\\u0100-\\uFFFF ]+), [0-9]{4}");
-    public static final String NOT_FOUND = "Not Found";
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
@@ -60,7 +59,7 @@ public class WorldCatBookCreator implements BookCreator {
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
         } catch (Exception e) {
-            return NOT_FOUND;
+            return "";
         }
     }
 
@@ -72,9 +71,9 @@ public class WorldCatBookCreator implements BookCreator {
                     .ownText());
             if(matcher.find())
                 return matcher.group(1).trim();
-            else return NOT_FOUND;
+            else return "";
         } catch (Exception e) {
-            return NOT_FOUND;
+            return "";
         }
     }
 
@@ -86,7 +85,7 @@ public class WorldCatBookCreator implements BookCreator {
                     .first()
                     .ownText().trim();
         } catch (Exception e) {
-            return NOT_FOUND;
+            return "";
         }
     }
 

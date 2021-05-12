@@ -117,8 +117,12 @@ public class AutoFillService {
     }
 
     private Author CreateAuthor(Book book, Book wcBook) {
-        if (containsId(book.getAuthor()))
+        if (containsId(book.getAuthor())){
             return null;
+        }
+        else if(book.getAuthor().isBlank()){
+            return CreateAuthor(book);
+        }
         var author = new Author();
         author.setLanguage(currentAuthorStrategy.getLanguage());
         var split = book.getAuthor().split(" ");
