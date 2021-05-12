@@ -300,12 +300,18 @@ public class AmazonJapanBookCreator implements BookCreator {
                     return "PB";
             }
             var ps = doc.getElementById("productSubtitle");
-            if (ps.wholeText().contains("単行本"))
+            if (ps.wholeText().contains("ソフトカバー")) {
+                return "PB";
+            }
+            if (ps.wholeText().contains("単行本")) {
                 return "HC";
-            if (ps.wholeText().contains("新書"))
+            }
+            if (ps.wholeText().contains("新書")) {
                 return "PB";
-            if (ps.wholeText().contains("文庫"))
+            }
+            if (ps.wholeText().contains("文庫")) {
                 return "PB";
+            }
             return "";
         }
         catch (Exception e) {
