@@ -4,6 +4,8 @@ import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
+import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.ExtraInfo;
@@ -51,6 +53,8 @@ public class AmazonJapanBookCreator implements BookCreator {
     private HontoBookCreator hontoBookCreator;
     private HonyaClubBookCreator honyaClubBookCreator;
     private YahooBookCreator yahooBookCreator;
+    private WorldCatBookCreator worldCatBookCreator;
+    private KinoBookCreator kinoBookCreator;
 
     public AmazonJapanBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
         this.bookWindowService = bookWindowService;
@@ -356,6 +360,8 @@ public class AmazonJapanBookCreator implements BookCreator {
         SetHonyaLink(book);
         SetHontoLink(book);
         SetYahooLink(book);
+        SetWorldCatLink(book);
+        SetKinoLink(book);
         return book;
     }
 
@@ -408,6 +414,40 @@ public class AmazonJapanBookCreator implements BookCreator {
             return;
         }
     }
+
+    private void SetWorldCatLink(Book book) {
+        if(worldCatBookCreator == null){
+            return;
+        }
+        try {
+            var worldCatBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            ExtraInfo ei = new ExtraInfo(48, worldCatBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("OCLC");
+            book.getMiscellaneous().add(ei);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private void SetKinoLink(Book book) {
+        if(kinoBookCreator == null){
+            return;
+        }
+        try {
+            var kinoBook = kinoBookCreator.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            ExtraInfo ei = new ExtraInfo(49, kinoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Kino");
+            book.getMiscellaneous().add(ei);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+
 
     private String lookupRomanizedTitle(String title) {
         if (title == null || title.equals(""))
@@ -475,5 +515,13 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     public void setYahooBookCreator(YahooBookCreator yahooBookCreator) {
         this.yahooBookCreator = yahooBookCreator;
+    }
+
+    public void setWorldCatBookCreator(WorldCatBookCreator worldCatBookCreator) {
+        this.worldCatBookCreator = worldCatBookCreator;
+    }
+
+    public void setKinoBookCreator(KinoBookCreator kinoBookCreator) {
+        this.kinoBookCreator = kinoBookCreator;
     }
 }

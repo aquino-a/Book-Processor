@@ -10,6 +10,7 @@ import com.aquino.webParser.bookCreators.aladin.web.AladinBookCreator;
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.model.Language;
@@ -70,6 +71,8 @@ public class ProcessorFactoryImpl {
                     abc.setHontoBookCreator(new HontoBookCreator());
                     abc.setHonyaClubBookCreator(new HonyaClubBookCreator());
                     abc.setYahooBookCreator(new YahooBookCreator());
+                    abc.setWorldCatBookCreator(new WorldCatBookCreator());
+                    abc.setKinoBookCreator(new KinoBookCreator());
                     newCreator = abc;
 
                 }

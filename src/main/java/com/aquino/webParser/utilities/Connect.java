@@ -86,7 +86,7 @@ public class Connect {
         return getWorkbook(new FileInputStream(file));
     }
     public static XSSFWorkbook newWorkbookFromTemplate() {
-        String path = "template/TEMPLATE_FOR_JWP.xlsx";
+        String path = "template/TEMPLATE_FOR_JWP.xlsm";
         try {
             return getWorkbook(Connect.class.getClassLoader().getResourceAsStream(path));
         } catch (Exception e) {
