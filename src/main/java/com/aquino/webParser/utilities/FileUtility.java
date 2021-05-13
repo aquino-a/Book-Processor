@@ -20,6 +20,7 @@ import java.util.Properties;
 public class FileUtility {
 
     private static final String DIRECTORY_PROPERTY = "directory";
+    private static final String SAVE_EXTENSION = ".xlsm";
     private static final JFileChooser FILE_CHOOSER = createFileChooser();
 
     private static JFileChooser createFileChooser() {
@@ -71,7 +72,12 @@ public class FileUtility {
     public static File saveLocation(JComponent component) {
         JFileChooser fc = getFileChooser();
         if (fc.showSaveDialog(component) == JFileChooser.APPROVE_OPTION) {
-            return fc.getSelectedFile();
+            if (!fc.getSelectedFile().getName().endsWith(SAVE_EXTENSION)) {
+                return new File(fc.getSelectedFile() + SAVE_EXTENSION);
+            }
+            else {
+                return fc.getSelectedFile();
+            }
         }
 
         return null;
