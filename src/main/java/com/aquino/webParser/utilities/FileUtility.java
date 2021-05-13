@@ -7,6 +7,7 @@ package com.aquino.webParser.utilities;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,8 @@ public class FileUtility {
         var filter = new FileNameExtensionFilter("Excel", "xlsx", "xlsm");
         fc.setFileFilter(filter);
         fc.setAcceptAllFileFilterUsed(false);
+
+        fc.setPreferredSize(new Dimension(800,600));
         return fc;
     }
 
