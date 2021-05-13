@@ -5,20 +5,20 @@
  */
 package com.aquino.webParser.utilities;
 
-import java.io.IOException;
-import java.util.StringJoiner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.util.StringJoiner;
+
 /**
- *
  * @author alex
  */
 public class Links {
-    
-    private static final Logger logger = Logger.getLogger(Links.class.getName());
+
+    private static final Logger LOGGER = LogManager.getLogger();
     private static Type type = Type.NEW;
 
     public static Type getType() {
@@ -28,43 +28,53 @@ public class Links {
     public static void setType(Type type) {
         Links.type = type;
     }
-    
+
     private static String buildOCLCURL(String pageNumber) {
-        if(type == Type.NEW)
+        if (type == Type.NEW)
             return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
         if (type == Type.BEST)
             return "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0&page=" + pageNumber;
-        else return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
+        else
+            return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
     }
+
     public static String getPageofLinks(int pageNumber) throws IOException {
-        logger.log(Level.INFO, "Starting page {0}", pageNumber);
+        LOGGER.info("Starting page {0}", pageNumber);
         return pageOfLinks(getSearchElements(pageNumber));
     }
+
     private static String pageOfLinks(Elements elements) {
         StringJoiner joiner = new StringJoiner("\n");
 //        for (Element element : elements) {
 //            joiner.add(element.attr("href"));
 //        }
-        elements.stream().map(e -> e.attr("href"))       
-           .forEach(e-> joiner.add(e));
-        logger.log(Level.INFO, "Got the Links");
+        elements.stream().map(e -> e.attr("href"))
+            .forEach(e -> joiner.add(e));
+        LOGGER.info("Got the Links");
 //        String links = joiner.toString();
-        
+
         return joiner.toString();
     }
+
     private static Elements getSearchElements(int pageNumber) throws IOException {
         Document doc = Connect.connectToURL(buildOCLCURL(String.valueOf(pageNumber)));
-        Elements elements =  doc.getElementsByClass("bo3");
-        if(elements.first() == null)
+        Elements elements = doc.getElementsByClass("bo3");
+        if (elements.first() == null)
             throw new IOException("No book");
         else return elements;
     }
-    
+
     public enum Type {
-        BEST(20),NEW(47);
+        BEST(20), NEW(47);
         private final int pages;
-        public int getPages(){return pages;};
-        Type(int pages){ this.pages = pages;};
+
+        Type(int pages) {
+            this.pages = pages;
+        }
+
+        public int getPages() {
+            return pages;
+        }
 
     }
 //    public String getPagesOfLinks(int pageAmount) {
@@ -74,5 +84,5 @@ public class Links {
 //        }
 //        return joiner.toString();
 //    }
-    
+
 }

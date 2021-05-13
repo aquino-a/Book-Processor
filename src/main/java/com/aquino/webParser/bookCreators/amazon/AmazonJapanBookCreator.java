@@ -12,6 +12,8 @@ import com.aquino.webParser.model.ExtraInfo;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,8 +29,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +43,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String BOOK_SIZE_FORMAT = "%.1f x %.1f";
     private static final String TRANSLIT_FORMAT = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
-    private static final Logger logger = Logger.getLogger(AmazonJapanBookCreator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern IMAGE_URL_SCRIPT_PATTERN = Pattern.compile(
@@ -119,8 +121,8 @@ public class AmazonJapanBookCreator implements BookCreator {
                 .wholeText().replaceAll("\n", "").trim();
         }
         catch (Exception e) {
-            logger.log(Level.WARNING, String.format("Couldn't parse description: %s", e.getMessage()));
-            e.printStackTrace();
+            LOGGER.error(String.format("Couldn't parse description: %s", e.getMessage()));
+            LOGGER.error(e.getMessage(), e);
             return "";
         }
     }
@@ -156,8 +158,8 @@ public class AmazonJapanBookCreator implements BookCreator {
 
         }
         catch (Exception e) {
-            logger.log(Level.WARNING, String.format("Couldn't parse author details: %s", e.getMessage()));
-            e.printStackTrace();
+            LOGGER.error(String.format("Couldn't parse author details: %s", e.getMessage()));
+            LOGGER.error(e.getMessage(), e);
         }
         finally {
             setDefaultAutorSection(book);
@@ -183,7 +185,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         element = e.getElementsByClass("a-link-normal").first();
         if (notNullorEmpty(element))
             return element.ownText().trim();
-        logger.log(Level.WARNING, String.format("Couldn't parse contributor: %s", e.text()));
+        LOGGER.warn(String.format("Couldn't parse contributor: %s", e.text()));
         return "";
     }
 
@@ -197,7 +199,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return NumberFormat.getInstance(Locale.JAPAN).parse(priceSource.replace("￥", "").trim()).intValue();
         }
         catch (NullPointerException | ParseException e) {
-            logger.log(Level.WARNING, String.format("Couldn't parse price: %s", e.getMessage()));
+            LOGGER.warn(String.format("Couldn't parse price: %s", e.getMessage()));
             return -1;
         }
     }
@@ -251,7 +253,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return publisherSource.substring(0, publisherSource.indexOf(";")).trim();
         else if (publisherSource.contains("("))
             return publisherSource.substring(0, publisherSource.indexOf("(")).trim();
-        logger.log(Level.WARNING, String.format("Couldn't find publisher: %s", publisherSource));
+        LOGGER.warn(String.format("Couldn't find publisher: %s", publisherSource));
         return "";
     }
 
@@ -262,7 +264,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return date.format(DATE_TARGET_FORMATTER);
         }
         catch (DateTimeParseException e) {
-            logger.log(Level.WARNING, String.format("Couldn't find publish date: %s", dateSource));
+            LOGGER.warn(String.format("Couldn't find publish date: %s", dateSource));
             return "";
         }
     }
@@ -318,7 +320,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return "";
         }
         catch (Exception e) {
-            logger.log(Level.WARNING, String.format("Couldn't no book type found: %s", e.getMessage()));
+            LOGGER.warn(String.format("Couldn't no book type found: %s", e.getMessage()));
             return "";
         }
     }
@@ -329,7 +331,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             return findImageUrl(element.data());
         }
         catch (Exception e) {
-            logger.log(Level.WARNING, String.format("Couldn't find image url: %s", e.getMessage()));
+            LOGGER.warn(String.format("Couldn't find image url: %s", e.getMessage()));
             return "";
         }
     }

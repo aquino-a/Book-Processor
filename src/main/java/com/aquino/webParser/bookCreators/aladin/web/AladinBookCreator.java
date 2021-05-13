@@ -7,6 +7,8 @@ import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.romanization.Romanizer;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,8 +19,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 import java.util.regex.Pattern;
 
 public class AladinBookCreator implements BookCreator {
@@ -36,7 +38,7 @@ public class AladinBookCreator implements BookCreator {
         Pattern.compile("([\\u3131-\\uD79D ]+)(?:,| )");
 
     private static final Pattern OCLC_PATTERN = Pattern.compile("oclc/(\\d+)$");
-    private static final Logger logger = Logger.getLogger(AladinBookCreator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
 
@@ -392,7 +394,7 @@ public class AladinBookCreator implements BookCreator {
             else return "";
         }
         catch (NullPointerException e) {
-            logger.log(Level.INFO, "Couldn't find original Author: " + doc.location());
+            LOGGER.info("Couldn't find original Author: " + doc.location());
             return "";
         }
     }

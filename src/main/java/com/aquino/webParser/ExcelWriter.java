@@ -12,9 +12,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Hyperlink;
@@ -27,7 +27,7 @@ import org.apache.poi.xssf.usermodel.*;
  */
 public class ExcelWriter {
     
-    private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
     
     private final XSSFWorkbook workbook;
     private int startRow;
@@ -45,7 +45,7 @@ public class ExcelWriter {
             
             if ( sheet.getRow(i) == null || 
                     sheet.getRow(i).getCell(1) == null) {
-                logger.log(Level.INFO, "Row {0} is null.", i);
+                LOGGER.info("Row {0} is null.", i);
                 startRow = i;
                 return;
             }
@@ -147,7 +147,7 @@ public class ExcelWriter {
 
     public void saveFile(File saveFile) {
         try (FileOutputStream fos = new FileOutputStream(saveFile)) {
-            logger.log(Level.INFO, "Saving file");
+            LOGGER.info("Saving file");
             workbook.write(fos);
         }catch (IOException e) {
             System.out.println(e.getMessage());

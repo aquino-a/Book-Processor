@@ -17,6 +17,8 @@ import com.aquino.webParser.oclc.OclcProgress;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -27,18 +29,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author alex
  */
 public class JWPUserInterface extends JPanel {
 
-    private static final Logger logger = Logger.getLogger(JWPUserInterface.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
     private JFrame frame;
     private JButton addButton, saveButton;
     private JPanel mainPanel, buttonPanel, checkPanel;
@@ -316,8 +317,8 @@ public class JWPUserInterface extends JPanel {
                     desWriter.writeBooks(books);
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE, "Problem adding.");
-                    e.printStackTrace();
+                    LOGGER.error("Problem adding.");
+                    LOGGER.error(e.getMessage(), e);
                 }
                 return null;
             }
@@ -355,8 +356,8 @@ public class JWPUserInterface extends JPanel {
             }
             catch (Exception e) {
                 JOptionPane.showMessageDialog(frame, String.format("Problem with isbn: %s", isbn));
-                logger.log(Level.SEVERE, String.format("Problem with isbn: %s", isbn));
-                logger.log(Level.SEVERE, e.getMessage());
+                LOGGER.error(String.format("Problem with isbn: %s", isbn));
+                LOGGER.error(e.getMessage(), e);
                 continue;
             }
         }
@@ -375,15 +376,15 @@ public class JWPUserInterface extends JPanel {
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
                     checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
-                    logger.log(Level.INFO, "Done scraping for oclc numbers.");
+                    LOGGER.info("Done scraping for oclc numbers.");
                 }
                 catch (IOException ex) {
                     JOptionPane.showMessageDialog(frame, "Reached end of pages", "Done", JOptionPane.INFORMATION_MESSAGE);
                 }
                 catch (Exception e) {
-                    Logger.getLogger("oclc").log(Level.SEVERE, "oclc problems");
+                    LOGGER.error("oclc problems");
+                    LOGGER.error(e.getMessage(), e);
                     JOptionPane.showMessageDialog(frame, "Error occured during oclc scraping", "Error", JOptionPane.ERROR_MESSAGE);
-                    e.printStackTrace();
                 }
                 return null;
             }

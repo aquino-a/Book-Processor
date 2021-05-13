@@ -5,16 +5,16 @@ import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class JapaneseAuthorStrategy implements AuthorStrategy {
 
-    private static final Logger LOGGER = Logger.getLogger(JapaneseAuthorStrategy.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public Author createAuthor(Book book) {
@@ -39,7 +39,8 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
         }
         catch (IOException e) {
             //Don't set if fails.
-            LOGGER.log(Level.WARNING, String.format("Failed to romaninze: %s", book.getAuthor()));
+            LOGGER.error(String.format("Failed to romanize: %s", book.getAuthor()));
+            LOGGER.error(e.getMessage(), e);
         }
 
         author.setNativeFirstName(book.getAuthor());
