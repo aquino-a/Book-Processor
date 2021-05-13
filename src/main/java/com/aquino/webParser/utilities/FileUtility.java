@@ -32,6 +32,7 @@ public class FileUtility {
 
         var filter = new FileNameExtensionFilter("Excel", "xlsx", "xlsm");
         fc.setFileFilter(filter);
+        fc.setAcceptAllFileFilterUsed(false);
         return fc;
     }
 
