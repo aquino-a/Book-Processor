@@ -149,8 +149,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                         book.setAuthor2(findContributorName(e));
                     }
                     else if (authorCount > 1) {
-                        book.setAuthor("1494");
-                        book.setAuthor2("");
+                        book.setAuthor2("1494");
                     }
                 }
             }
