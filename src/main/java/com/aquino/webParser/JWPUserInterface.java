@@ -242,8 +242,13 @@ public class JWPUserInterface extends JPanel {
                     autoFillTool.setLocationRelativeTo(null);
                     autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     autoFillTool.setVisible(true);
-                } catch (URISyntaxException | IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                    JOptionPane.showMessageDialog(
+                        frame,
+                        "Error occured opening auto fill",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
