@@ -10,8 +10,11 @@ import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
 import com.aquino.webParser.utilities.FileUtility;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
@@ -22,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.*;
 
 /**
  *
@@ -30,6 +32,7 @@ import javax.swing.*;
  */
 public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private XSSFWorkbook workbook;
     private AutoFillService autoFillService;
 
@@ -53,7 +56,7 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
                     try {
                         workbook.close();
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        LOGGER.error(ex.getMessage(), ex);
                     }
                 }
             }
@@ -324,100 +327,65 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
     private javax.swing.JLabel textFileName;
     // End of variables declaration//GEN-END:variables
 
-    private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
-        try {
-            File file = FileUtility.openFile(jPanel1);
-            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            workbook = Connect.openExistingWorkbook(file);
-            autoFillService.readBooks(workbook)
-                    .stream()
-                    .forEach(model -> {
-                        bookRowContainer.add(new BookRow(model));
-                    });
-            if(Arrays.stream(bookRowContainer.getComponents()).filter(c -> c instanceof BookRow).count() > 0){
-                setFileLabel(file.getName());
-                enableActions();
-            } else {
-                closeWorkbook();
-                textConsole.setText("No data to change");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
-        }
-        finally {
-            this.setCursor(null);
-        }
-    });
-
     private final Action autoFillAction = Handlers.anonymousEventClass("Auto Fill", (event) -> {
         try {
             var result = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
-            if(result != JOptionPane.OK_OPTION)
+                "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
+            if (result != JOptionPane.OK_OPTION)
                 return;
 
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             Stream.of(bookRowContainer.getComponents())
-                    .filter(c -> c instanceof BookRow)
-                    .map(c -> (BookRow) c)
-                    .filter(br -> br.isSelected())
-                    .forEach(br ->{
-                        var afm = br.getAutoFillModel();
-                        InsertAuthor(br, afm.getAuthor());
-                        //TODO insert pub and add link
-                        afm.UpdateBook();
-                    });
+                .filter(c -> c instanceof BookRow)
+                .map(c -> (BookRow) c)
+                .filter(br -> br.isSelected())
+                .forEach(br -> {
+                    var afm = br.getAutoFillModel();
+                    InsertAuthor(br, afm.getAuthor());
+                    //TODO insert pub and add link
+                    afm.UpdateBook();
+                });
 //            enableActions();
-        } catch (IllegalArgumentException | NullPointerException e) {
+        }
+        catch (IllegalArgumentException | NullPointerException e) {
             textConsole.setText(String.format("Auto Fill fail: %s", e.getMessage()));
         }
         finally {
             this.setCursor(null);
         }
     });
-
     private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
         languageMenu.setText("Japanese");
         autoFillService.setLanguage(Language.Japanese);
     });
-
     private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
         languageMenu.setText("Korean");
         autoFillService.setLanguage(Language.Korean);
     });
-
-    private void InsertAuthor(BookRow br, Author author) {
-        if(author == null)
-            return;
-        var id = autoFillService.insertAuthor(author);
-        var link = autoFillService.getAuthorLink(id);
-        br.setAuthorLink(id, link);
-    }
-
     private final Action saveAction = Handlers.anonymousEventClass("Save", (event) -> {
         try {
             File file = FileUtility.openFile(jPanel1);
-            if(file == null)
+            if (file == null)
                 return;
             var books = Stream.of(bookRowContainer.getComponents())
-                    .filter(c -> c instanceof BookRow)
-                    .map(c -> (BookRow) c)
-                    .filter(br -> br.isSelected())
-                    .map(br ->  br.getAutoFillModel().getBookPair())
-                    .collect(Collectors.toList());
+                .filter(c -> c instanceof BookRow)
+                .map(c -> (BookRow) c)
+                .filter(br -> br.isSelected())
+                .map(br -> br.getAutoFillModel().getBookPair())
+                .collect(Collectors.toList());
             autoFillService.updateBook(workbook, books);
 
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 workbook.write(fos);
             }
 //            enableActions();
-        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+        }
+        catch (IllegalArgumentException | NullPointerException | IOException e) {
             textConsole.setText(String.format("save fail: %s", e.getMessage()));
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
+
         }
     });
-
     private final Action closeAction = Handlers.anonymousEventClass("Close", (event) -> {
         try {
             closeWorkbook();
@@ -425,14 +393,50 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             disableActions();
             var bookRows = Stream.of(bookRowContainer.getComponents()).filter(c -> c instanceof BookRow).collect(Collectors.toList());
             bookRows.forEach(br -> bookRowContainer.remove(br));
-        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+        }
+        catch (IllegalArgumentException | NullPointerException | IOException e) {
             textConsole.setText(String.format("close fail: %s", e.getMessage()));
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
+        }
+    });
+    private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
+        try {
+            File file = FileUtility.openFile(jPanel1);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            workbook = Connect.openExistingWorkbook(file);
+            autoFillService.readBooks(workbook)
+                .stream()
+                .forEach(model -> {
+                    bookRowContainer.add(new BookRow(model));
+                });
+            if (Arrays.stream(bookRowContainer.getComponents()).filter(c -> c instanceof BookRow).count() > 0) {
+                setFileLabel(file.getName());
+                enableActions();
+            }
+            else {
+                closeWorkbook();
+                textConsole.setText("No data to change");
+            }
+        }
+        catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
+        }
+        finally {
+            this.setCursor(null);
         }
     });
 
+    private void InsertAuthor(BookRow br, Author author) {
+        if (author == null)
+            return;
+        var id = autoFillService.insertAuthor(author);
+        var link = autoFillService.getAuthorLink(id);
+        br.setAuthorLink(id, link);
+    }
+
     private void closeWorkbook() throws IOException {
-        if(workbook != null)
+        if (workbook != null)
             workbook.close();
         workbook = null;
     }

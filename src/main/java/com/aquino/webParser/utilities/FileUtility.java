@@ -5,6 +5,9 @@
  */
 package com.aquino.webParser.utilities;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -20,6 +23,7 @@ import java.util.Properties;
  */
 public class FileUtility {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String DIRECTORY_PROPERTY = "directory";
     private static final String SAVE_EXTENSION = ".xlsm";
     private static final JFileChooser FILE_CHOOSER = createFileChooser();
@@ -36,7 +40,7 @@ public class FileUtility {
         fc.setFileFilter(filter);
         fc.setAcceptAllFileFilterUsed(false);
 
-        fc.setPreferredSize(new Dimension(800,600));
+        fc.setPreferredSize(new Dimension(800, 600));
         return fc;
     }
 
@@ -58,7 +62,8 @@ public class FileUtility {
 
             return Optional.of(path.toAbsolutePath().toString());
         }
-        catch (IOException e) {
+        catch (Exception e){
+            LOGGER.error(e.getMessage(), e);
             return Optional.empty();
         }
     }
