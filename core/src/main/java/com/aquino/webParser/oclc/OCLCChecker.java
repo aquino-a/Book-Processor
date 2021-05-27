@@ -9,7 +9,6 @@ import com.aquino.webParser.ExcelWriter;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,13 +44,17 @@ public class OCLCChecker {
         Links.setType(Links.Type.BEST);
         //move test elsewhere
         OCLCChecker checker = new OCLCChecker(null);
-        checker.getHitsAndWrite(1, 2, panel, null);
+        checker.getHitsAndWrite(1, 2, null, new File("test.xlsx"));
         System.exit(0);
 
     }
 
-    public void getHitsAndWrite(int pageStart, int pageEnd, JComponent component, Consumer<ProgressData> consumer) throws IOException {
-        File save = FileUtility.saveLocation(component);
+    public void getHitsAndWrite(
+        int pageStart,
+        int pageEnd,
+        Consumer<ProgressData> consumer,
+        File save
+    ) throws IOException {
         if (save == null) {
             throw new IllegalArgumentException("No save file selected");
         }

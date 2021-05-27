@@ -3,19 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser;
+package com.aquino.webParser.swing;
 
-import com.aquino.webParser.autofill.AuthorPublisherAutoFill;
+import com.aquino.webParser.DescriptionWriter;
+import com.aquino.webParser.ExcelWriter;
+import com.aquino.webParser.ProcessorFactoryImpl;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
-import com.aquino.webParser.filters.CheckFilter;
-import com.aquino.webParser.filters.NewLineFilter;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
-import com.aquino.webParser.oclc.OclcProgress;
+import com.aquino.webParser.swing.autofill.AuthorPublisherAutoFill;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.utilities.FileUtility;
 import com.aquino.webParser.utilities.Links;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,9 +26,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
@@ -233,7 +230,7 @@ public class JWPUserInterface extends JPanel {
     }
 
     private void openAutoFillTool() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
+        EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
                     var autoFillTool = new AuthorPublisherAutoFill(
@@ -265,7 +262,7 @@ public class JWPUserInterface extends JPanel {
         //pack
         frame.pack();
         frame.setLocation((int)
-            java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().
+            GraphicsEnvironment.getLocalGraphicsEnvironment().
                 getMaximumWindowBounds().getWidth() - frame.getWidth(), 0);
         frame.setVisible(true);
     }
@@ -380,7 +377,11 @@ public class JWPUserInterface extends JPanel {
                     if (oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
-                    checker.getHitsAndWrite(1, type.getPages(), mainPanel, oclcProgress::setProgress);
+                    var save = FileUtility.saveLocation(mainPanel);
+                    if(save == null){
+                        throw new IllegalArgumentException("No save file selected");
+                    }
+                    checker.getHitsAndWrite(1, type.getPages(), oclcProgress::setProgress, save);
                     LOGGER.info("Done scraping for oclc numbers.");
                 }
                 catch (IOException ex) {

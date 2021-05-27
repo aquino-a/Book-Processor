@@ -3,19 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser;
+package com.aquino.webParser.swing;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import com.aquino.webParser.ProcessorFactoryImpl;
+import com.aquino.webParser.bookCreators.BookCreatorType;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
-import javax.swing.*;
-
-import com.aquino.webParser.bookCreators.BookCreatorType;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 /**
@@ -24,12 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class JWPdemo {
     public static void main(String[] args) throws URISyntaxException {
-//        XSSFWorkbook wk = Connect.newWorkbookFromTemplate();
-//        System.out.println(wk);
-        
-        
-        
-        
+
         ProcessorFactoryImpl processorFactory = new ProcessorFactoryImpl();
         java.awt.EventQueue.invokeLater(() ->
         {
@@ -39,22 +28,5 @@ public class JWPdemo {
                 e.printStackTrace();
             }
         });
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-//        
     }
-    
 }

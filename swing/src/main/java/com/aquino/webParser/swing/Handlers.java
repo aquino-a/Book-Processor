@@ -1,4 +1,4 @@
-package com.aquino.webParser;
+package com.aquino.webParser.swing;
 
 import java.awt.event.*;
 import java.util.function.*;

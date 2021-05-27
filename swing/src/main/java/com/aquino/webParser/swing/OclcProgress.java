@@ -1,4 +1,6 @@
-package com.aquino.webParser.oclc;
+package com.aquino.webParser.swing;
+
+import com.aquino.webParser.oclc.ProgressData;
 
 import javax.swing.*;
 import java.awt.*;

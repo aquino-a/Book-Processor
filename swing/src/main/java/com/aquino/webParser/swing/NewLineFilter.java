@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser.filters;
+package com.aquino.webParser.swing;
 
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.bookCreators.BookCreator;

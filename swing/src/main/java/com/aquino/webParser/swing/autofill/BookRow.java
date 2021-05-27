@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.aquino.webParser.autofill;
+package com.aquino.webParser.swing.autofill;
 
-import com.aquino.webParser.Handlers;
 import com.aquino.webParser.model.AutoFillModel;
+import com.aquino.webParser.swing.Handlers;
 
 import java.awt.*;
 import java.io.IOException;
@@ -57,23 +57,23 @@ public class BookRow extends javax.swing.JPanel {
         textEnglishFirst = new javax.swing.JTextField();
         textEnglishLast = new javax.swing.JTextField();
         buttonAuthorLink = new javax.swing.JButton();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(5, 5), new java.awt.Dimension(40, 20), new java.awt.Dimension(32767, 0));
+        filler2 = new javax.swing.Box.Filler(new Dimension(5, 5), new Dimension(40, 20), new Dimension(32767, 0));
         textPublisherNative = new javax.swing.JTextField();
         textPublisherEnglish = new javax.swing.JTextField();
         buttonPublisherLink = new javax.swing.JButton();
 
-        setMaximumSize(new java.awt.Dimension(2000, 50));
-        setMinimumSize(new java.awt.Dimension(200, 21));
+        setMaximumSize(new Dimension(2000, 50));
+        setMinimumSize(new Dimension(200, 21));
 
-        checkBox.setMinimumSize(new java.awt.Dimension(10, 10));
+        checkBox.setMinimumSize(new Dimension(10, 10));
         add(checkBox);
 
-        textNativeFirst.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textNativeFirst.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textNativeFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeFirst.setText("native firstマガジンハウス");
-        textNativeFirst.setMaximumSize(new java.awt.Dimension(500, 50));
-        textNativeFirst.setMinimumSize(new java.awt.Dimension(200, 50));
-        textNativeFirst.setPreferredSize(new java.awt.Dimension(120, 40));
+        textNativeFirst.setMaximumSize(new Dimension(500, 50));
+        textNativeFirst.setMinimumSize(new Dimension(200, 50));
+        textNativeFirst.setPreferredSize(new Dimension(120, 40));
         textNativeFirst.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textNativeFirstActionPerformed(evt);
@@ -82,12 +82,12 @@ public class BookRow extends javax.swing.JPanel {
         add(textNativeFirst);
         textNativeFirst.getAccessibleContext().setAccessibleName("textAuthorNewFirst");
 
-        textNativeLast.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textNativeLast.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textNativeLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textNativeLast.setText("native last(후지오카 요오코");
-        textNativeLast.setMaximumSize(new java.awt.Dimension(500, 50));
-        textNativeLast.setMinimumSize(new java.awt.Dimension(200, 50));
-        textNativeLast.setPreferredSize(new java.awt.Dimension(120, 40));
+        textNativeLast.setMaximumSize(new Dimension(500, 50));
+        textNativeLast.setMinimumSize(new Dimension(200, 50));
+        textNativeLast.setPreferredSize(new Dimension(120, 40));
         textNativeLast.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textNativeLastActionPerformed(evt);
@@ -95,40 +95,40 @@ public class BookRow extends javax.swing.JPanel {
         });
         add(textNativeLast);
 
-        textEnglishFirst.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textEnglishFirst.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textEnglishFirst.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishFirst.setText("english first");
-        textEnglishFirst.setMaximumSize(new java.awt.Dimension(500, 50));
-        textEnglishFirst.setMinimumSize(new java.awt.Dimension(200, 50));
-        textEnglishFirst.setPreferredSize(new java.awt.Dimension(120, 40));
+        textEnglishFirst.setMaximumSize(new Dimension(500, 50));
+        textEnglishFirst.setMinimumSize(new Dimension(200, 50));
+        textEnglishFirst.setPreferredSize(new Dimension(120, 40));
         add(textEnglishFirst);
 
-        textEnglishLast.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textEnglishLast.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textEnglishLast.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textEnglishLast.setText("english last");
-        textEnglishLast.setMaximumSize(new java.awt.Dimension(500, 50));
-        textEnglishLast.setMinimumSize(new java.awt.Dimension(200, 50));
-        textEnglishLast.setPreferredSize(new java.awt.Dimension(120, 40));
+        textEnglishLast.setMaximumSize(new Dimension(500, 50));
+        textEnglishLast.setMinimumSize(new Dimension(200, 50));
+        textEnglishLast.setPreferredSize(new Dimension(120, 40));
         add(textEnglishLast);
 
         buttonAuthorLink.setText("Link");
         add(buttonAuthorLink);
         add(filler2);
 
-        textPublisherNative.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textPublisherNative.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textPublisherNative.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherNative.setText("native");
-        textPublisherNative.setMaximumSize(new java.awt.Dimension(500, 50));
-        textPublisherNative.setMinimumSize(new java.awt.Dimension(200, 50));
-        textPublisherNative.setPreferredSize(new java.awt.Dimension(120, 40));
+        textPublisherNative.setMaximumSize(new Dimension(500, 50));
+        textPublisherNative.setMinimumSize(new Dimension(200, 50));
+        textPublisherNative.setPreferredSize(new Dimension(120, 40));
         add(textPublisherNative);
 
-        textPublisherEnglish.setFont(new java.awt.Font("HCR Batang", 0, 18)); // NOI18N
+        textPublisherEnglish.setFont(new Font("HCR Batang", 0, 18)); // NOI18N
         textPublisherEnglish.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         textPublisherEnglish.setText("english");
-        textPublisherEnglish.setMaximumSize(new java.awt.Dimension(500, 50));
-        textPublisherEnglish.setMinimumSize(new java.awt.Dimension(200, 50));
-        textPublisherEnglish.setPreferredSize(new java.awt.Dimension(120, 40));
+        textPublisherEnglish.setMaximumSize(new Dimension(500, 50));
+        textPublisherEnglish.setMinimumSize(new Dimension(200, 50));
+        textPublisherEnglish.setPreferredSize(new Dimension(120, 40));
         add(textPublisherEnglish);
 
         buttonPublisherLink.setText("Link");
