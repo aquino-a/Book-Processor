@@ -17,10 +17,11 @@ import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProcessorFactoryImpl {
-
 
     /**
      * A map containing the locations of the book properties needed for reading an excel.
@@ -125,12 +125,16 @@ public class ProcessorFactoryImpl {
 
     public Map<String, String> GetKoreanLastNames() throws URISyntaxException, IOException {
         if (koreanLastNames == null) {
-            var lastNamesUrl = this.getClass().getClassLoader()
-                .getResource("korean-last-names.csv");
-            koreanLastNames = Files.lines(Path.of(lastNamesUrl.toURI()))
-                .map(name -> name.split(","))
-                .filter(array -> array.length == 2)
-                .collect(Collectors.toMap(array -> stripBom(array[0].strip()), array -> array[1].strip()));
+            try (
+                var lastNamesStream = this.getClass().getClassLoader()
+                    .getResourceAsStream("korean-last-names.csv");
+                var br = new BufferedReader(new InputStreamReader(lastNamesStream, StandardCharsets.UTF_8))
+            ) {
+                koreanLastNames = br.lines()
+                    .map(name -> name.split(","))
+                    .filter(array -> array.length == 2)
+                    .collect(Collectors.toMap(array -> stripBom(array[0].strip()), array -> array[1].strip()));
+            }
         }
         return koreanLastNames;
     }
