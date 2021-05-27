@@ -89,6 +89,7 @@ public class ExcelWriter {
         row.createCell(17).setCellValue(book.getPublisherBooks());
 
         row.createCell(18).setCellValue(book.getCategory());
+        row.createCell(19).setCellValue(book.getCategory2());
         row.createCell(21).setCellValue(book.getVendorName());
         row.createCell(22).setCellValue(book.getLanguageCode());
         if(!book.getEnglishTitle().equals("")){
