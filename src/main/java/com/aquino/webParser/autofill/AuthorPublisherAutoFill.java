@@ -348,7 +348,12 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 //            enableActions();
         }
         catch (IllegalArgumentException | NullPointerException e) {
-            textConsole.setText(String.format("Auto Fill fail: %s", e.getMessage()));
+            LOGGER.error(e.getMessage(), e);
+            JOptionPane.showMessageDialog(
+                this,
+                "Auto fill fail",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
         finally {
             this.setCursor(null);
@@ -381,8 +386,12 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
 //            enableActions();
         }
         catch (IllegalArgumentException | NullPointerException | IOException e) {
-            textConsole.setText(String.format("save fail: %s", e.getMessage()));
             LOGGER.error(e.getMessage(), e);
+            JOptionPane.showMessageDialog(
+                this,
+                "Save fail.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
 
         }
     });
@@ -395,8 +404,12 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             bookRows.forEach(br -> bookRowContainer.remove(br));
         }
         catch (IllegalArgumentException | NullPointerException | IOException e) {
-            textConsole.setText(String.format("close fail: %s", e.getMessage()));
             LOGGER.error(e.getMessage(), e);
+            JOptionPane.showMessageDialog(
+                this,
+                "Close fail.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     });
     private final Action openAction = Handlers.anonymousEventClass("Open", (event) -> {
@@ -415,12 +428,20 @@ public class AuthorPublisherAutoFill extends javax.swing.JFrame {
             }
             else {
                 closeWorkbook();
-                textConsole.setText("No data to change");
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No data to change",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
             }
         }
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            textConsole.setText(String.format("Open failed: %s", e.getCause().getMessage()));
+            JOptionPane.showMessageDialog(
+                this,
+                "Open fail.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
         finally {
             this.setCursor(null);
