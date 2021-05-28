@@ -1,8 +1,11 @@
 package com.aquino.webParser.bookCreators.honya;
 
-import com.aquino.webParser.model.Book;
 import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.model.Book;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
@@ -11,6 +14,7 @@ import java.util.regex.Pattern;
 
 public class HonyaClubBookCreator implements BookCreator {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String HONYA_CLUB_URL = "https://www.honyaclub.com";
     private static final String SEARCH_URL_FORMAT =
         "https://www.honyaclub.com/shop/goods/search.aspx?cat_p=&search=x&keyw=%s";
@@ -45,6 +49,7 @@ public class HonyaClubBookCreator implements BookCreator {
     public Book fillInBasicData(Book book, Document doc) {
         book.setDescription(doc.getElementsByClass("detail-comment02").first().wholeText());
         book.setOriginalPriceNumber(parsePrice(doc));
+        book.setCategory(parseCategory(doc));
         return book;
     }
 
@@ -56,6 +61,20 @@ public class HonyaClubBookCreator implements BookCreator {
             return Integer.parseInt(priceMatcher.group(1).strip().replace(",", ""));
         }
         return -1;
+    }
+
+    private String parseCategory(Document doc) {
+        try {
+            return doc.getElementsByClass("navitopicpath_")
+                .first()
+                .wholeText()
+                .strip();
+        }
+        catch (Exception e) {
+            LOGGER.error("Problem with honya category");
+            LOGGER.error(e.getMessage(), e);
+            return StringUtils.EMPTY;
+        }
     }
 
     @Override

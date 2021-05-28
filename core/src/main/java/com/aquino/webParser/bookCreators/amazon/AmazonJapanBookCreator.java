@@ -374,7 +374,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         bookWindowService.findIds(book);
         book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
-        SetHonyaLink(book);
+        setHonyaDetails(book);
         SetHontoLink(book);
         SetYahooLink(book);
         SetWorldCatLink(book);
@@ -398,7 +398,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
-    private void SetHonyaLink(Book book) {
+    private void setHonyaDetails(Book book) {
         if (honyaClubBookCreator == null) {
             return;
         }
@@ -408,6 +408,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ei.setName("Honya");
             book.getMiscellaneous().add(ei);
             book.setDescription(honyaBook.getDescription());
+            book.setCategory2(honyaBook.getCategory());
         }
         catch (IOException e) {
             e.printStackTrace();

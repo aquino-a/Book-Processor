@@ -47,6 +47,7 @@ public class HonyaClubBookCreatorTest extends BasicBookCreatorTest {
         var book = new Book();
         book.setOriginalPriceNumber(1760);
         book.setDescription("５２ヘルツのクジラとは―他の鯨が聞き取れない高い周波数で鳴く");
+        book.setCategory("トップページ > 本・コミック > 文芸 > 文芸（日本） > 現代小説 ");
         return book;
     }
 
@@ -57,5 +58,6 @@ public class HonyaClubBookCreatorTest extends BasicBookCreatorTest {
 
         Assert.assertTrue(book.getDescription().contains(expected.getDescription()));
         Assert.assertEquals(expected.getOriginalPriceNumber(), book.getOriginalPriceNumber());
+        Assert.assertEquals(expected.getCategory(), book.getCategory());
     }
 }
