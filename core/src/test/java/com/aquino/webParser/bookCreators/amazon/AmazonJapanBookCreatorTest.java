@@ -67,11 +67,12 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("21 x 14.8",book.getBookSizeFormatted());
         assertEquals("FACTFULNESS",book.getTitle());
         assertEquals(1980,book.getOriginalPriceNumber());
-        assertEquals("1494",book.getAuthor());
-        assertEquals("",book.getAuthor2());
+        assertEquals("ハンス・ロスリング",book.getAuthor());
+        assertEquals("1494",book.getAuthor2());
         assertEquals("https://images-na.ssl-images-amazon.com/images/I/818RNdEODLL.jpg",book.getImageURL());
         assertEquals("上杉 周作 & 関 美和",book.getTranslator());
         assertEquals("日経BP",book.getPublisher());
+        assertEquals("1位国際政治情勢\n1位社会一般関連書籍\n1位経営学(本)",book.getCategory());
         assertTrue(book.getDescription().startsWith("ファクトフルネスとは――データや事実にもとづき、"));
         assertTrue(book.getDescription().endsWith("書かれている。"));
     }

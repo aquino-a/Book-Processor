@@ -11,6 +11,7 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.ExtraInfo;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +30,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,6 +106,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         book = parseAuthorDetails(book, doc);
         book = parseSecondDetailSection(book, doc);
         book = setWeight(book);
+        book.setCategory(parseCategory(doc));
         book.setLanguageCode("JAP");
         book.setCurrencyType("Yen");
 
@@ -237,6 +237,22 @@ public class AmazonJapanBookCreator implements BookCreator {
             }
         }
         return book;
+    }
+
+    private String parseCategory(Document doc) {
+        try {
+            return doc.getElementsByClass("a-unordered-list a-nostyle a-vertical zg_hrsr")
+                .first()
+                .wholeText()
+                .strip()
+                .replace("\n\n", "\n")
+                .replaceAll("(-| )", StringUtils.EMPTY);
+        }
+        catch (Exception e) {
+            LOGGER.error("Problem with amazon category.");
+            LOGGER.error(e.getMessage(), e);
+            return StringUtils.EMPTY;
+        }
     }
 
     private int findPages(String pagesSource) {
