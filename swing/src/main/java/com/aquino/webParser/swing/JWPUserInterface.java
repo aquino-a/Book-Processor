@@ -239,7 +239,8 @@ public class JWPUserInterface extends JPanel {
                     autoFillTool.setLocationRelativeTo(null);
                     autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     autoFillTool.setVisible(true);
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                     JOptionPane.showMessageDialog(
                         frame,
@@ -310,9 +311,9 @@ public class JWPUserInterface extends JPanel {
             public Void doInBackground() {
                 try {
                     disableActions();
-//                    Book[] books = OldBook.retrieveBookArray(textArea.getText());
-                    if (textArea.getText().trim().equals(""))
+                    if (textArea.getText().trim().equals("")) {
                         return null;
+                    }
                     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     List<Book> books = fetchBooks();
                     writer.writeBooks(books);
@@ -336,11 +337,18 @@ public class JWPUserInterface extends JPanel {
     }
 
     private List<Book> fetchBooks() throws IOException {
+        var text = textArea.getText();
+        LOGGER.info(System.lineSeparator() + text);
         List<Book> books = null;
-        if (dataType == DataType.BookPage)
-            books = bookCreator.bookListFromLink(textArea.getText());
-        else if (dataType == DataType.Isbn)
-            books = GetBookListFromIsbns(textArea.getText());
+        if (dataType == DataType.BookPage) {
+            books = bookCreator.bookListFromLink(text);
+        }
+        else if (dataType == DataType.Isbn) {
+            books = GetBookListFromIsbns(text);
+        }
+        else {
+            throw new UnsupportedOperationException("Only book page and isbn data types are supported.");
+        }
         books.stream().forEach(book -> bookCreator.fillInAllDetails(book));
         return books;
     }
@@ -378,7 +386,7 @@ public class JWPUserInterface extends JPanel {
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();
                     var save = FileUtility.saveLocation(mainPanel);
-                    if(save == null){
+                    if (save == null) {
                         throw new IllegalArgumentException("No save file selected");
                     }
                     checker.getHitsAndWrite(1, type.getPages(), oclcProgress::setProgress, save);
