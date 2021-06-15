@@ -340,7 +340,14 @@ public class AladinBookCreator implements BookCreator {
 
         var doc = Connect.connectToURLwithHeaders(
             createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
-        addPrizes(book, doc);
+        try {
+            addPrizes(book, doc);
+        } catch (Exception e) {
+            LOGGER.error(String.format(
+                "Failed to scrape prizes for %s",
+                    book.getTitle()));
+            LOGGER.error(e.getMessage(), e);
+        }
 
         if (book.getEnglishTitle() == "") {
             book.setAuthorOriginal("");
