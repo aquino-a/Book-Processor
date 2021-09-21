@@ -393,6 +393,8 @@ public class JWPUserInterface extends JPanel {
                     LOGGER.info("Done scraping for oclc numbers.");
                 }
                 catch (IOException ex) {
+                    LOGGER.error("IOException in oclc worker.  Could be abnormal.");
+                    LOGGER.error(ex.getMessage(), ex);
                     JOptionPane.showMessageDialog(frame, "Reached end of pages", "Done", JOptionPane.INFORMATION_MESSAGE);
                 }
                 catch (Exception e) {
