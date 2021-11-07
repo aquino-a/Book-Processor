@@ -357,7 +357,7 @@ public class JWPUserInterface extends JPanel {
         List<Book> list = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(text);
         while (st.hasMoreTokens()) {
-            String isbn = st.nextToken();
+            String isbn = st.nextToken().replace('\u00A0',' ').strip();
             try {
                 Book book = bookCreator.createBookFromIsbn(isbn);
                 if (book.getIsbn() == 0)

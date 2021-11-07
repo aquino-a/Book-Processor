@@ -7,6 +7,8 @@ package com.aquino.webParser.swing;
 
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.bookCreators.BookCreator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -19,7 +21,7 @@ import java.util.StringTokenizer;
  */
 public class NewLineFilter extends DocumentFilter{
 
-
+    private static final Logger LOGGER = LogManager.getLogger();
     private DataType dataType;
     private BookCreator bookCreator;
 
@@ -53,13 +55,17 @@ public class NewLineFilter extends DocumentFilter{
         while(st.hasMoreTokens()){
             token = st.nextToken();
             if(dataType.equals(DataType.BookPage)){
-                if(!token.contains(bookCreator.BookPagePrefix()))
+                if(!token.contains(bookCreator.BookPagePrefix())) {
+                    LOGGER.error(String.format("Problem with token: %s", token));
                     return false;
+                }
             }
             else if(dataType.equals(DataType.Isbn)){
+                var strippedToken = token.replace('\u00A0',' ').strip();
                 try {
-                    Long.parseLong(token);
+                    Long.parseLong(strippedToken);
                 } catch (NumberFormatException e) {
+                    LOGGER.error(String.format("Problem with ISBN token: \"%s\"", strippedToken));
                     return false;
                 }
             }
