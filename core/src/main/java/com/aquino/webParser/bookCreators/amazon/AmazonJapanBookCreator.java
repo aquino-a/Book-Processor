@@ -46,7 +46,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern IMAGE_URL_SCRIPT_PATTERN = Pattern.compile(
-        "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%\\-+]+.jpg)");
+            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%\\-+]+.jpg)");
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
@@ -71,20 +71,25 @@ public class AmazonJapanBookCreator implements BookCreator {
     public Book createBookFromIsbn(String isbn) throws IOException {
         //data-component-id="8"
         Document doc = Connect.connectToURL(String.format(SEARCH_URL_FORMAT, isbn));
-        if (doc == null)
+        if (doc == null) {
             throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
-        String link = doc.getElementsByClass("a-size-base a-link-normal a-text-bold")
-            .stream()
-            .filter(e -> e.wholeText().contains("単行本")
-                || e.wholeText().contains("大型本")
-                || e.wholeText().contains("文庫")
-                || e.wholeText().contains("新書"))
-            .findFirst()
-            .orElse(null)
-            .attr("href");
-        return createBookFromBookPage(BOOK_PAGE_PREFIX + link);
-    }
+        }
+        var linkElement = doc.getElementsByClass("a-size-base a-link-normal a-text-bold")
+                .stream()
+                .filter(e -> e.wholeText().contains("単行本")
+                        || e.wholeText().contains("大型本")
+                        || e.wholeText().contains("文庫")
+                        || e.wholeText().contains("新書"))
+                .findFirst()
+                .orElse(null);
 
+        if (linkElement == null) {
+            throw new NoSuchElementException(String.format("Book link not found for: %s", isbn));
+        } else {
+            var link = linkElement.attr("href");
+            return createBookFromBookPage(BOOK_PAGE_PREFIX + link);
+        }
+    }
 
     @Override
     public Book createBookFromBookPage(String bookPageUrl) throws IOException {
@@ -116,11 +121,10 @@ public class AmazonJapanBookCreator implements BookCreator {
     private String parseDescription(Document doc) {
         try {
             return doc.getElementById("bookDescription_feature_div")
-                .getElementsByTag("noscript")
-                .first()
-                .wholeText().replaceAll("\n", "").trim();
-        }
-        catch (Exception e) {
+                    .getElementsByTag("noscript")
+                    .first()
+                    .wholeText().replaceAll("\n", "").trim();
+        } catch (Exception e) {
             LOGGER.error(String.format("Couldn't parse description: %s", e.getMessage()));
             LOGGER.error(e.getMessage(), e);
             return "";
@@ -135,33 +139,28 @@ public class AmazonJapanBookCreator implements BookCreator {
             String contributionType = null;
             for (Element e : es) {
                 contributionType = e.getElementsByClass("contribution").first()
-                    .getElementsByClass("a-color-secondary").first().ownText();
+                        .getElementsByClass("a-color-secondary").first().ownText();
                 if (contributionType.contains("翻訳")) {
                     if (book.getTranslator() != null)
                         book.setTranslator(book.getTranslator() + " & " + findContributorName(e));
                     else book.setTranslator(findContributorName(e));
-                }
-                else if (contributionType.contains("著")) {
+                } else if (contributionType.contains("著")) {
                     if (authorCount == 0) {
                         authorCount++;
                         book.setAuthor(findContributorName(e));
-                    }
-                    else if (authorCount == 1) {
+                    } else if (authorCount == 1) {
                         authorCount++;
                         book.setAuthor2(findContributorName(e));
-                    }
-                    else if (authorCount > 1) {
+                    } else if (authorCount > 1) {
                         book.setAuthor2("1494");
                     }
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error(String.format("Couldn't parse author details: %s", e.getMessage()));
             LOGGER.error(e.getMessage(), e);
-        }
-        finally {
+        } finally {
             setDefaultAutorSection(book);
             return book;
         }
@@ -197,8 +196,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         try {
             String priceSource = doc.getElementsByClass("a-size-base a-color-price a-color-price").first().text().trim();
             return NumberFormat.getInstance(Locale.JAPAN).parse(priceSource.replace("￥", "").trim()).intValue();
-        }
-        catch (NullPointerException | ParseException e) {
+        } catch (NullPointerException | ParseException e) {
             LOGGER.warn(String.format("Couldn't parse price: %s", e.getMessage()));
             return -1;
         }
@@ -217,22 +215,18 @@ public class AmazonJapanBookCreator implements BookCreator {
             String whole = e.wholeText();
             if (whole.contains("ページ")) {
                 book.setPages(findPages(e.child(1).ownText()));
-            }
-            else if (whole.contains("出版社")) {
+            } else if (whole.contains("出版社")) {
                 book.setPublisher(findPublisher(e.child(1).ownText().trim()));
-            }
-            else if (whole.contains("発売日")) {
+            } else if (whole.contains("発売日")) {
                 book.setPublishDateFormatted(findPublishedDateFormatted(e.child(1).ownText().trim()));
-            }
-            else if (
-                whole.contains("梱包サイズ") ||
-                    whole.contains("商品パッケ") ||
-                    whole.contains("商品の寸法") ||
-                    whole.contains("寸法")
+            } else if (
+                    whole.contains("梱包サイズ") ||
+                            whole.contains("商品パッケ") ||
+                            whole.contains("商品の寸法") ||
+                            whole.contains("寸法")
             ) {
                 book.setBookSizeFormatted(findBookSizeFormatted(e.child(1).ownText().trim()));
-            }
-            else if (whole.contains("ISBN-13")) {
+            } else if (whole.contains("ISBN-13")) {
                 book.setIsbn(findIsbn(e.child(1).ownText().trim()));
             }
         }
@@ -242,13 +236,12 @@ public class AmazonJapanBookCreator implements BookCreator {
     private String parseCategory(Document doc) {
         try {
             return doc.getElementsByClass("a-unordered-list a-nostyle a-vertical zg_hrsr")
-                .first()
-                .wholeText()
-                .strip()
-                .replace("\n\n", "\n")
-                .replaceAll("(-| )", StringUtils.EMPTY);
-        }
-        catch (Exception e) {
+                    .first()
+                    .wholeText()
+                    .strip()
+                    .replace("\n\n", "\n")
+                    .replaceAll("(-| )", StringUtils.EMPTY);
+        } catch (Exception e) {
             LOGGER.error("Problem with amazon category.");
             LOGGER.error(e.getMessage(), e);
             return StringUtils.EMPTY;
@@ -258,8 +251,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private int findPages(String pagesSource) {
         try {
             return Integer.parseInt(pagesSource.substring(0, pagesSource.indexOf("ページ")));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
@@ -278,8 +270,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         try {
             LocalDate date = LocalDate.parse(dateSource, DATE_SOURCE_FORMATTER);
             return date.format(DATE_TARGET_FORMATTER);
-        }
-        catch (DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             LOGGER.warn(String.format("Couldn't find publish date: %s", dateSource));
             return "";
         }
@@ -289,19 +280,18 @@ public class AmazonJapanBookCreator implements BookCreator {
         //28.5 x 20.9 x 1.4 cm
         String[] nums = sizeSource.split("[ x cm]");
         double[] arr = Arrays.stream(nums).filter(n -> NumberUtils.isCreatable(n))
-            .map(Double::valueOf)
-            .sorted(Comparator.reverseOrder())
-            .limit(2)
-            .mapToDouble(Double::doubleValue)
-            .toArray();
+                .map(Double::valueOf)
+                .sorted(Comparator.reverseOrder())
+                .limit(2)
+                .mapToDouble(Double::doubleValue)
+                .toArray();
         return String.format(BOOK_SIZE_FORMAT, arr[0], arr[1]).replace(".0", "");
     }
 
     private long findIsbn(String isbnSource) {
         try {
             return Long.parseLong(isbnSource.replace("-", ""));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }
@@ -334,8 +324,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                 return "PB";
             }
             return "";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.warn(String.format("Couldn't no book type found: %s", e.getMessage()));
             return "";
         }
@@ -345,8 +334,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         try {
             Element element = doc.getElementById("booksImageBlock_feature_div").getElementsByTag("script").first();
             return findImageUrl(element.data());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.warn(String.format("Couldn't find image url: %s", e.getMessage()));
             return "";
         }
@@ -391,8 +379,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(45, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Honto");
             book.getMiscellaneous().add(ei);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -409,8 +396,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             book.getMiscellaneous().add(ei);
             book.setDescription(honyaBook.getDescription());
             book.setCategory2(honyaBook.getCategory());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -426,8 +412,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(47, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Yahoo");
             book.getMiscellaneous().add(ei);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -442,8 +427,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(48, worldCatBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("OCLC");
             book.getMiscellaneous().add(ei);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -458,8 +442,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(49, kinoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Kino");
             book.getMiscellaneous().add(ei);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
@@ -472,8 +455,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         try {
             var romanized = RomanizeJapanese(title);
             return capitalizeFirstLetter(romanized);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return "";
         }
     }
