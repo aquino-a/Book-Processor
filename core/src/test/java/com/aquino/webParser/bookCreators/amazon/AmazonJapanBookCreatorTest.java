@@ -35,7 +35,7 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
-    public void FromIsbnKindleBugFix1() throws IOException, URISyntaxException {
+    public void fromIsbnKindleBugFix1() throws IOException, URISyntaxException {
 
         String isbn = "9784391154511";
         Book book = bc.createBookFromIsbn(isbn);
@@ -46,7 +46,7 @@ public class AmazonJapanBookCreatorTest {
     }
 
     @Test
-    public void FromIsbnKindleBugFix2() throws IOException, URISyntaxException {
+    public void fromIsbnKindleBugFix2() throws IOException, URISyntaxException {
 
         String isbn = "9784864541473";
         Book book = bc.createBookFromIsbn(isbn);
@@ -54,6 +54,14 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(book.getPages(), 184);
         assertEquals(book.getOriginalPriceNumber(), 1980);
         assertEquals(book.getAuthor(), "白井 恭弘");
+    }
+
+    @Test
+    public void bookLinkBugFix() throws IOException, URISyntaxException {
+
+        String isbn = "9784065258910";
+        Book book = bc.createBookFromIsbn(isbn);
+        assertNotNull(book);
     }
 
     @Test

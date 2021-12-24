@@ -74,14 +74,12 @@ public class AmazonJapanBookCreator implements BookCreator {
         if (doc == null) {
             throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
         }
-        var linkElement = doc.getElementsByClass("a-size-base a-link-normal a-text-bold")
-                .stream()
-                .filter(e -> e.wholeText().contains("単行本")
-                        || e.wholeText().contains("大型本")
-                        || e.wholeText().contains("文庫")
-                        || e.wholeText().contains("新書"))
-                .findFirst()
-                .orElse(null);
+        Element linkElement;
+        linkElement = findLink(doc, "a-size-base a-link-normal s-link-style a-text-bold");
+
+        if (linkElement == null) {
+            linkElement = findLink(doc, "a-size-base a-color-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold");
+        }
 
         if (linkElement == null) {
             throw new NoSuchElementException(String.format("Book link not found for: %s", isbn));
@@ -116,6 +114,17 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setCurrencyType("Yen");
 
         return book;
+    }
+
+    private Element findLink(Document doc, String linkClass) {
+        return doc.getElementsByClass(linkClass)
+                .stream()
+                .filter(e -> e.wholeText().contains("単行本")
+                        || e.wholeText().contains("大型本")
+                        || e.wholeText().contains("文庫")
+                        || e.wholeText().contains("新書"))
+                .findFirst()
+                .orElse(null);
     }
 
     private String parseDescription(Document doc) {
