@@ -3,22 +3,20 @@ package com.aquino.webParser.bookCreators.amazon;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.oclc.OclcService;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
 
 public class AmazonJapanBookCreatorTest {
 
@@ -31,7 +29,7 @@ public class AmazonJapanBookCreatorTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        bc = new AmazonJapanBookCreator(bookWindowService,oclcService);
+        bc = new AmazonJapanBookCreator(bookWindowService, oclcService);
     }
 
     @Test
@@ -61,7 +59,7 @@ public class AmazonJapanBookCreatorTest {
 
         String isbn = "9784065258910";
         Book book = bc.createBookFromIsbn(isbn);
-        assertNotNull(book);
+        assertThat(book, is(notNullValue()));
     }
 
     @Test
@@ -69,19 +67,18 @@ public class AmazonJapanBookCreatorTest {
 
         String isbn = "9784822289607";
         Book book = bc.createBookFromIsbn(isbn);
-        assertEquals(9784822289607L,book.getIsbn());
-        assertEquals(400,book.getPages());
-        assertEquals("01/11/2019",book.getPublishDateFormatted());
-        assertEquals("21 x 14.8",book.getBookSizeFormatted());
-        assertEquals("FACTFULNESS",book.getTitle());
-        assertEquals(1980,book.getOriginalPriceNumber());
-        assertEquals("ハンス・ロスリング",book.getAuthor());
-        assertEquals("1494",book.getAuthor2());
-        assertEquals("https://images-na.ssl-images-amazon.com/images/I/818RNdEODLL.jpg",book.getImageURL());
-        assertEquals("上杉 周作 & 関 美和",book.getTranslator());
-        assertEquals("日経BP",book.getPublisher());
-        assertEquals("1位国際政治情勢\n1位社会一般関連書籍\n1位経営学(本)",book.getCategory());
-        assertTrue(book.getDescription().startsWith("ファクトフルネスとは――データや事実にもとづき、"));
-        assertTrue(book.getDescription().endsWith("書かれている。"));
+        assertEquals(9784822289607L, book.getIsbn());
+        assertEquals(400, book.getPages());
+        assertEquals("01/11/2019", book.getPublishDateFormatted());
+        assertEquals("21 x 14.8", book.getBookSizeFormatted());
+        assertEquals("FACTFULNESS", book.getTitle());
+        assertEquals(1980, book.getOriginalPriceNumber());
+        assertEquals("ハンス・ロスリング", book.getAuthor());
+        assertEquals("1494", book.getAuthor2());
+        assertEquals("上杉 周作 & 関 美和", book.getTranslator());
+        assertEquals("日経BP", book.getPublisher());
+        assertThat(book.getImageURL(), startsWith("https://images-na.ssl-images-amazon.com/images/I/"));
+        assertThat(book.getCategory(), is(not(emptyOrNullString())));
+        assertThat(book.getDescription(), is(not(emptyOrNullString())));
     }
 }

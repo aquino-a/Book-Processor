@@ -81,6 +81,10 @@ public class AmazonJapanBookCreator implements BookCreator {
             linkElement = findLink(doc, "a-size-base a-color-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold");
         }
 
+        if(linkElement == null) {
+            linkElement = findLink(doc, "a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold");
+        }
+
         if (linkElement == null) {
             throw new NoSuchElementException(String.format("Book link not found for: %s", isbn));
         } else {
