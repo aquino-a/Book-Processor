@@ -134,8 +134,6 @@ public class AmazonJapanBookCreator implements BookCreator {
     private String parseDescription(Document doc) {
         try {
             return doc.getElementById("bookDescription_feature_div")
-                    .getElementsByTag("noscript")
-                    .first()
                     .wholeText().replaceAll("\n", "").trim();
         } catch (Exception e) {
             LOGGER.error(String.format("Couldn't parse description: %s", e.getMessage()));
