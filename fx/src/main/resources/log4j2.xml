@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="PropertiesConfig" packages="com.aquino.webParser">
+    <Properties>
+        <Property name="mainFileName">logs/book.log</Property>
+        <Property name="inputFileName">logs/input.log</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%d %p %C{1.} %m%n"/>
+            <Filters>
+                <ThresholdFilter level="all"/>
+            </Filters>
+        </Console>
+        <RollingFile name="RollingFile"
+                  fileName="${mainFileName}"
+                  filePattern="logs/test1-%d{MM-dd-yy}-%i.log.gz">
+            <PatternLayout pattern="%d %p %C{1.} %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <Filters>
+                <ThresholdFilter level="error"/>
+            </Filters>
+        </RollingFile>
+        <RollingFile name="inputRolling"
+                     fileName="${inputFileName}"
+                     filePattern="logs/input-%d{MM-dd-yy}-%i.log.gz">
+            <PatternLayout pattern="%d{MM-dd-yy hh:m a} %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <Filters>
+                <ThresholdFilter level="info"/>
+            </Filters>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.aquino.webParser.fx" level="info">
+            <AppenderRef ref="inputRolling"/>
+        </Logger>
+        <Root level="all">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
