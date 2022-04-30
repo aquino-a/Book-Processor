@@ -62,7 +62,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        com.aquino.webParser.fx.Main
+                                        com.aquino.webParser.fx.App
                                     </mainClass>
                                 </manifest>
                                 <manifestEntries>

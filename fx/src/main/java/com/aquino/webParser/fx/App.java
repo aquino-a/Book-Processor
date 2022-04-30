@@ -7,11 +7,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main extends Application {
+public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        var fxmlLoader = new FXMLLoader(Main.class.getResource("main.fxml"));
+        var fxmlLoader = new FXMLLoader(App.class.getResource("view/main.fxml"));
         var scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Jeein's Web Parser");
         stage.setScene(scene);
