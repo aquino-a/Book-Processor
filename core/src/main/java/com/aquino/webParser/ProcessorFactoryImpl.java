@@ -133,18 +133,9 @@ public class ProcessorFactoryImpl {
                 koreanLastNames = br.lines()
                     .map(name -> name.split(","))
                     .filter(array -> array.length == 2)
-                    .collect(Collectors.toMap(array -> stripBom(array[0].strip()), array -> array[1].strip()));
+                    .collect(Collectors.toMap(array -> array[0].strip(), array -> array[1].strip()));
             }
         }
         return koreanLastNames;
-    }
-
-    private String stripBom(String text) {
-        byte[] bytes = text.getBytes();
-        if (bytes[0] == (byte) 0xef && bytes[1] == (byte) 0xbb && bytes[2] == (byte) 0xbf) // BOM
-        {
-            return new String(Arrays.copyOfRange(bytes, 3, bytes.length));
-        }
-        return text;
     }
 }
