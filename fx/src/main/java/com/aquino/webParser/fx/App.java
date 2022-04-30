@@ -1,5 +1,6 @@
 package com.aquino.webParser.fx;
 
+import com.aquino.webParser.fx.builder.AppBuilderFactory;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,7 +12,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        var fxmlLoader = new FXMLLoader(App.class.getResource("view/main.fxml"));
+        var fxmlLoader = new FXMLLoader(App.class.getResource("view/main.fxml"),
+            null,
+            new AppBuilderFactory());
         var scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Jeein's Web Parser");
         stage.setScene(scene);
