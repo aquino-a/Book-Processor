@@ -1,12 +1,13 @@
 package com.aquino.webParser.fx.view;
 
 import com.aquino.webParser.fx.viewModel.MainViewModel;
+import javafx.fxml.FXML;
+
+import java.util.ResourceBundle;
 
 public class Main {
 
-    private final MainViewModel mainViewModel;
 
-    public Main(MainViewModel mainViewModel) {
-        this.mainViewModel = mainViewModel;
+    public Main() {
     }
 }

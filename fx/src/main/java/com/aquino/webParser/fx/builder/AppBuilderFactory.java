@@ -11,7 +11,7 @@ public class AppBuilderFactory implements BuilderFactory {
     @Override
     public Builder<?> getBuilder(Class<?> type) {
         if (MainViewModel.class.equals(type)) {
-            return () -> new MainViewModel();
+            return MainViewModel::new;
         }
         throw new NotImplementedException("");
     }
