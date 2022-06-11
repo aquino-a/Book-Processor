@@ -31,19 +31,28 @@ public class ExcelReader {
         var list = new ArrayList<Pair<Integer, Book>>();
         XSSFRow row = sheet.getRow(startRow);
         for (int i = startRow; row != null && row.getPhysicalNumberOfCells() > 2; i++, row = sheet.getRow(i)) {
-            list.add(Pair.of(i, CreateBook(row)));
+            var book = CreateBook(row);
+
+            if (book != null) {
+                list.add(Pair.of(i, CreateBook(row)));
+            }
         }
         return list;
     }
 
     private Book CreateBook(XSSFRow row) {
         var book = new Book();
-        book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
+
+        try {
+            book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
+        } catch (Exception e) {
+            LOGGER.warn(String.format("Problem with Isbn. Skipping Row. Row#: %d, %s", row.getRowNum(), e.getMessage()));
+            return null;
+        }
 
         try {
             book.setOclc((long) row.getCell(locationMap.get("oclc")).getNumericCellValue());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             book.setOclc(-1);
         }
 
@@ -61,16 +70,14 @@ public class ExcelReader {
         try {
             var id = GetNum(row, authorIdCell);
             book.setAuthorId(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.warn(String.format("Problem with author id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
         }
 
         var cell = row.getCell(authorCell);
         if (cell != null) {
             book.setAuthor(cell.getStringCellValue());
-        }
-        else LOGGER.warn(String.format("Problem with author. Isbn: %d", book.getIsbn()));
+        } else LOGGER.warn(String.format("Problem with author. Isbn: %d", book.getIsbn()));
     }
 
     private void SetAuthor2(XSSFRow row, Book book) {
@@ -80,8 +87,7 @@ public class ExcelReader {
         try {
             var id = GetNum(row, author2IdCell);
             book.setAuthor2Id(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.warn(String.format("Problem with author2 id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
         }
 
@@ -99,8 +105,7 @@ public class ExcelReader {
         try {
             var id = GetNum(row, publisherIdCell);
             book.setPublisherId(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.warn(String.format("Problem with author2 id. Isbn: %d, %s", book.getIsbn(), e.getMessage()));
         }
         var cell = row.getCell(publisherCell);
