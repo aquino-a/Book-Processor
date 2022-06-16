@@ -10,6 +10,8 @@ import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -352,8 +354,13 @@ public class BookWindowServiceImpl implements BookWindowService {
     @Override
     public int addAuthor(Author author) {
 
-        var addAuthorDoc = Login.postDocument(ADD_URL,
-                Map.of("first_name",author.getEnglishFirstName(),"middle_name", "","last_name", author.getEnglishLastName(), "contributor_role", AUTHOR_ROLE));
+        var addAuthorDoc = Login.postBody(
+                ADD_URL,
+                Map.of("first_name", URLEncoder.encode(author.getEnglishFirstName(), StandardCharsets.UTF_8),
+                        "middle_name", "",
+                        "last_name", URLEncoder.encode(author.getEnglishLastName(), StandardCharsets.UTF_8),
+                        "contributor_role", AUTHOR_ROLE));
+
         var text = addAuthorDoc.html();
         var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.html());
         int result = -1;
