@@ -53,7 +53,7 @@ public class AladinBookCreator implements BookCreator {
         for (Element element : doc.getAllElements()) {
             for (Node n : element.childNodes()) {
                 if (n.nodeName().equals("#comment")) {
-                    if ("\n<!-- 책소개-->".contentEquals(n.toString())) {
+                    if (n.toString().contains("책소개")) {
                         try {
                             result = Jsoup.parse(
                                 element.siblingElements().toString())
