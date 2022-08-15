@@ -14,7 +14,7 @@
         </Console>
         <RollingFile name="RollingFile"
                   fileName="${mainFileName}"
-                  filePattern="logs/test1-%d{MM-dd-yy}-%i.log.gz">
+                  filePattern="logs/book-%d{MM-dd-yy}-%i.log.gz">
             <PatternLayout pattern="%d %p %C{1.} %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
