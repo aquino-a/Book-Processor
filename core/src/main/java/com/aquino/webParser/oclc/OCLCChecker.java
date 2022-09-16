@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
+ *  Searches the Aladdin page for books with OCLC and not in books windows.
+ *
  * @author alex
  */
 public class OCLCChecker {
@@ -32,9 +34,6 @@ public class OCLCChecker {
 
     private final BookCreator bookCreator;
     private final ExcelWriter writer;
-
-    //    Links link;
-    int hits;
     private Type type = NEW;
 
     public OCLCChecker(BookCreator bookCreator) {
@@ -109,12 +108,7 @@ public class OCLCChecker {
             var doc = Jsoup.connect(linksUrl)
                 .get();
 
-//            if (doc == null) {
-//                throw new IOException(String.format("Couldn't get links page: %s", linksUrl));
-//            }
-
             var bookElements = doc.getElementsByClass("bo3");
-//            if (bookElements == null || bookElements.size() < 1) {
             if (bookElements.size() < 1) {
                 throw new IOException(String.format("No book elements found: %s", linksUrl));
             }
