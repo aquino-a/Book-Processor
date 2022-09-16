@@ -41,8 +41,8 @@ public final class OclcServiceImpl implements OclcService {
 
             return Long.parseLong(oclc);
         } catch (IOException | InterruptedException e) {
-            LOGGER.error(String.format("Couldn't get OCLC for %s", isbn));
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.info(String.format("Couldn't get OCLC for %s", isbn));
+            LOGGER.info(e.getMessage(), e);
             return -1;
         }
     }
