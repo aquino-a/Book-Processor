@@ -19,24 +19,8 @@ import java.util.StringJoiner;
 public class Links {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Type type = Type.NEW;
 
-    public static Type getType() {
-        return type;
-    }
 
-    public static void setType(Type type) {
-        Links.type = type;
-    }
-
-    private static String buildOCLCURL(String pageNumber) {
-        if (type == Type.NEW)
-            return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
-        if (type == Type.BEST)
-            return "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0&page=" + pageNumber;
-        else
-            return "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=" + pageNumber;
-    }
 
     public static String getPageofLinks(int pageNumber) throws IOException {
         LOGGER.info("Starting page {0}", pageNumber);
@@ -64,19 +48,7 @@ public class Links {
         else return elements;
     }
 
-    public enum Type {
-        BEST(20), NEW(47);
-        private final int pages;
 
-        Type(int pages) {
-            this.pages = pages;
-        }
-
-        public int getPages() {
-            return pages;
-        }
-
-    }
 //    public String getPagesOfLinks(int pageAmount) {
 //        StringJoiner joiner = new StringJoiner("\n");
 //        for(int i = 0; i < pageAmount; i++) {
