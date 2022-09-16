@@ -15,7 +15,6 @@ import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.swing.autofill.AuthorPublisherAutoFill;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.utilities.Links;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
