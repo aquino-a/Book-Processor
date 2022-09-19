@@ -18,6 +18,7 @@ public final class OclcServiceImpl implements OclcService {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ProxyList PROXY_LIST = new ProxyList();
 
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
@@ -54,8 +55,7 @@ public final class OclcServiceImpl implements OclcService {
      * @return the oclc if found
      */
     private String GetWorldCatOclc(String isbn) throws IOException, InterruptedException {
-        var link = String.format(WORLDCAT_REQUEST, isbn);
-        var process = new ProcessBuilder("curl","--fail-with-body", "--proxy","198.49.68.80:80", link).start();
+        var process = getCurlProcess(isbn);
 
         try (var is = process.getInputStream()) {
             var root = OBJECT_MAPPER.readTree(is);
@@ -73,6 +73,26 @@ public final class OclcServiceImpl implements OclcService {
 
             return oclcNode.asText();
         }
+    }
+
+    private Process getCurlProcess(String isbn) throws IOException {
+
+        String proxy;
+        try {
+            proxy = PROXY_LIST.getProxy();
+        } catch (IOException e) {
+            LOGGER.info("No proxy found, trying without proxy.");
+            proxy = null;
+        }
+        var processBuilder = new ProcessBuilder("curl", "--fail-with-body");
+        if (proxy != null) {
+            processBuilder.command("--proxy", "198.49.68.80:80");
+        }
+
+        var link = String.format(WORLDCAT_REQUEST, isbn);
+        processBuilder.command(link);
+
+        return processBuilder.start();
     }
 
     /**
