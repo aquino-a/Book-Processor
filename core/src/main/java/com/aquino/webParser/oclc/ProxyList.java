@@ -14,19 +14,21 @@ public class ProxyList {
     private final Set<String> proxies = new HashSet<>();
 
     public String getProxy() throws IOException {
-        if(proxies.size() <= 0){
+        if (proxies.size() <= 0) {
             getProxies();
         }
 
-        if(proxies.size() <= 0){
+        if (proxies.size() <= 0) {
             throw new IOException("Couldn't load proxies");
         }
 
         return proxies.stream().findFirst().get();
     }
 
-    public void removeProxy(String proxy){
-        proxies.remove(proxy);
+    public void removeProxy(String proxy) {
+        if (proxy != null) {
+            proxies.remove(proxy);
+        }
     }
 
     private void getProxies() throws IOException {

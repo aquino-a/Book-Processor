@@ -68,13 +68,13 @@ public final class OclcServiceImpl implements OclcService {
                     root = OBJECT_MAPPER.readTree(is);
                 } catch (JsonParseException e) {
                     LOGGER.info("Request body not valid");
+                    PROXY_LIST.removeProxy(proxy);
+                    continue;
                 }
-                process.waitFor();
 
+                process.waitFor();
                 if (process.exitValue() > 0) {
-                    if (proxy != null) {
-                        PROXY_LIST.removeProxy(proxy);
-                    }
+                    PROXY_LIST.removeProxy(proxy);
                     LOGGER.info("Request to world cat failed");
                     continue;
                 }
@@ -82,7 +82,6 @@ public final class OclcServiceImpl implements OclcService {
                 return findOclc(root);
             }
         }
-
     }
 
     private String getProxy() {
