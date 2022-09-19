@@ -84,6 +84,12 @@ public final class OclcServiceImpl implements OclcService {
         }
     }
 
+    /**
+     * Gets a proxy from {@code PROXY_LIST}.
+     * Returns null if any IOException is thrown.
+     *
+     * @return a proxy
+     */
     private String getProxy() {
         try {
             return PROXY_LIST.getProxy();
@@ -93,6 +99,13 @@ public final class OclcServiceImpl implements OclcService {
         }
     }
 
+    /**
+     * Gets the oclc from the world cat json root node.
+     *
+     * @param root the world cat JsonNode root.
+     * @return the oclc
+     * @throws IOException when the json doesn't contain any book records.
+     */
     private String findOclc(JsonNode root) throws IOException {
         var numOfRecords = root.path("numberOfRecords").asInt();
         if (numOfRecords < 1) {
@@ -105,6 +118,15 @@ public final class OclcServiceImpl implements OclcService {
         return oclcNode.asText();
     }
 
+    /**
+     * Starts the cUrl process and returns it to get the input.
+     * Doesn't use proxy if {@code proxy} is null.
+     *
+     * @param proxy the proxy to use.
+     * @param isbn the isbn to search for.
+     * @return the started cUrl process.
+     * @throws IOException if any problems arise when starting the process.
+     */
     private Process getCurlProcess(String proxy, String isbn) throws IOException {
         var args = new ArrayList<String>(5);
         args.add("curl");
@@ -128,7 +150,7 @@ public final class OclcServiceImpl implements OclcService {
      *
      * @param owi the book's owi.
      * @return the oclc
-     * @throws IOException
+     * @throws IOException if any problems when making a request to the 'classify' api.
      */
     private String GetOclc(String owi) throws IOException {
         var doc = GetClassifyDoc(String.format(OWI_REQUEST, owi));
@@ -147,7 +169,7 @@ public final class OclcServiceImpl implements OclcService {
      *
      * @param isbn the book's isbn.
      * @return the owi
-     * @throws IOException
+     * @throws IOException if any problems when making a request to the 'classify' api.
      */
     private String GetOwi(String isbn) throws IOException {
         var doc = GetClassifyDoc(String.format(ISBN_REQUEST, isbn));
@@ -166,7 +188,7 @@ public final class OclcServiceImpl implements OclcService {
      *
      * @param url the url to connect to.
      * @return the response document.
-     * @throws IOException
+     * @throws IOException if any problems when making a request to the 'classify' api.
      */
     private Document GetClassifyDoc(String url) throws IOException {
         var res = Jsoup.connect(url)
@@ -182,7 +204,7 @@ public final class OclcServiceImpl implements OclcService {
     /**
      * Gets whether the classify.org response successfully found works.
      *
-     * @param doc the classify xml response.
+     * @param doc the 'classify' xml response.
      * @return whether the request was successful.
      */
     private boolean IsResponseOK(Document doc) {
