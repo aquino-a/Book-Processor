@@ -1,5 +1,7 @@
 package com.aquino.webParser.oclc;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -55,42 +58,68 @@ public final class OclcServiceImpl implements OclcService {
      * @return the oclc if found
      */
     private String GetWorldCatOclc(String isbn) throws IOException, InterruptedException {
-        var process = getCurlProcess(isbn);
+        while (true) {
+            var proxy = getProxy();
+            var process = getCurlProcess(proxy, isbn);
 
-        try (var is = process.getInputStream()) {
-            var root = OBJECT_MAPPER.readTree(is);
-            if (process.exitValue() > 0) {
-                throw new IOException("Request to world cat failed");
+            try (var is = process.getInputStream()) {
+                JsonNode root = null;
+                try {
+                    root = OBJECT_MAPPER.readTree(is);
+                } catch (JsonParseException e) {
+                    LOGGER.info("Request body not valid");
+                }
+                process.waitFor();
+
+                if (process.exitValue() > 0) {
+                    if (proxy != null) {
+                        PROXY_LIST.removeProxy(proxy);
+                    }
+                    LOGGER.info("Request to world cat failed");
+                    continue;
+                }
+
+                return findOclc(root);
             }
+        }
 
-            var numOfRecords = root.path("numberOfRecords").asInt();
-            if (numOfRecords < 1) {
-                throw new IOException(String.format("ISBN not in world cat: %s", isbn));
-            }
+    }
 
-            var firstRecord = root.path("briefRecords").get(0);
-            var oclcNode = firstRecord.path("oclcNumber");
-
-            return oclcNode.asText();
+    private String getProxy() {
+        try {
+            return PROXY_LIST.getProxy();
+        } catch (IOException e) {
+            LOGGER.info("No proxy found, trying without proxy.");
+            return null;
         }
     }
 
-    private Process getCurlProcess(String isbn) throws IOException {
-
-        String proxy;
-        try {
-            proxy = PROXY_LIST.getProxy();
-        } catch (IOException e) {
-            LOGGER.info("No proxy found, trying without proxy.");
-            proxy = null;
+    private String findOclc(JsonNode root) throws IOException {
+        var numOfRecords = root.path("numberOfRecords").asInt();
+        if (numOfRecords < 1) {
+            throw new IOException("ISBN not in world cat");
         }
-        var processBuilder = new ProcessBuilder("curl", "--fail-with-body");
+
+        var firstRecord = root.path("briefRecords").get(0);
+        var oclcNode = firstRecord.path("oclcNumber");
+
+        return oclcNode.asText();
+    }
+
+    private Process getCurlProcess(String proxy, String isbn) throws IOException {
+        var args = new ArrayList<String>(5);
+        args.add("curl");
+        args.add("--fail-with-body");
+
         if (proxy != null) {
-            processBuilder.command("--proxy", "198.49.68.80:80");
+            args.add("--proxy");
+            args.add(proxy);
         }
 
         var link = String.format(WORLDCAT_REQUEST, isbn);
-        processBuilder.command(link);
+        args.add(link);
+
+        var processBuilder = new ProcessBuilder(args);
 
         return processBuilder.start();
     }
