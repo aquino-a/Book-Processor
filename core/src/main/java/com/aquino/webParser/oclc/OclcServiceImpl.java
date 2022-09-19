@@ -21,7 +21,7 @@ public final class OclcServiceImpl implements OclcService {
 
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
-    private static final String WORLDCAT_REQUEST = "\"https://www.worldcat.org/api/search?q=%s&audience=&author=" +
+    private static final String WORLDCAT_REQUEST = "\"http://www.worldcat.org/api/search?q=%s&audience=&author=" +
         "&content=&datePublished=&inLanguage=&itemSubType=&itemType=&limit=10&offset=1&openAccess=&orderBy=library" +
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
         "&lat=35.5625&lon=129.1235\"";
@@ -55,10 +55,14 @@ public final class OclcServiceImpl implements OclcService {
      */
     private String GetWorldCatOclc(String isbn) throws IOException, InterruptedException {
         var link = String.format(WORLDCAT_REQUEST, isbn);
-        var process = new ProcessBuilder("curl", link).start();
+        var process = new ProcessBuilder("curl","--fail-with-body", "--proxy","198.49.68.80:80", link).start();
 
         try (var is = process.getInputStream()) {
             var root = OBJECT_MAPPER.readTree(is);
+            if (process.exitValue() > 0) {
+                throw new IOException("Request to world cat failed");
+            }
+
             var numOfRecords = root.path("numberOfRecords").asInt();
             if (numOfRecords < 1) {
                 throw new IOException(String.format("ISBN not in world cat: %s", isbn));
