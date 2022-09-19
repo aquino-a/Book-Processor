@@ -30,7 +30,7 @@ public class ProxyList {
     }
 
     private void getProxies() throws IOException {
-        var doc = Jsoup.connect("us-proxy.org")
+        var doc = Jsoup.connect("http://us-proxy.org")
             .get();
 
         doc.selectFirst(".table.table-striped.table-bordered")
@@ -38,7 +38,7 @@ public class ProxyList {
             .getElementsByTag("tr")
             .stream()
             .filter(e -> TIME_REGEX.test(e.child(7).ownText()))
-            .map(e -> String.format("%s:%s", e.child(0), e.child(1)))
+            .map(e -> String.format("%s:%s", e.child(0).ownText(), e.child(1).ownText()))
             .forEach(s -> proxies.add(s));
     }
 }
