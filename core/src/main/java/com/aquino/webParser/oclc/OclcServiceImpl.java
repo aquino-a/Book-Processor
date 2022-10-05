@@ -37,7 +37,7 @@ public final class OclcServiceImpl implements OclcService {
     private static final String WC_LOCATION_REQUEST = "https://www.worldcat.org/api/iplocation?language=en";
     private static final String WC_TOKEN_REQUEST = "https://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
     private static final Pattern WC_BUILD_PATTERN = Pattern.compile("/_next/static/([a-z0-9]+)/_buildManifest\\.js");
-    private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\": \"([-a-zA-Z0-9._~+/]+=*)\",");
+    private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\":\"([-a-zA-Z0-9._~+/]+=*)\",");
 
     private boolean firstTime = true;
 
@@ -139,8 +139,13 @@ public final class OclcServiceImpl implements OclcService {
         var status = connection.getResponseCode();
 
         try (var br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            for (var line = br.readLine(); line != null; line = br.readLine()) {
-                var match = WC_TOKEN_PATTERN.matcher(line);
+            var sb = new TextStringBuilder();
+            var c = new char[400];
+            for (var read = br.read(c, 0, c.length);
+                 read > 0;
+                 read = br.read(c, 0, c.length)) {
+                sb.append(c);
+                var match = WC_TOKEN_PATTERN.matcher(sb);
                 if (match.find()) {
                     return match.group(1);
                 }
