@@ -25,8 +25,7 @@ public final class OclcServiceImpl implements OclcService {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final ProxyList PROXY_LIST = new ProxyList();
-
+    private static final Set<String> SUCCESS_CODES = Set.of("0", "2", "4");
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
     private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=%s&audience=&author=" +
@@ -40,13 +39,9 @@ public final class OclcServiceImpl implements OclcService {
     private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\":\"([-a-zA-Z0-9._~+/]+=*)\",");
 
     private boolean firstTime = true;
-
-    private static final Set<String> SUCCESS_CODES = Set.of("0", "2", "4");
-
-    private final Map<String, String> classifyCookies = new HashMap<>();
-    private Map<String, String> cookies;
     private CookieManager cookieManager;
     private String wcBuild;
+    private final Map<String, String> classifyCookies = new HashMap<>();
 
     @Override
     public long findOclc(String isbn) {
@@ -82,6 +77,13 @@ public final class OclcServiceImpl implements OclcService {
         return findOclc(root);
     }
 
+    /**
+     * Queries worldcat for the isbn.
+     *
+     * @param isbn the isbn to search for.
+     * @return the json response body.
+     * @throws IOException when there's a problem.
+     */
     private String queryWorldCat(String isbn) throws IOException {
 
         var token = getSearchToken(isbn);
@@ -107,6 +109,13 @@ public final class OclcServiceImpl implements OclcService {
         }
     }
 
+    /**
+     * Gets the search token from world cat.
+     *
+     * @param isbn the isbn to search.
+     * @return the token to use in search request.
+     * @throws IOException when there's a problem.
+     */
     private String getSearchToken(String isbn) throws IOException {
         var connection = (HttpsURLConnection) new URL(String.format(WC_TOKEN_REQUEST, wcBuild, isbn)).openConnection();
         connection.setRequestProperty("accept", "*/*");
@@ -192,21 +201,6 @@ public final class OclcServiceImpl implements OclcService {
         }
 
         connection.disconnect();
-    }
-
-    /**
-     * Gets a proxy from {@code PROXY_LIST}.
-     * Returns null if any IOException is thrown.
-     *
-     * @return a proxy
-     */
-    private String getProxy() {
-        try {
-            return PROXY_LIST.getProxy();
-        } catch (IOException e) {
-            LOGGER.info("No proxy found, trying without proxy.");
-            return null;
-        }
     }
 
     /**
