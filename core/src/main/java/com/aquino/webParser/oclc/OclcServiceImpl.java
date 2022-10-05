@@ -34,7 +34,7 @@ public final class OclcServiceImpl implements OclcService {
         "&lat=35.5625&lon=129.1235";
 
     private static final String WC_LOCATION_REQUEST = "https://www.worldcat.org/api/iplocation?language=en";
-    private static final String WC_TOKEN_REQUEST = "https://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
+    private static final String WC_TOKEN_REQUEST = "http://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
     private static final Pattern WC_BUILD_PATTERN = Pattern.compile("/_next/static/([a-z0-9]+)/_buildManifest\\.js");
     private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\":\"([-a-zA-Z0-9._~+/]+=*)\",");
 
@@ -117,9 +117,9 @@ public final class OclcServiceImpl implements OclcService {
      * @throws IOException when there's a problem.
      */
     private String getSearchToken(String isbn) throws IOException {
-        var connection = (HttpsURLConnection) new URL(String.format(WC_TOKEN_REQUEST, wcBuild, isbn)).openConnection();
+        var connection = (HttpURLConnection) new URL(String.format(WC_TOKEN_REQUEST, wcBuild, isbn)).openConnection();
         connection.setRequestProperty("accept", "*/*");
-        connection.setRequestProperty("Referer", "https://www.worldcat.org/");
+        connection.setRequestProperty("Referer", "http://www.worldcat.org/");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
         connection.setRequestProperty("Cookie",
             StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
