@@ -3,6 +3,8 @@ package com.aquino.webParser.oclc;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.TextStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Connection;
@@ -12,15 +14,9 @@ import org.jsoup.parser.Parser;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
+import java.net.*;
 import java.util.*;
 
 public final class OclcServiceImpl implements OclcService {
@@ -32,10 +28,10 @@ public final class OclcServiceImpl implements OclcService {
 
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
-    private static final String WORLDCAT_REQUEST = "\"http://www.worldcat.org/api/search?q=%s&audience=&author=" +
+    private static final String WORLDCAT_REQUEST = "https://www.worldcat.org/api/search?q=%s&audience=&author=" +
         "&content=&datePublished=&inLanguage=&itemSubType=&itemType=&limit=10&offset=1&openAccess=&orderBy=library" +
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
-        "&lat=35.5625&lon=129.1235\"";
+        "&lat=35.5625&lon=129.1235";
 
     private static final String WC_LOCATION_REQUEST = "https://www.worldcat.org/api/iplocation?language=en";
 
@@ -45,6 +41,8 @@ public final class OclcServiceImpl implements OclcService {
 
     private final Map<String, String> classifyCookies = new HashMap<>();
     private Map<String, String> cookies;
+    private CookieManager cookieManager;
+    private String wcBuild;
 
     @Override
     public long findOclc(String isbn) {
@@ -73,6 +71,10 @@ public final class OclcServiceImpl implements OclcService {
         if (firstTime) {
             initializeCookies();
         }
+
+        var body = queryWorldCat(isbn);
+
+
         while (true) {
             var proxy = getProxy();
             var process = getCurlProcess(proxy, isbn);
@@ -99,55 +101,74 @@ public final class OclcServiceImpl implements OclcService {
         }
     }
 
-    private void initializeCookies() throws IOException, URISyntaxException, InterruptedException {
-//        var kibanaResponse = Jsoup.connect("https://www.worldcat.org/api/environment/kibana")
-//            .method(Connection.Method.GET)
-//            .cookies(cookies)
-//            .header("referer", "https://www.worldcat.org")
-//            .header("referer", "https://www.worldcat.org")
-//            .header("referer", "https://www.worldcat.org")
-//            .header("referer", "https://www.worldcat.org")
-//            .execute();
-
-//        cookies.putAll(kibanaResponse.cookies());
-
-        var connection = (HttpURLConnection) new URL("http://www.worldcat.org/api/iplocation").openConnection();
+    private String queryWorldCat(String isbn) throws IOException {
+        var connection = (HttpsURLConnection) new URL(String.format(WORLDCAT_REQUEST, isbn)).openConnection();
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("Referer", "https://www.worldcat.org/");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
+        connection.setRequestProperty("Cookie",
+            StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
 
         var status = connection.getResponseCode();
 
         try (var br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            var sb = new TextStringBuilder();
             for (var line = br.readLine();
-                 line != null ;
+                 line != null;
                  line = br.readLine()) {
-                System.out.println(line);
+                sb.appendln(line);
             }
+            return sb.toString();
         }
+    }
+
+    private void initializeCookies() throws IOException, URISyntaxException, InterruptedException {
+
+        SetInitialCookies();
+        SetLocationCookie();
+
+        firstTime = false;
+    }
+
+    /**
+     * Fetches the intial cookies from wc, and sets a generated source id.
+     * Creates the cookie manager.
+     *
+     * @throws IOException
+     */
+    private void SetInitialCookies() throws IOException {
         var response = Jsoup.connect("https://worldcat.org")
             .method(Connection.Method.GET)
             .execute();
 
-        cookies = response.cookies();
-        cookies.put("wc_source_request_id", UUID.randomUUID().toString());
-        var anonFormat = "isGpcEnabled=1&datestamp=Wed+Oct+05+2022+08:14:57+GMT+0900+(Korean+Standard+Time)&version=202209.1.0&isIABGlobal=false&hosts=&consentId=%s&interactionCount=2&landingPath=https://www.worldcat.org/&groups=C0001:1,C0003:0,C0002:0,C0004:0";
-        cookies.put("OptanonConsent", String.format(anonFormat, UUID.randomUUID()));
+        cookieManager = new CookieManager();
+        response
+            .cookies()
+            .forEach((c,v) -> cookieManager.getCookieStore().add(null, new HttpCookie(c, v)));
+        cookieManager.getCookieStore().add(null, new HttpCookie("wc_source_request_id", UUID.randomUUID().toString()));
+    }
 
-        var locationResponse = Jsoup.connect(WC_LOCATION_REQUEST)
-            .method(Connection.Method.GET)
-            .header("Referer", "https://www.worldcat.org/")
-            .header("Referer-Policy", "strict-origin-when-cross-origin")
-            .header("sec-fetch-dest", "empty")
-            .header("sec-fetch-mode", "cors")
-            .header("sec-fetch-site", "same-origin")
-            .header("sec-gpc", "1")
-            .cookies(cookies)
-            .execute();
+    /**
+     * Fetches and sets the location cookie.
+     *
+     * @throws IOException
+     */
+    private void SetLocationCookie() throws IOException {
+        var connection = (HttpsURLConnection) new URL("https://www.worldcat.org/api/iplocation").openConnection();
+        connection.setRequestProperty("accept", "*/*");
+        connection.setRequestProperty("Referer", "https://www.worldcat.org/");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
+        connection.setRequestProperty("Cookie",
+            StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
 
-        cookies.putAll(locationResponse.cookies());
+        var status = connection.getResponseCode();
 
-        firstTime = false;
+        try (var br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            var location = br.readLine();
+            cookieManager.getCookieStore().add(null, new HttpCookie("wc_location", location));
+        }
+
+        connection.disconnect();
     }
 
     /**
