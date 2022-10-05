@@ -29,7 +29,7 @@ public final class OclcServiceImpl implements OclcService {
 
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
-    private static final String WORLDCAT_REQUEST = "https://www.worldcat.org/api/search?q=%s&audience=&author=" +
+    private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=%s&audience=&author=" +
         "&content=&datePublished=&inLanguage=&itemSubType=&itemType=&limit=10&offset=1&openAccess=&orderBy=library" +
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
         "&lat=35.5625&lon=129.1235";
@@ -76,42 +76,21 @@ public final class OclcServiceImpl implements OclcService {
             initializeCookies();
         }
 
-        var body = queryWorldCat(isbn);
+        var json = queryWorldCat(isbn);
+        var root = OBJECT_MAPPER.readTree(json);
 
-
-        while (true) {
-            var proxy = getProxy();
-            var process = getCurlProcess(proxy, isbn);
-
-            try (var is = process.getInputStream()) {
-                JsonNode root = null;
-                try {
-                    root = OBJECT_MAPPER.readTree(is);
-                } catch (JsonParseException e) {
-                    LOGGER.info("Request body not valid");
-                    PROXY_LIST.removeProxy(proxy);
-                    continue;
-                }
-
-                process.waitFor();
-                if (process.exitValue() > 0) {
-                    PROXY_LIST.removeProxy(proxy);
-                    LOGGER.info("Request to world cat failed");
-                    continue;
-                }
-
-                return findOclc(root);
-            }
-        }
+        return findOclc(root);
     }
 
     private String queryWorldCat(String isbn) throws IOException {
 
         var token = getSearchToken(isbn);
-        var connection = (HttpsURLConnection) new URL(String.format(WORLDCAT_REQUEST, isbn)).openConnection();
+
+        var connection = (HttpURLConnection) new URL(String.format(WORLDCAT_REQUEST, isbn)).openConnection();
         connection.setRequestProperty("accept", "*/*");
-        connection.setRequestProperty("Referer", "https://www.worldcat.org/");
+        connection.setRequestProperty("Referer", String.format("http://www.worldcat.org/search?q=%s", isbn));
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
+        connection.setRequestProperty("x-oclc-tkn", token);
         connection.setRequestProperty("Cookie",
             StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
 
