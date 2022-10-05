@@ -15,7 +15,6 @@ import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.swing.autofill.AuthorPublisherAutoFill;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.utilities.Links;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -110,10 +109,10 @@ public class JWPUserInterface extends JPanel {
     });
 
     private final Action scrapeBestOclc = Handlers.anonymousEventClass("Scrape BEST OCLCs", (event) -> {
-        getOclcWorker(Links.Type.BEST).execute();
+        getOclcWorker(OCLCChecker.Type.BEST).execute();
     });
     private final Action scrapeOclc = Handlers.anonymousEventClass("Scrape OCLCs", (event) -> {
-        getOclcWorker(Links.Type.NEW).execute();
+        getOclcWorker(OCLCChecker.Type.NEW).execute();
     });
     private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) -> {
         openAutoFillTool();
@@ -361,7 +360,7 @@ public class JWPUserInterface extends JPanel {
             try {
                 Book book = bookCreator.createBookFromIsbn(isbn);
                 if (book.getIsbn() == 0)
-                    throw new Exception(String.format("ISBN is 0"));
+                    throw new Exception("ISBN is 0");
                 list.add(book);
             }
             catch (Exception e) {
@@ -374,14 +373,14 @@ public class JWPUserInterface extends JPanel {
         return list;
     }
 
-    private SwingWorker getOclcWorker(Links.Type type) {
+    private SwingWorker getOclcWorker(OCLCChecker.Type type) {
         return new SwingWorker<Void, Void>() {
             @Override
             public Void doInBackground() {
                 try {
                     disableActions();
-                    Links.setType(type);
                     OCLCChecker checker = new OCLCChecker(processorFactory.CreateBookCreator(BookCreatorType.AladinApi));
+                    checker.type(type);
                     if (oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
                     oclcProgress.start();

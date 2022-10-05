@@ -7,46 +7,38 @@ package com.aquino.webParser.oclc;
 
 import com.aquino.webParser.ExcelWriter;
 import com.aquino.webParser.bookCreators.BookCreator;
-import com.aquino.webParser.model.Book;
+import static com.aquino.webParser.oclc.OCLCChecker.Type.*;
 import com.aquino.webParser.utilities.Connect;
-import com.aquino.webParser.utilities.Links;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
+ *  Searches the Aladdin page for books with OCLC and not in books windows.
+ *
  * @author alex
  */
 public class OCLCChecker {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final String NEW_ALADIN_FORMAT = "http://www.aladin.co.kr/shop/common/wnew.aspx?ViewRowsCount=50&ViewType=Detail&SortOrder=6&page=%d";
+    private static final String BEST_ALADIN_FORMAT = "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0&page=%d";
+    private String currentFormat = NEW_ALADIN_FORMAT;
+
     private final BookCreator bookCreator;
     private final ExcelWriter writer;
-    //    Links link;
-    int hits;
+    private Type type = NEW;
 
     public OCLCChecker(BookCreator bookCreator) {
         this.bookCreator = bookCreator;
         writer = new ExcelWriter(Connect.newWorkbookFromTemplate());
-//        link = new Links();
-    }
-
-    public static void main(String[] args) throws IOException {
-        JFrame frame = new JFrame();
-        JPanel panel = new JPanel();
-        frame.add(panel);
-        Links.setType(Links.Type.BEST);
-        //move test elsewhere
-        OCLCChecker checker = new OCLCChecker(null);
-        checker.getHitsAndWrite(1, 2, null, new File("test.xlsx"));
-        System.exit(0);
-
     }
 
     public void getHitsAndWrite(
@@ -64,12 +56,10 @@ public class OCLCChecker {
                 if (consumer != null)
                     consumer.accept(new ProgressData(pageStart, i, pageEnd));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOGGER.info("Reached end of pages");
             throw e;
-        }
-        finally {
+        } finally {
             writer.saveFile(save);
             if (consumer != null)
                 consumer.accept(new ProgressData(1, 1, 1));
@@ -77,61 +67,87 @@ public class OCLCChecker {
     }
 
     private void checkAndWriteOnePage(int pageNumber) throws IOException {
-        List<Book> books = null;
         try {
-            books = setHits(getOnePageCheckedBooks(pageNumber));
-            if (books != null && books.size() > 0) {
-                LOGGER.info("Books found: {0}", books.size());
-                writer.writeBooks(books);
+            var bookLinks = getLinks(pageNumber);
+            if (bookLinks == null || StringUtils.isBlank(bookLinks)) {
+                LOGGER.info(String.format("No links found on page %d", pageNumber));
+                return;
             }
-        }
-        catch (IOException e) {
-            throw e;
-        }
-    }
 
-    private List<Book> getOnePageCheckedBooks(int pageNumber) throws IOException {
-        return checkBooks(getBooks(pageNumber));
-    }
+            var books = bookCreator.bookListFromLink(bookLinks);
+            if (books == null) {
+                LOGGER.error("No books returned from bookCreator");
+                return;
+            }
 
-    private List<Book> getBooks(int pageNumber) throws IOException {
-        return bookCreator.bookListFromLink(Links.getPageofLinks(pageNumber));
-//        return OldBook.retrieveBookArray(Links.getPageofLinks(pageNumber));
-    }
-
-    private List<Book> checkBooks(List<Book> books) {
-        return books.stream()
-            .filter(b -> {
+            books.forEach(b -> {
                 try {
                     bookCreator.checkInventoryAndOclc(b);
-                    return b.getOclc() != -1 && !b.isTitleExists();
+                } catch (Exception e) {
+                    LOGGER.error(String.format("Error checking book: %s", b.getIsbn()), e);
                 }
-                catch (Exception e) {
-                    LOGGER.error(String.format("Error Checking OldBook: %s", e.getMessage()));
-                    LOGGER.error(e.getMessage(), e);
-                    return false;
-                }
-            }).collect(Collectors.toList());
+            });
+
+            var filteredBooks = books.stream()
+                .filter(b -> b.getOclc() != -1 && !b.isTitleExists())
+                .collect(Collectors.toList());
+
+            LOGGER.info(String.format("Books found: %d", filteredBooks.size()));
+
+            if (filteredBooks.size() > 0) {
+                writer.writeBooks(filteredBooks);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Uncaught error when checking and writing a page", e);
+        }
     }
 
-    private List<Book> setHits(List<Book> books) {
-        hits += books.size();
-        return books;
+    private String getLinks(int pageNumber) {
+        try {
+            var linksUrl = String.format(currentFormat, pageNumber);
+            var doc = Jsoup.connect(linksUrl)
+                .get();
+
+            var bookElements = doc.getElementsByClass("bo3");
+            if (bookElements.size() < 1) {
+                throw new IOException(String.format("No book elements found: %s", linksUrl));
+            }
+
+            return bookElements
+                .stream()
+                .map(e -> e.attr("href"))
+                .collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            LOGGER.error("Problem getting links.", e);
+            return null;
+        }
     }
 
-    public int getHits() {
-        return hits;
+    public Type type() {
+        return type;
     }
 
+    public void type(Type type) {
+        this.type = type;
+        switch (type) {
+            case BEST:
+                currentFormat = BEST_ALADIN_FORMAT;
+            case NEW:
+                currentFormat = NEW_ALADIN_FORMAT;
+        }
+    }
 
-//    public void getOCLCTitles(int pageNumber, JComponent component) {
-//        File save = FileUtility.saveLocation(component);
-//        OldBook[] books = setHits(checkBooks(getBooks(pageNumber)));
-//        if(hits > 0) {
-//            System.out.println("got hits");
-//            writer.writeBooks(books);
-//            writer.saveFile(save);
-//        } else System.out.println("no hits");
-//        
-//    }
+    public enum Type {
+        BEST(20), NEW(47);
+        private final int pages;
+
+        Type(int pages) {
+            this.pages = pages;
+        }
+
+        public int getPages() {
+            return pages;
+        }
+
+    }
 }
