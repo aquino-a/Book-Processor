@@ -10,11 +10,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.util.*;
 
 public final class OclcServiceImpl implements OclcService {
 
@@ -30,9 +37,14 @@ public final class OclcServiceImpl implements OclcService {
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
         "&lat=35.5625&lon=129.1235\"";
 
+    private static final String WC_LOCATION_REQUEST = "https://www.worldcat.org/api/iplocation?language=en";
+
+    private boolean firstTime = true;
+
     private static final Set<String> SUCCESS_CODES = Set.of("0", "2", "4");
 
     private final Map<String, String> classifyCookies = new HashMap<>();
+    private Map<String, String> cookies;
 
     @Override
     public long findOclc(String isbn) {
@@ -44,7 +56,7 @@ public final class OclcServiceImpl implements OclcService {
                 : GetOclc(owi);
 
             return Long.parseLong(oclc);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | URISyntaxException e) {
             LOGGER.info(String.format("Couldn't get OCLC for %s", isbn));
             LOGGER.info(e.getMessage(), e);
             return -1;
@@ -57,7 +69,10 @@ public final class OclcServiceImpl implements OclcService {
      * @param isbn the book's isbn.
      * @return the oclc if found
      */
-    private String GetWorldCatOclc(String isbn) throws IOException, InterruptedException {
+    private String GetWorldCatOclc(String isbn) throws IOException, InterruptedException, URISyntaxException {
+        if (firstTime) {
+            initializeCookies();
+        }
         while (true) {
             var proxy = getProxy();
             var process = getCurlProcess(proxy, isbn);
@@ -82,6 +97,57 @@ public final class OclcServiceImpl implements OclcService {
                 return findOclc(root);
             }
         }
+    }
+
+    private void initializeCookies() throws IOException, URISyntaxException, InterruptedException {
+//        var kibanaResponse = Jsoup.connect("https://www.worldcat.org/api/environment/kibana")
+//            .method(Connection.Method.GET)
+//            .cookies(cookies)
+//            .header("referer", "https://www.worldcat.org")
+//            .header("referer", "https://www.worldcat.org")
+//            .header("referer", "https://www.worldcat.org")
+//            .header("referer", "https://www.worldcat.org")
+//            .execute();
+
+//        cookies.putAll(kibanaResponse.cookies());
+
+        var connection = (HttpURLConnection) new URL("http://www.worldcat.org/api/iplocation").openConnection();
+        connection.setRequestProperty("accept", "*/*");
+        connection.setRequestProperty("Referer", "https://www.worldcat.org/");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
+
+        var status = connection.getResponseCode();
+
+        try (var br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            for (var line = br.readLine();
+                 line != null ;
+                 line = br.readLine()) {
+                System.out.println(line);
+            }
+        }
+        var response = Jsoup.connect("https://worldcat.org")
+            .method(Connection.Method.GET)
+            .execute();
+
+        cookies = response.cookies();
+        cookies.put("wc_source_request_id", UUID.randomUUID().toString());
+        var anonFormat = "isGpcEnabled=1&datestamp=Wed+Oct+05+2022+08:14:57+GMT+0900+(Korean+Standard+Time)&version=202209.1.0&isIABGlobal=false&hosts=&consentId=%s&interactionCount=2&landingPath=https://www.worldcat.org/&groups=C0001:1,C0003:0,C0002:0,C0004:0";
+        cookies.put("OptanonConsent", String.format(anonFormat, UUID.randomUUID()));
+
+        var locationResponse = Jsoup.connect(WC_LOCATION_REQUEST)
+            .method(Connection.Method.GET)
+            .header("Referer", "https://www.worldcat.org/")
+            .header("Referer-Policy", "strict-origin-when-cross-origin")
+            .header("sec-fetch-dest", "empty")
+            .header("sec-fetch-mode", "cors")
+            .header("sec-fetch-site", "same-origin")
+            .header("sec-gpc", "1")
+            .cookies(cookies)
+            .execute();
+
+        cookies.putAll(locationResponse.cookies());
+
+        firstTime = false;
     }
 
     /**
@@ -123,7 +189,7 @@ public final class OclcServiceImpl implements OclcService {
      * Doesn't use proxy if {@code proxy} is null.
      *
      * @param proxy the proxy to use.
-     * @param isbn the isbn to search for.
+     * @param isbn  the isbn to search for.
      * @return the started cUrl process.
      * @throws IOException if any problems arise when starting the process.
      */
