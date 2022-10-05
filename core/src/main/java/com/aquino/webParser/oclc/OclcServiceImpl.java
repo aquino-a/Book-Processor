@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class OclcServiceImpl implements OclcService {
 
@@ -34,6 +35,9 @@ public final class OclcServiceImpl implements OclcService {
         "&lat=35.5625&lon=129.1235";
 
     private static final String WC_LOCATION_REQUEST = "https://www.worldcat.org/api/iplocation?language=en";
+    private static final String WC_TOKEN_REQUEST = "https://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
+    private static final Pattern WC_BUILD_PATTERN = Pattern.compile("/_next/static/([a-z0-9]+)/_buildManifest\\.js");
+    private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\": \"([-a-zA-Z0-9._~+/]+=*)\",");
 
     private boolean firstTime = true;
 
@@ -102,6 +106,8 @@ public final class OclcServiceImpl implements OclcService {
     }
 
     private String queryWorldCat(String isbn) throws IOException {
+
+        var token = getSearchToken(isbn);
         var connection = (HttpsURLConnection) new URL(String.format(WORLDCAT_REQUEST, isbn)).openConnection();
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("Referer", "https://www.worldcat.org/");
@@ -122,6 +128,28 @@ public final class OclcServiceImpl implements OclcService {
         }
     }
 
+    private String getSearchToken(String isbn) throws IOException {
+        var connection = (HttpsURLConnection) new URL(String.format(WC_TOKEN_REQUEST, wcBuild, isbn)).openConnection();
+        connection.setRequestProperty("accept", "*/*");
+        connection.setRequestProperty("Referer", "https://www.worldcat.org/");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
+        connection.setRequestProperty("Cookie",
+            StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
+
+        var status = connection.getResponseCode();
+
+        try (var br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            for (var line = br.readLine(); line != null; line = br.readLine()) {
+                var match = WC_TOKEN_PATTERN.matcher(line);
+                if (match.find()) {
+                    return match.group(1);
+                }
+            }
+        }
+
+        throw new IOException("TOKEN NOT FOUND!!!");
+    }
+
     private void initializeCookies() throws IOException, URISyntaxException, InterruptedException {
 
         SetInitialCookies();
@@ -133,6 +161,7 @@ public final class OclcServiceImpl implements OclcService {
     /**
      * Fetches the intial cookies from wc, and sets a generated source id.
      * Creates the cookie manager.
+     * Also finds the build id.
      *
      * @throws IOException
      */
@@ -144,8 +173,18 @@ public final class OclcServiceImpl implements OclcService {
         cookieManager = new CookieManager();
         response
             .cookies()
-            .forEach((c,v) -> cookieManager.getCookieStore().add(null, new HttpCookie(c, v)));
+            .forEach((c, v) -> cookieManager.getCookieStore().add(null, new HttpCookie(c, v)));
         cookieManager.getCookieStore().add(null, new HttpCookie("wc_source_request_id", UUID.randomUUID().toString()));
+
+        try (var br = new BufferedReader(new InputStreamReader(response.bodyStream()))) {
+            for (var line = br.readLine(); line != null; line = br.readLine()) {
+                var match = WC_BUILD_PATTERN.matcher(line);
+                if (match.find()) {
+                    wcBuild = match.group(1);
+                    return;
+                }
+            }
+        }
     }
 
     /**
@@ -154,7 +193,7 @@ public final class OclcServiceImpl implements OclcService {
      * @throws IOException
      */
     private void SetLocationCookie() throws IOException {
-        var connection = (HttpsURLConnection) new URL("https://www.worldcat.org/api/iplocation").openConnection();
+        var connection = (HttpsURLConnection) new URL(WC_LOCATION_REQUEST).openConnection();
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("Referer", "https://www.worldcat.org/");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 ");
