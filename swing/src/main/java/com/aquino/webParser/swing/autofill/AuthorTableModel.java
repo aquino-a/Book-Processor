@@ -64,7 +64,7 @@ public class AuthorTableModel extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return boolean.class;
+                return Boolean.class;
             case 1:
             case 2:
             case 3:
