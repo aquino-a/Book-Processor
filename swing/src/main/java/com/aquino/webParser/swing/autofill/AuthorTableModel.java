@@ -37,7 +37,7 @@ public class AuthorTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         var row = authors.get(rowIndex);
-        switch (columnIndex){
+        switch (columnIndex) {
             case 0:
                 return row.isSelected();
             case 1:
@@ -55,13 +55,37 @@ public class AuthorTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
+    public String getColumnName(int column) {
+        return COLUMNS.get(column);
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return getValueAt(0, columnIndex).getClass();
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 0;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 0) {
+            authors.get(rowIndex).setSelected((boolean) aValue);
+        }
+
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
+
     public List<Author> getAuthors() {
         return authors.stream()
             .map(AuthorTableModel::getAuthor)
             .collect(Collectors.toList());
     }
 
-    private static Author getAuthor(Row row){
+    private static Author getAuthor(Row row) {
         return (Author) row.getObject();
     }
 }
