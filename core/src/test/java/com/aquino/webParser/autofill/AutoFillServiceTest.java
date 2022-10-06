@@ -44,7 +44,7 @@ public class AutoFillServiceTest {
     public void setUp() throws Exception {
         var factory = new ProcessorFactoryImpl();
 
-        this.autoFillService = new AutoFillService(null, null, null,
+        this.autoFillService = new AutoFillServiceImpl(null, null, null,
             Map.of(Language.Korean, new KoreanAuthorStrategy(factory.GetKoreanLastNames())));
         this.autoFillService.setLanguage(Language.Korean);
     }

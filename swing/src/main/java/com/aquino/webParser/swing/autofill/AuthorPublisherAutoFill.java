@@ -5,9 +5,10 @@
  */
 package com.aquino.webParser.swing.autofill;
 
+import com.aquino.webParser.autofill.AutoFillService;
+import com.aquino.webParser.autofill.AutoFillServiceImpl;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
-import com.aquino.webParser.autofill.AutoFillService;
 import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.utilities.Connect;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.*;
 
 /**
  *
@@ -237,11 +237,9 @@ public class AuthorPublisherAutoFill extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void checkSelectAllItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkSelectAllItemStateChanged
-        if(evt.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
-            setIsChecked(true);
-        } else {//checkbox has been deselected
-            setIsChecked(false);
-        };
+        //checkbox has been selected
+        //checkbox has been deselected
+        setIsChecked(evt.getStateChange() == ItemEvent.SELECTED);
     }//GEN-LAST:event_checkSelectAllItemStateChanged
 
     private void setIsChecked(boolean enable){
@@ -253,7 +251,7 @@ public class AuthorPublisherAutoFill extends JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
