@@ -62,7 +62,18 @@ public class AuthorTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return getValueAt(0, columnIndex).getClass();
+        switch (columnIndex) {
+            case 0:
+                return boolean.class;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                return String.class;
+            default:
+                throw new NotImplementedException("not supported");
+        }
     }
 
     @Override

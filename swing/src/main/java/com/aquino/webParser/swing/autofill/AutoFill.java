@@ -1,11 +1,12 @@
 package com.aquino.webParser.swing.autofill;
 
 import com.aquino.webParser.autofill.AutoFillService;
-import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.Language;
+import com.aquino.webParser.model.*;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,8 +28,53 @@ public class AutoFill extends JFrame{
         init();
     }
 
+    public static void main(String[] args) {
+        var autoFill = new AutoFill(new AutoFillService() {
+            @Override
+            public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
+                return null;
+            }
+
+            @Override
+            public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books) {
+
+            }
+
+            @Override
+            public Author CreateAuthor(Book book) {
+                return null;
+            }
+
+            @Override
+            public int insertAuthor(Author author) {
+                return 0;
+            }
+
+            @Override
+            public int insertPublisher(Publisher publisher) {
+                return 0;
+            }
+
+            @Override
+            public String getAuthorLink(int id) {
+                return null;
+            }
+
+            @Override
+            public void setLanguage(Language language) {
+
+            }
+        });
+
+        autoFill.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        autoFill.setVisible(true);
+    }
+
     private void init() {
         this.setLayout(new BorderLayout());
+        this.setSize(1400, 600);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.add(CreateMenu());
         this.add(CreateTabPane(), BorderLayout.CENTER);
 
@@ -57,7 +103,8 @@ public class AutoFill extends JFrame{
         tabPane.addTab("Author", CreateAuthorTable());
         tabPane.addTab("Author 2", CreateAuthor2Table());
         tabPane.addTab("Publisher", CreatePublisherTable());
-        return null;
+
+        return tabPane;
     }
 
     private Component CreateAuthorTable() {
