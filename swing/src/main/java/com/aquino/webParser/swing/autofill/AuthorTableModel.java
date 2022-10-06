@@ -67,13 +67,38 @@ public class AuthorTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 0;
+        switch (columnIndex){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
-            authors.get(rowIndex).setSelected((boolean) aValue);
+        switch (columnIndex){
+            case 0:
+                authors.get(rowIndex).setSelected((boolean) aValue);
+                break;
+            case 1:
+                getAuthor(rowIndex).setNativeFirstName((String) aValue);
+                break;
+            case 2:
+                getAuthor(rowIndex).setNativeLastName((String) aValue);
+                break;
+            case 3:
+                getAuthor(rowIndex).setEnglishFirstName((String) aValue);
+                break;
+            case 4:
+                getAuthor(rowIndex).setEnglishLastName((String) aValue);
+                break;
+            default:
+                throw new NotImplementedException("not supported");
         }
 
         fireTableCellUpdated(rowIndex, columnIndex);
@@ -87,5 +112,9 @@ public class AuthorTableModel extends AbstractTableModel {
 
     private static Author getAuthor(Row row) {
         return (Author) row.getObject();
+    }
+
+    private Author getAuthor(int rowIndex) {
+        return getAuthor(authors.get(rowIndex));
     }
 }
