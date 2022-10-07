@@ -5,6 +5,7 @@ import com.aquino.webParser.model.*;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -17,10 +18,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AutoFill extends JFrame {
 
@@ -85,8 +89,7 @@ public class AutoFill extends JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setJMenuBar(CreateMenu());
-//        this.add(CreateTabPane(), BorderLayout.CENTER);
-
+        this.add(new JButton(Handlers.anonymousEventClass("Auto Fill", event -> autoFill())), BorderLayout.SOUTH);
     }
 
     private JMenuBar CreateMenu() {
@@ -175,6 +178,7 @@ public class AutoFill extends JFrame {
 
             if (books.size() > 0) {
                 this.setTitle(file.getName());
+                this.add(CreateTabPane(), BorderLayout.CENTER);
                 enableActions();
             } else {
                 closeWorkbook();
@@ -189,7 +193,7 @@ public class AutoFill extends JFrame {
             JOptionPane.showMessageDialog(
                 this,
                 String.format("Open failed: %s", e.getCause().getMessage()),
-                "Link Problem.",
+                "Open Problem.",
                 JOptionPane.ERROR_MESSAGE);
         } finally {
             this.setCursor(null);
@@ -197,10 +201,58 @@ public class AutoFill extends JFrame {
     }
 
     private void save(ActionEvent actionEvent) {
+        try {
+            throw new NotImplementedException("");
+            File file = FileUtility.openFile(this.rootPane);
+            autoFillService.updateBook(workbook, books);
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            }
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            LOGGER.error("save failed!", e);
+            JOptionPane.showMessageDialog(
+                this,
+                String.format("Save failed: %s", e.getCause().getMessage()),
+                "Save Problem.",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void close(ActionEvent actionEvent) {
+        throw new NotImplementedException("");
+    }
 
+    private void autoFill() {
+        throw new NotImplementedException("");
+        try {
+            var result = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
+            if (result != JOptionPane.OK_OPTION) {
+                return;
+            }
+
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Stream.of(bookRowContainer.getComponents())
+                .filter(c -> c instanceof BookRow)
+                .map(c -> (BookRow) c)
+                .filter(br -> br.isSelected())
+                .forEach(br -> {
+                    var afm = br.getAutoFillModel();
+                    InsertAuthor(br, afm.author());
+                    //TODO insert pub and add link
+                    afm.UpdateBook();
+                });
+        } catch (IllegalArgumentException | NullPointerException e) {
+            LOGGER.error("Autofill failed!", e);
+            JOptionPane.showMessageDialog(
+                this,
+                String.format("Auto Fill fail: %s", e.getMessage()),
+                "Auto Fill Problem.",
+                JOptionPane.ERROR_MESSAGE);
+        } finally {
+            this.setCursor(null);
+        }
     }
 
     private void enableActions() {
