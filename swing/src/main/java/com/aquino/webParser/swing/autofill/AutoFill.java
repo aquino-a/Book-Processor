@@ -113,8 +113,15 @@ public class AutoFill extends JFrame{
         fakeAuthor.setNativeFirstName("박근혜");
         fakeAuthor.setNativeLastName("박근혜");
 
-        var model = new AuthorTableModel(List.of(fakeAuthor));
-        var table = new JTable(model);
+        var fakeAuthor2 = new Author();
+        fakeAuthor.setLanguage(Language.Korean);
+        fakeAuthor.setNativeFirstName("김정은");
+        fakeAuthor.setNativeLastName("김정은");
+        fakeAuthor.setId(123);
+
+        var model = new AuthorTableModel(List.of(fakeAuthor, fakeAuthor2));
+        var table = CreateTable();
+        table.setModel(model);
         AuthorTableModel.setColumn(table);
 
         return new JScrollPane(table);
@@ -126,6 +133,14 @@ public class AutoFill extends JFrame{
 
     private Component CreatePublisherTable() {
         return null;
+    }
+
+    private JTable CreateTable(){
+        var table = new JTable();
+        table.setRowHeight(30);
+        table.setRowMargin(10);
+
+        return table;
     }
 
     private void korean(ActionEvent actionEvent) {
