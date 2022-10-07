@@ -4,12 +4,13 @@ public class Row {
 
     private final Object object;
     private boolean isSelected;
+    private String link;
 
     public Row(Object object) {
         this.object = object;
     }
 
-    public Object getObject() {
+    public Object object() {
         return object;
     }
 
@@ -17,7 +18,15 @@ public class Row {
         return isSelected;
     }
 
-    public void setSelected(boolean selected) {
+    public void isSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public String link() {
+        return link;
+    }
+
+    public void link(String link) {
+        this.link = link;
     }
 }

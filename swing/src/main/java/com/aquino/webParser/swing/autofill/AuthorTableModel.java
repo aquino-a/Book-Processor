@@ -1,15 +1,22 @@
 package com.aquino.webParser.swing.autofill;
 
 import com.aquino.webParser.model.Author;
+import com.aquino.webParser.swing.Handlers;
 import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.lang3.NotImplementedException;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AuthorTableModel extends AbstractTableModel {
 
+    private static final LinkButtonRenderer LINK_BUTTON_RENDERER = new LinkButtonRenderer();
     private static final List<String> COLUMNS = List.of(
         "",
         "Native First", "Native Last",
@@ -49,7 +56,7 @@ public class AuthorTableModel extends AbstractTableModel {
             case 4:
                 return getAuthor(row).getEnglishLastName();
             case 5:
-                return getAuthor(row).getId();
+                return row;
             default:
                 throw new NotImplementedException("not supported");
         }
@@ -69,8 +76,9 @@ public class AuthorTableModel extends AbstractTableModel {
             case 2:
             case 3:
             case 4:
-            case 5:
                 return String.class;
+            case 5:
+                return Author.class;
             default:
                 throw new NotImplementedException("not supported");
         }
@@ -78,7 +86,7 @@ public class AuthorTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex){
+        switch (columnIndex) {
             case 0:
             case 1:
             case 2:
@@ -92,9 +100,9 @@ public class AuthorTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        switch (columnIndex){
+        switch (columnIndex) {
             case 0:
-                authors.get(rowIndex).setSelected((boolean) aValue);
+                authors.get(rowIndex).isSelected((boolean) aValue);
                 break;
             case 1:
                 getAuthor(rowIndex).setNativeFirstName((String) aValue);
@@ -121,11 +129,49 @@ public class AuthorTableModel extends AbstractTableModel {
             .collect(Collectors.toList());
     }
 
+    public static void setColumn(JTable jTable) {
+        var idColumn = jTable.getColumnModel().getColumn(5);
+        idColumn.setCellRenderer(LINK_BUTTON_RENDERER);
+    }
+
     private static Author getAuthor(Row row) {
-        return (Author) row.getObject();
+        return (Author) row.object();
     }
 
     private Author getAuthor(int rowIndex) {
         return getAuthor(authors.get(rowIndex));
+    }
+
+    private static class LinkButtonRenderer implements TableCellRenderer {
+
+        private static final JLabel NO_LINK_LABEL = new JLabel("No id");
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
+            var row = (Row) value;
+            var author = getAuthor(row);
+            var id = author.getId();
+
+            if (id > 0) {
+                var button = new JButton();
+                button.setAction(Handlers.anonymousEventClass(
+                    String.valueOf(id),
+                    (event) -> openLink(row.link())));
+
+                return button;
+            }
+            else {
+                return NO_LINK_LABEL;
+            }
+        }
+
+        private void openLink(String link) {
+            try {
+                Desktop.getDesktop().browse(URI.create(link));
+            } catch (IOException e) {
+                //TODO send event to parent form to display error.
+                e.printStackTrace();
+            }
+        }
     }
 }

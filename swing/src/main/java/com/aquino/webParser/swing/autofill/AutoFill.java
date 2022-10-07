@@ -113,7 +113,9 @@ public class AutoFill extends JFrame{
         fakeAuthor.setNativeFirstName("박근혜");
         fakeAuthor.setNativeLastName("박근혜");
 
-        var table = new JTable(new AuthorTableModel(List.of(fakeAuthor)));
+        var model = new AuthorTableModel(List.of(fakeAuthor));
+        var table = new JTable(model);
+        AuthorTableModel.setColumn(table);
 
         return new JScrollPane(table);
     }
@@ -141,10 +143,4 @@ public class AutoFill extends JFrame{
     private void close(ActionEvent actionEvent) {
 
     }
-
-
-
-
-
-
 }
