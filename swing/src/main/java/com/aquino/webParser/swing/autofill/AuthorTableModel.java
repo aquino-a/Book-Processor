@@ -144,7 +144,8 @@ public class AuthorTableModel extends AbstractTableModel {
 
     private static class LinkButtonRenderer implements TableCellRenderer {
 
-        private static final JLabel NO_LINK_LABEL = new JLabel("No id");
+        private static final JLabel NO_LINK_LABEL = new JLabel("No id", SwingConstants.CENTER);
+        private static final JButton BUTTON = new JButton();
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
@@ -153,14 +154,10 @@ public class AuthorTableModel extends AbstractTableModel {
             var id = author.getId();
 
             if (id > 0) {
-                var button = new JButton();
-                button.setAction(Handlers.anonymousEventClass(
-                    String.valueOf(id),
-                    (event) -> openLink(row.link())));
+                BUTTON.setText(String.valueOf(id));
 
-                return button;
-            }
-            else {
+                return BUTTON;
+            } else {
                 return NO_LINK_LABEL;
             }
         }
