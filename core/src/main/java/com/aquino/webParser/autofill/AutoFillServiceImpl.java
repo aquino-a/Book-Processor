@@ -41,11 +41,9 @@ public class AutoFillServiceImpl implements AutoFillService {
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
             .stream()
-//                .filter(p -> !containsId(p.getRight().getAuthor()) || !containsId(p.getRight().getPublisher()))
-//                .filter(p -> p.getRight().getAuthorId() != -1 || p.getRight().getPublisherId() != -1)
-            .filter(p -> p.getRight().getAuthorId() == -1 && p.getRight().getAuthor() != null)
-            .map(p -> createAutoFillModel(p))
-            .filter(afm -> afm != null)
+            .map(this::createBooksWindowsId)
+            .filter(bwIds -> bwIds != null)
+            .filter(BookWindowIds::isMissingIds)
             .collect(Collectors.toList());
     }
 
@@ -63,26 +61,27 @@ public class AutoFillServiceImpl implements AutoFillService {
         return ID_REGEX.test(text);
     }
 
-    private BookWindowIds createAutoFillModel(Pair<Integer, Book> p) {
+    private BookWindowIds createBooksWindowsId(Pair<Integer, Book> p) {
         try {
             var book = p.getRight();
-            BookWindowIds afm;
+            BookWindowIds bookWindowIds;
             if (book.getOclc() > 0) {
-                afm = getWorldCatModel(book);
+                bookWindowIds = getFromWorldCat(book);
+            } else {
+                bookWindowIds = getWithoutNoOclc(book);
             }
-            else {
-                afm = getNoOclcModel(book);
-            }
-            afm.setBookPair(p);
-            return afm;
-        }
-        catch (IOException e) {
+
+            bookWindowIds.excelRow(p.getLeft());
+            bookWindowIds.book(p.getRight());
+
+            return bookWindowIds;
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private BookWindowIds getWorldCatModel(Book book) throws IOException {
+    private BookWindowIds getFromWorldCat(Book book) throws IOException {
         var afm = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
         afm.author(CreateAuthor(book, wcBook));
@@ -90,7 +89,7 @@ public class AutoFillServiceImpl implements AutoFillService {
         return afm;
     }
 
-    private BookWindowIds getNoOclcModel(Book book) {
+    private BookWindowIds getWithoutNoOclc(Book book) {
         var afm = new BookWindowIds();
         afm.author(CreateAuthor(book));
         afm.publisher(CreatePublisher(book));
@@ -120,10 +119,9 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     private Author CreateAuthor(Book book, Book wcBook) {
-        if (containsId(book.getAuthor())){
+        if (containsId(book.getAuthor())) {
             return null;
-        }
-        else if(book.getAuthor().isBlank()){
+        } else if (book.getAuthor().isBlank()) {
             return CreateAuthor(book);
         }
         var author = new Author();

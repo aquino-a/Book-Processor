@@ -50,11 +50,14 @@ public class BookWindowIds {
     }
 
     public void UpdateBook() {
-        if(author != null)
-            book.setAuthorId(author.getId());
-        if(author2 != null)
-            book.setAuthor2Id(author2.getId());
-        if(publisher != null)
-            book.setPublisherId(publisher.getId());
+        if (author != null) book.setAuthorId(author.getId());
+        if (author2 != null) book.setAuthor2Id(author2.getId());
+        if (publisher != null) book.setPublisherId(publisher.getId());
+    }
+
+    public boolean isMissingIds() {
+        return (author != null && author.getId() < 1) ||
+            (author2 != null && author2.getId() < 1) ||
+            (publisher != null && publisher.getId() < 1);
     }
 }
