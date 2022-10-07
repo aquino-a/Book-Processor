@@ -84,7 +84,7 @@ public class AutoFill extends JFrame {
         this.setSize(1400, 600);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.add(CreateMenu());
+        this.setJMenuBar(CreateMenu());
 //        this.add(CreateTabPane(), BorderLayout.CENTER);
 
     }
