@@ -29,6 +29,7 @@ public class AutoFill extends JFrame {
     private final MouseAdapter idClickListener = CreateMouseAdapter();
     private XSSFWorkbook workbook;
     private List<BookWindowIds> books;
+    private JMenu languageMenu;
 
 
     public AutoFill(AutoFillService autoFillService) {
@@ -98,7 +99,7 @@ public class AutoFill extends JFrame {
         fileMenu.add(new JMenuItem(Handlers.anonymousEventClass("Close", this::close)));
         menuBar.add(fileMenu);
 
-        var languageMenu = new JMenu("Korean");
+        languageMenu = new JMenu("Korean");
         languageMenu.add(new JMenuItem(Handlers.anonymousEventClass("Korean", this::korean)));
         languageMenu.add(new JMenuItem(Handlers.anonymousEventClass("Japanese", this::japanese)));
         menuBar.add(languageMenu);
@@ -156,9 +157,13 @@ public class AutoFill extends JFrame {
     }
 
     private void korean(ActionEvent actionEvent) {
+        languageMenu.setText("Korean");
+        autoFillService.setLanguage(Language.Korean);
     }
 
     private void japanese(ActionEvent actionEvent) {
+        languageMenu.setText("Japanese");
+        autoFillService.setLanguage(Language.Japanese);
     }
 
     private void open(ActionEvent actionEvent) {
