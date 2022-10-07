@@ -7,9 +7,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.List;
 
 public interface AutoFillService {
-    List<AutoFillModel> readBooks(XSSFWorkbook workbook);
+    List<BookWindowIds> readBooks(XSSFWorkbook workbook);
 
-    void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books);
+    void updateBook(XSSFWorkbook workbook, List<BookWindowIds> books);
 
     Author CreateAuthor(Book book);
 

@@ -6,7 +6,6 @@
 package com.aquino.webParser.swing.autofill;
 
 import com.aquino.webParser.autofill.AutoFillService;
-import com.aquino.webParser.autofill.AutoFillServiceImpl;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.model.Author;
@@ -367,7 +366,7 @@ public class AuthorPublisherAutoFill extends JFrame {
                     .filter(br -> br.isSelected())
                     .forEach(br ->{
                         var afm = br.getAutoFillModel();
-                        InsertAuthor(br, afm.getAuthor());
+                        InsertAuthor(br, afm.author());
                         //TODO insert pub and add link
                         afm.UpdateBook();
                     });
@@ -407,7 +406,6 @@ public class AuthorPublisherAutoFill extends JFrame {
                     .filter(c -> c instanceof BookRow)
                     .map(c -> (BookRow) c)
                     .filter(br -> br.isSelected())
-                    .map(br ->  br.getAutoFillModel().getBookPair())
                     .collect(Collectors.toList());
             autoFillService.updateBook(workbook, books);
 

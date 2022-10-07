@@ -5,7 +5,7 @@
  */
 package com.aquino.webParser.swing.autofill;
 
-import com.aquino.webParser.model.AutoFillModel;
+import com.aquino.webParser.model.BookWindowIds;
 import com.aquino.webParser.swing.Handlers;
 
 import java.awt.*;
@@ -18,7 +18,7 @@ import java.net.URI;
  */
 public class BookRow extends javax.swing.JPanel {
 
-    private AutoFillModel autoFillModel;
+    private BookWindowIds autoFillModel;
 
     /**
      * Creates new form BookRow
@@ -27,18 +27,18 @@ public class BookRow extends javax.swing.JPanel {
         initComponents();
     }
 
-    public BookRow(AutoFillModel model) {
+    public BookRow(BookWindowIds model) {
         this();
         this.autoFillModel = model;
-        if(autoFillModel.getAuthor() != null){
-            textEnglishFirst.setText(autoFillModel.getAuthor().getEnglishFirstName());
-            textEnglishLast.setText(autoFillModel.getAuthor().getEnglishLastName());
-            textNativeFirst.setText(autoFillModel.getAuthor().getNativeFirstName());
-            textNativeLast.setText(autoFillModel.getAuthor().getNativeLastName());
+        if(autoFillModel.author() != null){
+            textEnglishFirst.setText(autoFillModel.author().getEnglishFirstName());
+            textEnglishLast.setText(autoFillModel.author().getEnglishLastName());
+            textNativeFirst.setText(autoFillModel.author().getNativeFirstName());
+            textNativeLast.setText(autoFillModel.author().getNativeLastName());
         }
-        if(autoFillModel.getPublisher() != null){
-            textPublisherEnglish.setText(autoFillModel.getPublisher().getEnglishName());
-            textPublisherNative.setText(autoFillModel.getPublisher().getNativeName());
+        if(autoFillModel.publisher() != null){
+            textPublisherEnglish.setText(autoFillModel.publisher().getEnglishName());
+            textPublisherNative.setText(autoFillModel.publisher().getNativeName());
         }
     }
 
@@ -158,21 +158,21 @@ public class BookRow extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
 
-    public AutoFillModel getAutoFillModel() {
+    public BookWindowIds getAutoFillModel() {
         updateModel();
         return autoFillModel;
     }
 
     private void updateModel() {
-        if(autoFillModel.getAuthor() != null){
-            autoFillModel.getAuthor().setEnglishFirstName(textEnglishFirst.getText());
-            autoFillModel.getAuthor().setEnglishLastName(textEnglishLast.getText());
-            autoFillModel.getAuthor().setNativeFirstName(textNativeFirst.getText());
-            autoFillModel.getAuthor().setNativeLastName(textNativeLast.getText());
+        if(autoFillModel.author() != null){
+            autoFillModel.author().setEnglishFirstName(textEnglishFirst.getText());
+            autoFillModel.author().setEnglishLastName(textEnglishLast.getText());
+            autoFillModel.author().setNativeFirstName(textNativeFirst.getText());
+            autoFillModel.author().setNativeLastName(textNativeLast.getText());
         }
-        if(autoFillModel.getPublisher() != null){
-            autoFillModel.getPublisher().setEnglishName(textPublisherEnglish.getText());
-            autoFillModel.getPublisher().setNativeName(textPublisherNative.getText());
+        if(autoFillModel.publisher() != null){
+            autoFillModel.publisher().setEnglishName(textPublisherEnglish.getText());
+            autoFillModel.publisher().setNativeName(textPublisherNative.getText());
         }
     }
 

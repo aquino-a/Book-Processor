@@ -7,6 +7,8 @@ import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
@@ -14,20 +16,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AutoFill extends JFrame {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private final AutoFillService autoFillService;
     private final MouseAdapter idClickListener = CreateMouseAdapter();
+    private XSSFWorkbook workbook;
+    private List<BookWindowIds> books;
 
 
     public AutoFill(AutoFillService autoFillService) {
@@ -38,12 +39,12 @@ public class AutoFill extends JFrame {
     public static void main(String[] args) {
         var autoFill = new AutoFill(new AutoFillService() {
             @Override
-            public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
+            public List<BookWindowIds> readBooks(XSSFWorkbook workbook) {
                 return null;
             }
 
             @Override
-            public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books) {
+            public void updateBook(XSSFWorkbook workbook, List<BookWindowIds> books) {
 
             }
 
@@ -83,7 +84,7 @@ public class AutoFill extends JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.add(CreateMenu());
-        this.add(CreateTabPane(), BorderLayout.CENTER);
+//        this.add(CreateTabPane(), BorderLayout.CENTER);
 
     }
 
@@ -161,6 +162,33 @@ public class AutoFill extends JFrame {
     }
 
     private void open(ActionEvent actionEvent) {
+        try {
+            File file = FileUtility.openFile(this.rootPane);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            workbook = Connect.openExistingWorkbook(file);
+            books = autoFillService.readBooks(workbook);
+
+            if (books.size() > 0) {
+                setFileLabel(file.getName());
+                enableActions();
+            } else {
+                closeWorkbook();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No data to change",
+                    "No data",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Open failed!", e);
+            JOptionPane.showMessageDialog(
+                this,
+                String.format("Open failed: %s", e.getCause().getMessage()),
+                "Link Problem.",
+                JOptionPane.ERROR_MESSAGE);
+        } finally {
+            this.setCursor(null);
+        }
     }
 
     private void save(ActionEvent actionEvent) {

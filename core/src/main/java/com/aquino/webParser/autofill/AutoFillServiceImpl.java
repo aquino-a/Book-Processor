@@ -36,7 +36,7 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     @Override
-    public List<AutoFillModel> readBooks(XSSFWorkbook workbook) {
+    public List<BookWindowIds> readBooks(XSSFWorkbook workbook) {
         var reader = new ExcelReader(workbook);
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
@@ -50,11 +50,11 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     @Override
-    public void updateBook(XSSFWorkbook workbook, List<Pair<Integer, Book>> books) {
+    public void updateBook(XSSFWorkbook workbook, List<BookWindowIds> books) {
         var updater = new ExcelUpdater(workbook);
         updater.setLocationMap(locationMap);
         books.forEach(b -> {
-            updater.UpdateBook(b.getLeft(), b.getRight());
+            updater.UpdateBook(b.excelRow(), b.book());
         });
     }
 
@@ -63,10 +63,10 @@ public class AutoFillServiceImpl implements AutoFillService {
         return ID_REGEX.test(text);
     }
 
-    private AutoFillModel createAutoFillModel(Pair<Integer, Book> p) {
+    private BookWindowIds createAutoFillModel(Pair<Integer, Book> p) {
         try {
             var book = p.getRight();
-            AutoFillModel afm;
+            BookWindowIds afm;
             if (book.getOclc() > 0) {
                 afm = getWorldCatModel(book);
             }
@@ -82,18 +82,18 @@ public class AutoFillServiceImpl implements AutoFillService {
         }
     }
 
-    private AutoFillModel getWorldCatModel(Book book) throws IOException {
-        var afm = new AutoFillModel();
+    private BookWindowIds getWorldCatModel(Book book) throws IOException {
+        var afm = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
-        afm.setAuthor(CreateAuthor(book, wcBook));
-        afm.setPublisher(CreatePublisher(book, wcBook));
+        afm.author(CreateAuthor(book, wcBook));
+        afm.publisher(CreatePublisher(book, wcBook));
         return afm;
     }
 
-    private AutoFillModel getNoOclcModel(Book book) {
-        var afm = new AutoFillModel();
-        afm.setAuthor(CreateAuthor(book));
-        afm.setPublisher(CreatePublisher(book));
+    private BookWindowIds getNoOclcModel(Book book) {
+        var afm = new BookWindowIds();
+        afm.author(CreateAuthor(book));
+        afm.publisher(CreatePublisher(book));
         return afm;
     }
 
