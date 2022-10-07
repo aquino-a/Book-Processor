@@ -169,7 +169,7 @@ public class AutoFill extends JFrame {
             books = autoFillService.readBooks(workbook);
 
             if (books.size() > 0) {
-                setFileLabel(file.getName());
+                this.setTitle(file.getName());
                 enableActions();
             } else {
                 closeWorkbook();
@@ -196,6 +196,16 @@ public class AutoFill extends JFrame {
 
     private void close(ActionEvent actionEvent) {
 
+    }
+
+    private void enableActions() {
+        this.getJMenuBar().setEnabled(true);
+    }
+
+    private void closeWorkbook() throws IOException {
+        if (workbook != null)
+            workbook.close();
+        workbook = null;
     }
 
     private MouseAdapter CreateMouseAdapter() {
