@@ -23,12 +23,10 @@ public class AuthorTableModel extends AbstractTableModel {
         "English First", "English Last",
         "");
 
-    private final List<Row> authors;
+    private final List<Row<Author>> authors;
 
-    public AuthorTableModel(List<Author> authors) {
-        this.authors = new UnmodifiableList<>(authors.stream()
-            .map(Row::new)
-            .collect(Collectors.toList()));
+    public AuthorTableModel(List<Row<Author>> authors) {
+        this.authors = authors;
     }
 
     @Override
@@ -44,17 +42,19 @@ public class AuthorTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         var row = authors.get(rowIndex);
+        var author = row.object();
+
         switch (columnIndex) {
             case 0:
                 return row.isSelected();
             case 1:
-                return getAuthor(row).getNativeFirstName();
+                return author.getNativeFirstName();
             case 2:
-                return getAuthor(row).getNativeLastName();
+                return author.getNativeLastName();
             case 3:
-                return getAuthor(row).getEnglishFirstName();
+                return author.getEnglishFirstName();
             case 4:
-                return getAuthor(row).getEnglishLastName();
+                return author.getEnglishLastName();
             case 5:
                 return row;
             default:
@@ -125,7 +125,7 @@ public class AuthorTableModel extends AbstractTableModel {
 
     public List<Author> getAuthors() {
         return authors.stream()
-            .map(AuthorTableModel::getAuthor)
+            .map(r -> r.object())
             .collect(Collectors.toList());
     }
 
@@ -134,12 +134,8 @@ public class AuthorTableModel extends AbstractTableModel {
         idColumn.setCellRenderer(LINK_BUTTON_RENDERER);
     }
 
-    private static Author getAuthor(Row row) {
-        return (Author) row.object();
-    }
-
     private Author getAuthor(int rowIndex) {
-        return getAuthor(authors.get(rowIndex));
+        return authors.get(rowIndex).object();
     }
 
     private static class LinkButtonRenderer implements TableCellRenderer {
@@ -149,8 +145,8 @@ public class AuthorTableModel extends AbstractTableModel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-            var row = (Row) value;
-            var author = getAuthor(row);
+            var row = (Row<Author>) value;
+            var author = row.object();
             var id = author.getId();
 
             if (id > 0) {
@@ -159,15 +155,6 @@ public class AuthorTableModel extends AbstractTableModel {
                 return BUTTON;
             } else {
                 return NO_LINK_LABEL;
-            }
-        }
-
-        private void openLink(String link) {
-            try {
-                Desktop.getDesktop().browse(URI.create(link));
-            } catch (IOException e) {
-                //TODO send event to parent form to display error.
-                e.printStackTrace();
             }
         }
     }

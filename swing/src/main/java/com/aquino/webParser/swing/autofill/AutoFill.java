@@ -5,23 +5,30 @@ import com.aquino.webParser.model.*;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AutoFill extends JFrame{
+public class AutoFill extends JFrame {
 
     private final AutoFillService autoFillService;
+    private final MouseAdapter idClickListener = CreateMouseAdapter();
+
 
     public AutoFill(AutoFillService autoFillService) {
         this.autoFillService = autoFillService;
@@ -114,15 +121,19 @@ public class AutoFill extends JFrame{
         fakeAuthor.setNativeLastName("박근혜");
 
         var fakeAuthor2 = new Author();
-        fakeAuthor.setLanguage(Language.Korean);
-        fakeAuthor.setNativeFirstName("김정은");
-        fakeAuthor.setNativeLastName("김정은");
-        fakeAuthor.setId(123);
+        fakeAuthor2.setLanguage(Language.Korean);
+        fakeAuthor2.setNativeFirstName("김정은");
+        fakeAuthor2.setNativeLastName("김정은");
+        fakeAuthor2.setId(123);
+        var secondRow = new Row<>(fakeAuthor2);
+        secondRow.link("http://bookswindow.com");
 
-        var model = new AuthorTableModel(List.of(fakeAuthor, fakeAuthor2));
+        var model = new AuthorTableModel(List.of(new Row<>(fakeAuthor), secondRow));
         var table = CreateTable();
         table.setModel(model);
         AuthorTableModel.setColumn(table);
+
+        table.addMouseListener(idClickListener);
 
         return new JScrollPane(table);
     }
@@ -135,7 +146,7 @@ public class AutoFill extends JFrame{
         return null;
     }
 
-    private JTable CreateTable(){
+    private JTable CreateTable() {
         var table = new JTable();
         table.setRowHeight(30);
         table.setRowMargin(10);
@@ -157,5 +168,41 @@ public class AutoFill extends JFrame{
 
     private void close(ActionEvent actionEvent) {
 
+    }
+
+    private MouseAdapter CreateMouseAdapter() {
+        var mouseParent = this;
+        return new MouseAdapter() {
+            private final Component parent = mouseParent;
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JTable table = (JTable) e.getSource();
+                int rowIndex = table.getSelectedRow();
+                int columnIndex = table.getSelectedColumn();
+
+                if (columnIndex != 5) {
+                    return;
+                }
+
+                var row = (Row) table.getValueAt(rowIndex, columnIndex);
+
+                if (!StringUtils.isBlank(row.link())) {
+                    openLink(row.link());
+                }
+            }
+
+            private void openLink(String link) {
+                try {
+                    Desktop.getDesktop().browse(URI.create(link));
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(
+                        parent,
+                        String.format("Error occured opening link %s !", link),
+                        "Link Problem.",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
     }
 }

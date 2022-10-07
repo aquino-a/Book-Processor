@@ -1,16 +1,16 @@
 package com.aquino.webParser.swing.autofill;
 
-public class Row {
+public class Row<T> {
 
-    private final Object object;
+    private final T object;
     private boolean isSelected;
     private String link;
 
-    public Row(Object object) {
+    public Row(T object) {
         this.object = object;
     }
 
-    public Object object() {
+    public T object() {
         return object;
     }
 
