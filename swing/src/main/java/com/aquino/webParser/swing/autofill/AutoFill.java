@@ -7,12 +7,12 @@ import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -21,9 +21,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class AutoFill extends JFrame {
@@ -33,7 +32,12 @@ public class AutoFill extends JFrame {
     private final MouseAdapter idClickListener = CreateMouseAdapter();
     private XSSFWorkbook workbook;
     private List<BookWindowIds> books;
+    private List<BookWindowIds> currentAuthors;
+    private List<BookWindowIds> currentAuthor2s;
+    private List<BookWindowIds> currentPublishers;
     private JMenu languageMenu;
+    private AutoFillStrategy currentAutoFillStrategy;
+    private Map<Type, AutoFillStrategy> strategies;
 
 
     public AutoFill(AutoFillService autoFillService) {
@@ -84,12 +88,17 @@ public class AutoFill extends JFrame {
     }
 
     private void init() {
+        strategies = createStrategies();
         this.setLayout(new BorderLayout());
         this.setSize(1400, 600);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setJMenuBar(CreateMenu());
         this.add(new JButton(Handlers.anonymousEventClass("Auto Fill", event -> autoFill())), BorderLayout.SOUTH);
+    }
+
+    private Map<Type, AutoFillStrategy> createStrategies() {
+        throw new NotImplementedException("");
     }
 
     private JMenuBar CreateMenu() {
@@ -116,7 +125,13 @@ public class AutoFill extends JFrame {
         tabPane.addTab("Author 2", CreateAuthor2Table());
         tabPane.addTab("Publisher", CreatePublisherTable());
 
+        tabPane.addChangeListener(this::tabChange);
+
         return tabPane;
+    }
+
+    private void tabChange(ChangeEvent changeEvent) {
+        var tabPane = (JTabbedPane) changeEvent.getSource();
     }
 
     private Component CreateAuthorTable() {
@@ -233,6 +248,7 @@ public class AutoFill extends JFrame {
             }
 
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
             Stream.of(bookRowContainer.getComponents())
                 .filter(c -> c instanceof BookRow)
                 .map(c -> (BookRow) c)
@@ -299,5 +315,17 @@ public class AutoFill extends JFrame {
                 }
             }
         };
+    }
+
+    public interface HasType {
+        Type type();
+    }
+    public enum Type {
+        Author,
+        Author2,
+        Publisher
+    }
+
+    private interface AutoFillStrategy {
     }
 }

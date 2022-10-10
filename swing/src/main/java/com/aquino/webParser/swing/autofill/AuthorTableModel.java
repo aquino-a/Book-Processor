@@ -1,8 +1,6 @@
 package com.aquino.webParser.swing.autofill;
 
 import com.aquino.webParser.model.Author;
-import com.aquino.webParser.swing.Handlers;
-import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.swing.*;
@@ -14,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AuthorTableModel extends AbstractTableModel {
+public class AuthorTableModel extends AbstractTableModel implements AutoFill.HasType {
 
     private static final LinkButtonRenderer LINK_BUTTON_RENDERER = new LinkButtonRenderer();
     private static final List<String> COLUMNS = List.of(
@@ -24,6 +22,7 @@ public class AuthorTableModel extends AbstractTableModel {
         "");
 
     private final List<Row<Author>> authors;
+    private AutoFill.Type type = AutoFill.Type.Author;
 
     public AuthorTableModel(List<Row<Author>> authors) {
         this.authors = authors;
@@ -137,6 +136,16 @@ public class AuthorTableModel extends AbstractTableModel {
     private Author getAuthor(int rowIndex) {
         return authors.get(rowIndex).object();
     }
+
+    @Override
+    public AutoFill.Type type() {
+        return type;
+    }
+
+    public void type(AutoFill.Type type){
+        this.type = type;
+    }
+
 
     private static class LinkButtonRenderer implements TableCellRenderer {
 
