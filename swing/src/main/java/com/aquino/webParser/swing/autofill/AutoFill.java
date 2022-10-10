@@ -32,9 +32,6 @@ public class AutoFill extends JFrame {
     private final MouseAdapter idClickListener = CreateMouseAdapter();
     private XSSFWorkbook workbook;
     private List<BookWindowIds> books;
-    private List<BookWindowIds> currentAuthors;
-    private List<BookWindowIds> currentAuthor2s;
-    private List<BookWindowIds> currentPublishers;
     private JMenu languageMenu;
     private AutoFillStrategy currentAutoFillStrategy;
     private Map<Type, AutoFillStrategy> strategies;
@@ -132,6 +129,20 @@ public class AutoFill extends JFrame {
 
     private void tabChange(ChangeEvent changeEvent) {
         var tabPane = (JTabbedPane) changeEvent.getSource();
+        var table = (JTable) tabPane.getSelectedComponent();
+        var hasType = (HasType) table.getColumnModel();
+
+        switch (hasType.type()){
+            case Author:
+                currentAutoFillStrategy = strategies.get(Type.Author);
+                break;
+            case Author2:
+                currentAutoFillStrategy = strategies.get(Type.Author2);
+                break;
+            case Publisher:
+                currentAutoFillStrategy = strategies.get(Type.Publisher);
+                break;
+        }
     }
 
     private Component CreateAuthorTable() {
@@ -248,17 +259,7 @@ public class AutoFill extends JFrame {
             }
 
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-            Stream.of(bookRowContainer.getComponents())
-                .filter(c -> c instanceof BookRow)
-                .map(c -> (BookRow) c)
-                .filter(br -> br.isSelected())
-                .forEach(br -> {
-                    var afm = br.getAutoFillModel();
-                    InsertAuthor(br, afm.author());
-                    //TODO insert pub and add link
-                    afm.UpdateBook();
-                });
+            currentAutoFillStrategy.fill();
         } catch (IllegalArgumentException | NullPointerException e) {
             LOGGER.error("Autofill failed!", e);
             JOptionPane.showMessageDialog(
@@ -327,5 +328,9 @@ public class AutoFill extends JFrame {
     }
 
     private interface AutoFillStrategy {
+        List<BookWindowIds> ids();
+        void ids(List<BookWindowIds> ids);
+
+        void fill();
     }
 }
