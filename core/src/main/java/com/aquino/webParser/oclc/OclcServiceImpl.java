@@ -28,7 +28,7 @@ public final class OclcServiceImpl implements OclcService {
     private static final Set<String> SUCCESS_CODES = Set.of("0", "2", "4");
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
-    private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=%s&audience=&author=" +
+    private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=bn:%s&audience=&author=" +
         "&content=&datePublished=&inLanguage=&itemSubType=&itemType=&limit=10&offset=1&openAccess=&orderBy=library" +
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
         "&lat=35.5625&lon=129.1235";
