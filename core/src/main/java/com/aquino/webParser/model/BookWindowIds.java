@@ -1,7 +1,5 @@
 package com.aquino.webParser.model;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 public class BookWindowIds {
     private Author author;
     private Author author2;
@@ -49,7 +47,11 @@ public class BookWindowIds {
         this.excelRow = excelRow;
     }
 
-    public void UpdateBook() {
+    public void updateBook() {
+        if (book == null) {
+            return;
+        }
+
         if (author != null) book.setAuthorId(author.getId());
         if (author2 != null) book.setAuthor2Id(author2.getId());
         if (publisher != null) book.setPublisherId(publisher.getId());

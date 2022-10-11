@@ -38,7 +38,7 @@ public class Row<T> {
         this.link = link;
     }
 
-    public BookWindowIds getParentIds() {
+    public BookWindowIds ids() {
         return parentIds;
     }
 }

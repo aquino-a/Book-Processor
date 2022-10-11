@@ -80,7 +80,7 @@ public class AutoFill extends JFrame {
 
             @Override
             public int insertAuthor(Author author) {
-                return 0;
+                return 1234;
             }
 
             @Override
@@ -90,7 +90,7 @@ public class AutoFill extends JFrame {
 
             @Override
             public String getAuthorLink(int id) {
-                return null;
+                return String.format("https://www.bookswindow.com/admin/author/%s/edit/main", id);
             }
 
             @Override
@@ -221,7 +221,10 @@ public class AutoFill extends JFrame {
             File file = FileUtility.openFile(this.rootPane);
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             workbook = Connect.openExistingWorkbook(file);
-            books = autoFillService.readBooks(workbook);
+            books = autoFillService.readBooks(workbook)
+                .stream()
+                .filter(b -> b.isMissingIds())
+                .collect(Collectors.toList());
 
             if (books.size() > 0) {
                 this.setTitle(file.getName());
@@ -282,6 +285,7 @@ public class AutoFill extends JFrame {
 
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             currentAutoFillStrategy.fill();
+            this.repaint();
         } catch (IllegalArgumentException | NullPointerException e) {
             LOGGER.error("Autofill failed!", e);
             JOptionPane.showMessageDialog(

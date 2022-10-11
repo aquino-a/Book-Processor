@@ -26,6 +26,19 @@ class AuthorStrategy implements AutoFill.AutoFillStrategy<Author> {
 
     @Override
     public void fill() {
+        rows.stream()
+            .filter(r -> r.object() != null)
+            .filter(r -> r.isSelected())
+            .forEach(this::insert);
+    }
 
+    private void insert(Row<Author> authorRow) {
+        var author = authorRow.object();
+        var id = autoFillService.insertAuthor(author);
+        var link = autoFillService.getAuthorLink(id);
+
+        author.setId(id);
+        authorRow.link(link);
+        authorRow.ids().updateBook();
     }
 }
