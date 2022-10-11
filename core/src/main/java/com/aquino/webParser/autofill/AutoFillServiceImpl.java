@@ -64,10 +64,12 @@ public class AutoFillServiceImpl implements AutoFillService {
     private BookWindowIds createBooksWindowsId(Pair<Integer, Book> p) {
         try {
             var book = p.getRight();
-            BookWindowIds bookWindowIds;
+            BookWindowIds bookWindowIds = null;
             if (book.getOclc() > 0) {
                 bookWindowIds = getFromWorldCat(book);
-            } else {
+            }
+
+            if (bookWindowIds == null) {
                 bookWindowIds = getWithoutNoOclc(book);
             }
 
@@ -84,6 +86,10 @@ public class AutoFillServiceImpl implements AutoFillService {
     private BookWindowIds getFromWorldCat(Book book) throws IOException {
         var afm = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
+        if (wcBook == null) {
+            return null;
+        }
+
         afm.author(CreateAuthor(book, wcBook));
         afm.publisher(CreatePublisher(book, wcBook));
         return afm;

@@ -115,6 +115,7 @@ public class AutoFill extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setJMenuBar(CreateMenu());
         this.add(new JButton(Handlers.anonymousEventClass("Auto Fill", event -> autoFill())), BorderLayout.SOUTH);
+        this.korean(null);
     }
 
     private void createStrategies() {
@@ -247,7 +248,7 @@ public class AutoFill extends JFrame {
             LOGGER.error("Open failed!", e);
             JOptionPane.showMessageDialog(
                 this,
-                String.format("Open failed: %s", e.getCause().getMessage()),
+                String.format("Open failed: %s", e.getMessage()),
                 "Open Problem.",
                 JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -267,7 +268,7 @@ public class AutoFill extends JFrame {
             LOGGER.error("save failed!", e);
             JOptionPane.showMessageDialog(
                 this,
-                String.format("Save failed: %s", e.getCause().getMessage()),
+                String.format("Save failed: %s", e.getMessage()),
                 "Save Problem.",
                 JOptionPane.ERROR_MESSAGE);
         }

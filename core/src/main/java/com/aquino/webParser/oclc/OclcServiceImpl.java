@@ -82,7 +82,7 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
             var root = OBJECT_MAPPER.readTree(json);
 
             return createBook(root);
-        } catch (InterruptedException | URISyntaxException e) {
+        } catch (Exception e) {
             LOGGER.info(String.format("Couldn't get book for %s", oclc));
             LOGGER.info(e.getMessage(), e);
             return null;
@@ -348,6 +348,10 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
             .filter(c -> c.has("firstName"))
             .filter(this::isAuthor)
             .collect(Collectors.toList());
+
+        if (authors.size() < 1) {
+            throw new RuntimeException("No authors found!");
+        }
 
         var book = new Book();
         var author = createAuthor(authors.get(0));

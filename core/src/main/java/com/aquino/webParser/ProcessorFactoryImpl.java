@@ -106,7 +106,7 @@ public class ProcessorFactoryImpl {
 
     public AutoFillService GetAutoFillService() throws IOException, URISyntaxException {
         var autoFillService = new AutoFillServiceImpl(
-            new WorldCatBookCreator(),
+            (OclcServiceImpl) this.CreateOclcService(),
             this.CreateWindowService(),
             this.GetExcelMap(), getAuthorStrategies());
         return autoFillService;
