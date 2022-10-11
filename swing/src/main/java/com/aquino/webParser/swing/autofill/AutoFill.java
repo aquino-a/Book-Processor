@@ -247,22 +247,22 @@ public class AutoFill extends JFrame {
     }
 
     private void save(ActionEvent actionEvent) {
-        try {
-            throw new NotImplementedException("");
-            File file = FileUtility.openFile(this.rootPane);
-            autoFillService.updateBook(workbook, books);
-
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                workbook.write(fos);
-            }
-        } catch (IllegalArgumentException | NullPointerException | IOException e) {
-            LOGGER.error("save failed!", e);
-            JOptionPane.showMessageDialog(
-                this,
-                String.format("Save failed: %s", e.getCause().getMessage()),
-                "Save Problem.",
-                JOptionPane.ERROR_MESSAGE);
-        }
+//        try {
+//            throw new NotImplementedException("");
+//            File file = FileUtility.openFile(this.rootPane);
+//            autoFillService.updateBook(workbook, books);
+//
+//            try (FileOutputStream fos = new FileOutputStream(file)) {
+//                workbook.write(fos);
+//            }
+//        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+//            LOGGER.error("save failed!", e);
+//            JOptionPane.showMessageDialog(
+//                this,
+//                String.format("Save failed: %s", e.getCause().getMessage()),
+//                "Save Problem.",
+//                JOptionPane.ERROR_MESSAGE);
+//        }
     }
 
     private void close(ActionEvent actionEvent) {
@@ -270,7 +270,7 @@ public class AutoFill extends JFrame {
     }
 
     private void autoFill() {
-        throw new NotImplementedException("");
+//        throw new NotImplementedException("");
         try {
             var result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);

@@ -13,7 +13,7 @@ import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
-import com.aquino.webParser.swing.autofill.AuthorPublisherAutoFill;
+import com.aquino.webParser.swing.autofill.AutoFill;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -232,12 +232,8 @@ public class JWPUserInterface extends JPanel {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    var autoFillTool = new AuthorPublisherAutoFill(
-                        processorFactory.GetAutoFillService());
-                    autoFillTool.setSize(1400, 600);
-                    autoFillTool.setLocationRelativeTo(null);
-                    autoFillTool.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                    autoFillTool.setVisible(true);
+                    var autoFill = new AutoFill(processorFactory.GetAutoFillService());
+                    autoFill.setVisible(true);
                 }
                 catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
