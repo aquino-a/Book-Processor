@@ -27,43 +27,6 @@ public class BookWindowServiceImpl implements BookWindowService {
     private static final String PUBLISHER_EDIT_URL_FORMAT = "https://www.bookswindow.com/admin/mfg/%s/edit/main";
     public static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/author\\\\/(\\d+)\\\\/edit\\\\/main");
     public static final Pattern PUBLISHER_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/mfg\\\\/(\\d+)\\\\/edit\\\\/main");
-    //add author return url
-    //https://www.bookswindow.com/admin/author/(33521)/edit/main
-
-//Ignore all empty strings
-//    private static final Map<String, String> ADD_LANGUAGE_PARAMS = Map.of(
-//            "input_arr[prj_language]", "langCode",
-//            "input_arr[first_name]", "firstName",
-//            "input_arr[first_name_romanized]", "",
-//            "input_arr[last_name]", "lastName",
-//            "input_arr[last_name_romanized]", "",
-//            "input_arr[description]", "",
-//            "opt_param[table]", "author", //don't change
-//            "opt_param[pk]", "authorId",
-//            "opt_param[field]", "language_obj", //don't change
-//            "opt_param[has_native]", "1", //don't change
-//            "opt_param[info_arr][0][key]", "first_name",
-//            "opt_param[info_arr][0][label]", "First Name",
-//            "opt_param[info_arr][0][required]", "true",
-//            "opt_param[info_arr][0][class]", "input-xlarge",
-//            "opt_param[info_arr][1][key]", "first_name_romanized",
-//            "opt_param[info_arr][1][label]", "Romanized",
-//            "opt_param[info_arr][1][class]", "input-xlarge",
-//            "opt_param[info_arr][1][input_type]", "input_indented",
-//            "opt_param[info_arr][2][key]", "last_name",
-//            "opt_param[info_arr][2][label]", "Last Name",
-//            "opt_param[info_arr][2][class]", "input-xlarge",
-//            "opt_param[info_arr][3][key]", "last_name_romanized",
-//            "opt_param[info_arr][3][label]", "Romanized",
-//            "opt_param[info_arr][3][class]", "input-xlarge",
-//            "opt_param[info_arr][3][input_type]", "input_indented",
-//            "opt_param[info_arr][4][key]", "description",
-//            "opt_param[info_arr][4][label]", "Intro / Description",
-//            "opt_param[info_arr][4][class]", "input-xxlarge",
-//            "opt_param[info_arr][4][input_type]", "textarea",
-//            "opt_param[sort_arr][]", "first_name",
-//            "opt_param[sort_arr][]", "asc"
-//            );
 
     private static final Map<String, String> ADD_LANGUAGE_PARAMS1 = Map.of(
         "input_arr[first_name_romanized]", "",
@@ -109,6 +72,23 @@ public class BookWindowServiceImpl implements BookWindowService {
         return m;
     }
 
+    private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
+        "native_lang", "langCode",
+        "opt_param[table]", "author", //don't change
+        "opt_param[pk]", "authorId",
+        " opt_param[field]", "language_obj",
+        "opt_param[has_native]", "1"
+    );
+
+    private static final Map<String, String> ADD_PUBLISHER_LANG_PARAMS = Map.of(
+        "input_arr[prj_language]", "langCode",
+        "opt_param[pk]", "id",
+        "input_arr[name]", "pubName",
+        "opt_param[table]", "mfg", //don't change
+        "opt_param[field]", "language_obj",
+        "opt_param[has_native]", "1"
+    );
+
     @Override
     public String getAuthorLink(String id) {
         return String.format(AUTHOR_EDIT_URL_FORMAT, id);
@@ -118,153 +98,6 @@ public class BookWindowServiceImpl implements BookWindowService {
     public String getPublisherLink(String id) {
         return String.format(PUBLISHER_EDIT_URL_FORMAT, id);
     }
-
-    private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
-        "native_lang", "langCode",
-        "opt_param[table]", "author", //don't change
-        "opt_param[pk]", "authorId",
-        " opt_param[field]", "language_obj",
-        "opt_param[has_native]", "1"
-    );
-
-  private static final Map<String, String> ADD_PUBLISHER_LANG_PARAMS = Map.of(
-        "input_arr[prj_language]", "langCode",
-        "opt_param[pk]", "id",
-        "input_arr[name]", "pubName",
-        "opt_param[table]", "mfg", //don't change
-        "opt_param[field]", "language_obj",
-        "opt_param[has_native]", "1"
-    );
-
-
-    //add author // publisher
-//    first_name: testttt1
-//    middle_name:
-//    last_name: testttt1
-//    contributor_role: 100
-
-    //language - engish
-//    input_arr[prj_language]: 1000
-//    input_arr[first_name]: testttt1
-//    input_arr[first_name_romanized]:
-//    input_arr[last_name]: testttt1
-//    input_arr[last_name_romanized]:
-//    input_arr[description]:
-//    opt_param[table]: author
-//    opt_param[pk]: 33468
-//    opt_param[field]: language_obj
-//    opt_param[has_native]: 1
-//    opt_param[info_arr][0][key]: first_name
-//    opt_param[info_arr][0][label]: First Name
-//    opt_param[info_arr][0][required]: true
-//    opt_param[info_arr][0][class]: input-xlarge
-//    opt_param[info_arr][1][key]: first_name_romanized
-//    opt_param[info_arr][1][label]: Romanized
-//    opt_param[info_arr][1][class]: input-xlarge
-//    opt_param[info_arr][1][input_type]: input_indented
-//    opt_param[info_arr][2][key]: last_name
-//    opt_param[info_arr][2][label]: Last Name
-//    opt_param[info_arr][2][class]: input-xlarge
-//    opt_param[info_arr][3][key]: last_name_romanized
-//    opt_param[info_arr][3][label]: Romanized
-//    opt_param[info_arr][3][class]: input-xlarge
-//    opt_param[info_arr][3][input_type]: input_indented
-//    opt_param[info_arr][4][key]: description
-//    opt_param[info_arr][4][label]: Intro / Description
-//    opt_param[info_arr][4][class]: input-xxlarge
-//    opt_param[info_arr][4][input_type]: textarea
-//    opt_param[sort_arr][]: first_name
-//    opt_param[sort_arr][]: asc
-
-    //add language japanese
-//    input_arr[prj_language]: 3000
-//    input_arr[first_name]: testttt1
-//    input_arr[first_name_romanized]:
-//    input_arr[last_name]: testttt1
-//    input_arr[last_name_romanized]:
-//    input_arr[description]:
-//    opt_param[table]: author
-//    opt_param[pk]: 33535
-//    opt_param[field]: language_obj
-//    opt_param[has_native]: 1
-//    opt_param[info_arr][0][key]: first_name
-//    opt_param[info_arr][0][label]: First Name
-//    opt_param[info_arr][0][required]: true
-//    opt_param[info_arr][0][class]: input-xlarge
-//    opt_param[info_arr][1][key]: first_name_romanized
-//    opt_param[info_arr][1][label]: Romanized
-//    opt_param[info_arr][1][class]: input-xlarge
-//    opt_param[info_arr][1][input_type]: input_indented
-//    opt_param[info_arr][2][key]: last_name
-//    opt_param[info_arr][2][label]: Last Name
-//    opt_param[info_arr][2][class]: input-xlarge
-//    opt_param[info_arr][3][key]: last_name_romanized
-//    opt_param[info_arr][3][label]: Romanized
-//    opt_param[info_arr][3][class]: input-xlarge
-//    opt_param[info_arr][3][input_type]: input_indented
-//    opt_param[info_arr][4][key]: description
-//    opt_param[info_arr][4][label]: Intro / Description
-//    opt_param[info_arr][4][class]: input-xxlarge
-//    opt_param[info_arr][4][input_type]: textarea
-//    opt_param[sort_arr][]: first_name
-//    opt_param[sort_arr][]: asc
-
-    //native - english
-//    native_lang: 1000
-//    opt_param[table]: author
-//    opt_param[pk]: 33468
-//    opt_param[field]: language_obj
-//    opt_param[has_native]: 1
-//    opt_param[info_arr][0][key]: first_name
-//    opt_param[info_arr][0][label]: First Name
-//    opt_param[info_arr][0][required]: true
-//    opt_param[info_arr][0][class]: input-xlarge
-//    opt_param[info_arr][1][key]: first_name_romanized
-//    opt_param[info_arr][1][label]: Romanized
-//    opt_param[info_arr][1][class]: input-xlarge
-//    opt_param[info_arr][1][input_type]: input_indented
-//    opt_param[info_arr][2][key]: last_name
-//    opt_param[info_arr][2][label]: Last Name
-//    opt_param[info_arr][2][class]: input-xlarge
-//    opt_param[info_arr][3][key]: last_name_romanized
-//    opt_param[info_arr][3][label]: Romanized
-//    opt_param[info_arr][3][class]: input-xlarge
-//    opt_param[info_arr][3][input_type]: input_indented
-//    opt_param[info_arr][4][key]: description
-//    opt_param[info_arr][4][label]: Intro / Description
-//    opt_param[info_arr][4][class]: input-xxlarge
-//    opt_param[info_arr][4][input_type]: textarea
-//    opt_param[sort_arr][]: first_name
-//    opt_param[sort_arr][]: asc
-//    native_lang_status: 1
-
-//    native_lang: 3000
-//    opt_param[table]: author
-//    opt_param[pk]: 33535
-//    opt_param[field]: language_obj
-//    opt_param[has_native]: 1
-//    opt_param[info_arr][0][key]: first_name
-//    opt_param[info_arr][0][label]: First Name
-//    opt_param[info_arr][0][required]: true
-//    opt_param[info_arr][0][class]: input-xlarge
-//    opt_param[info_arr][1][key]: first_name_romanized
-//    opt_param[info_arr][1][label]: Romanized
-//    opt_param[info_arr][1][class]: input-xlarge
-//    opt_param[info_arr][1][input_type]: input_indented
-//    opt_param[info_arr][2][key]: last_name
-//    opt_param[info_arr][2][label]: Last Name
-//    opt_param[info_arr][2][class]: input-xlarge
-//    opt_param[info_arr][3][key]: last_name_romanized
-//    opt_param[info_arr][3][label]: Romanized
-//    opt_param[info_arr][3][class]: input-xlarge
-//    opt_param[info_arr][3][input_type]: input_indented
-//    opt_param[info_arr][4][key]: description
-//    opt_param[info_arr][4][label]: Intro / Description
-//    opt_param[info_arr][4][class]: input-xxlarge
-//    opt_param[info_arr][4][input_type]: textarea
-//    opt_param[sort_arr][]: first_name
-//    opt_param[sort_arr][]: asc
-//    native_lang_status: 1
 
     @Override
     public Book findIds(Book book) {
