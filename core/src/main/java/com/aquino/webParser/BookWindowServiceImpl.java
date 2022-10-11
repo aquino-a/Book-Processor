@@ -4,7 +4,6 @@ import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Publisher;
 import com.aquino.webParser.utilities.Login;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -28,7 +27,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     public static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/author\\\\/(\\d+)\\\\/edit\\\\/main");
     public static final Pattern PUBLISHER_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/mfg\\\\/(\\d+)\\\\/edit\\\\/main");
 
-    private static final Map<String, String> ADD_LANGUAGE_PARAMS1 = Map.of(
+    private static final Map<String, String> ADD_AUTHOR_LANGUAGE_PARAMS = Map.of(
         "input_arr[first_name_romanized]", "",
         "input_arr[last_name_romanized]", "",
         "input_arr[description]", "",
@@ -37,40 +36,6 @@ public class BookWindowServiceImpl implements BookWindowService {
         "opt_param[has_native]", "1", //don't change
         "opt_param[info_arr][0][key]", "first_name"
     );
-
-
-    private static final Map<String, String> ADD_LANGUAGE_PARAMS2 = Map.of(
-        "opt_param[info_arr][0][label]", "First Name",
-        "opt_param[info_arr][0][required]", "true",
-        "opt_param[info_arr][0][class]", "input-xlarge",
-        "opt_param[info_arr][1][key]", "first_name_romanized",
-        "opt_param[info_arr][1][label]", "Romanized",
-        "opt_param[info_arr][1][class]", "input-xlarge",
-        "opt_param[info_arr][1][input_type]", "input_indented",
-        "opt_param[info_arr][2][key]", "last_name",
-        "opt_param[info_arr][2][label]", "Last Name",
-        "opt_param[info_arr][2][class]", "input-xlarge"
-    );
-
-
-    private static final Map<String, String> ADD_LANGUAGE_PARAMS3 = Map.of(
-        "opt_param[info_arr][3][key]", "last_name_romanized",
-        "opt_param[info_arr][3][label]", "Romanized",
-        "opt_param[info_arr][3][class]", "input-xlarge",
-        "opt_param[info_arr][3][input_type]", "input_indented",
-        "opt_param[info_arr][4][key]", "description",
-        "opt_param[info_arr][4][label]", "Intro / Description",
-        "opt_param[info_arr][4][class]", "input-xxlarge",
-        "opt_param[info_arr][4][input_type]", "textarea",
-        "opt_param[sort_arr][]", "first_name"
-    );
-
-    private static Map<String, String> GetAddLanguageParams() {
-        var m = new HashMap<String, String>(ADD_LANGUAGE_PARAMS1);
-        m.putAll(ADD_LANGUAGE_PARAMS2);
-        m.putAll(ADD_LANGUAGE_PARAMS3);
-        return m;
-    }
 
     private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
         "native_lang", "langCode",
@@ -218,7 +183,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void AddEnglishLanguage(int id, Author author) {
-        var data = GetAddLanguageParams();
+        var data = new HashMap<>(ADD_AUTHOR_LANGUAGE_PARAMS);
         data.put("input_arr[prj_language]", ENGLISH_LANG_CODE);
         data.put("input_arr[first_name]", author.getEnglishFirstName());
         data.put("input_arr[last_name]", author.getEnglishLastName());
@@ -228,7 +193,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void AddNativeLanguage(int id, Author author) {
-        var data = GetAddLanguageParams();
+        var data = new HashMap<>(ADD_AUTHOR_LANGUAGE_PARAMS);
         data.put("input_arr[prj_language]", author.getLanguage().LanguageCode);
         data.put("input_arr[first_name]", author.getNativeFirstName());
         data.put("input_arr[last_name]", author.getNativeLastName());
@@ -238,7 +203,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void SetNativeLanguage(int id, Author author) {
-        var data = new HashMap<String, String>(SET_NATIVE_PARAMS);
+        var data = new HashMap<>(SET_NATIVE_PARAMS);
         data.replace("native_lang", author.getLanguage().LanguageCode);
         data.replace("opt_param[pk]", String.valueOf(id));
 

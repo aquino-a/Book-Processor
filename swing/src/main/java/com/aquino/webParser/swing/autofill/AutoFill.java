@@ -93,6 +93,11 @@ public class AutoFill extends JFrame {
             }
 
             @Override
+            public String getPublisherLink(int id) {
+                return String.format("https://www.bookswindow.com/admin/mfg/%s/edit/main", id);
+            }
+
+            @Override
             public void setLanguage(Language language) {
 
             }
