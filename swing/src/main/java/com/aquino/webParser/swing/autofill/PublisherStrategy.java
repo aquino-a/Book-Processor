@@ -5,27 +5,14 @@ import com.aquino.webParser.model.Publisher;
 
 import java.util.List;
 
-class PublisherStrategy implements AutoFill.AutoFillStrategy<Publisher> {
-
-    private List<Row<Publisher>> rows;
-    private final AutoFillService autoFillService;
+class PublisherStrategy extends AutoFillStrategy<Publisher> {
 
     PublisherStrategy(AutoFillService autoFillService) {
-        this.autoFillService = autoFillService;
+        super(autoFillService);
     }
 
     @Override
-    public List<Row<Publisher>> rows() {
-        return rows;
-    }
-
-    @Override
-    public void rows(List<Row<Publisher>> rows) {
-        this.rows = rows;
-    }
-
-    @Override
-    public void fill() {
+    protected void insert(Row<Publisher> authorRow) {
 
     }
 }
