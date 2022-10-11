@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -54,7 +55,7 @@ public class AutoFill extends JFrame {
                 fakeAuthor2.setNativeFirstName("김정은");
                 fakeAuthor2.setNativeLastName("김정은");
                 fakeAuthor2.setId(123);
-                
+
                 var publisher = new Publisher();
                 publisher.setNativeName("하로");
 
@@ -250,22 +251,21 @@ public class AutoFill extends JFrame {
     }
 
     private void save(ActionEvent actionEvent) {
-//        try {
-//            throw new NotImplementedException("");
-//            File file = FileUtility.openFile(this.rootPane);
-//            autoFillService.updateBook(workbook, books);
-//
-//            try (FileOutputStream fos = new FileOutputStream(file)) {
-//                workbook.write(fos);
-//            }
-//        } catch (IllegalArgumentException | NullPointerException | IOException e) {
-//            LOGGER.error("save failed!", e);
-//            JOptionPane.showMessageDialog(
-//                this,
-//                String.format("Save failed: %s", e.getCause().getMessage()),
-//                "Save Problem.",
-//                JOptionPane.ERROR_MESSAGE);
-//        }
+        try {
+            File file = FileUtility.openFile(this.rootPane);
+            autoFillService.updateBook(workbook, books);
+
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                workbook.write(fos);
+            }
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            LOGGER.error("save failed!", e);
+            JOptionPane.showMessageDialog(
+                this,
+                String.format("Save failed: %s", e.getCause().getMessage()),
+                "Save Problem.",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void close(ActionEvent actionEvent) {
