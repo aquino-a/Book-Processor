@@ -5,7 +5,6 @@ import com.aquino.webParser.model.*;
 import com.aquino.webParser.swing.FileUtility;
 import com.aquino.webParser.swing.Handlers;
 import com.aquino.webParser.utilities.Connect;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -271,11 +269,20 @@ public class AutoFill extends JFrame {
     }
 
     private void close(ActionEvent actionEvent) {
-        throw new NotImplementedException("");
+        try {
+            closeWorkbook();
+            this.setTitle("");
+        } catch (IllegalArgumentException | NullPointerException | IOException e) {
+            LOGGER.error("Close failed!", e);
+            JOptionPane.showMessageDialog(
+                this,
+                String.format("Close fail: %s", e.getMessage()),
+                "Close Problem.",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void autoFill() {
-//        throw new NotImplementedException("");
         try {
             var result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
