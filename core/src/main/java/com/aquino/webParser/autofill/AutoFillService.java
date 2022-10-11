@@ -19,5 +19,7 @@ public interface AutoFillService {
 
     String getAuthorLink(int id);
 
+    String getPublisherLink(int id);
+
     void setLanguage(Language language);
 }
