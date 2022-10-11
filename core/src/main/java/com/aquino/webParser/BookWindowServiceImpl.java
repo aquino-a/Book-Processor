@@ -26,6 +26,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     private static final String PUBLISHER_ROLE = "100";
     private static final String ENGLISH_LANG_CODE = "1000";
     private static final String AUTHOR_EDIT_URL_FORMAT = "https://www.bookswindow.com/admin/author/%s/edit/main";
+    private static final String PUBLISHER_EDIT_URL_FORMAT = "https://www.bookswindow.com/admin/mfg/%s/edit/main";
     public static final Pattern AUTHOR_NUMBER_REGEX = Pattern.compile("\"redirect_url\":\"\\\\/admin\\\\/author\\\\/(\\d+)\\\\/edit\\\\/main");
     //add author return url
     //https://www.bookswindow.com/admin/author/(33521)/edit/main
@@ -66,43 +67,43 @@ public class BookWindowServiceImpl implements BookWindowService {
 //            );
 
     private static final Map<String, String> ADD_LANGUAGE_PARAMS1 = Map.of(
-            "input_arr[first_name_romanized]", "",
-            "input_arr[last_name_romanized]", "",
-            "input_arr[description]", "",
-            "opt_param[table]", "author", //don't change
-            "opt_param[field]", "language_obj", //don't change
-            "opt_param[has_native]", "1", //don't change
-            "opt_param[info_arr][0][key]", "first_name"
+        "input_arr[first_name_romanized]", "",
+        "input_arr[last_name_romanized]", "",
+        "input_arr[description]", "",
+        "opt_param[table]", "author", //don't change
+        "opt_param[field]", "language_obj", //don't change
+        "opt_param[has_native]", "1", //don't change
+        "opt_param[info_arr][0][key]", "first_name"
     );
 
 
     private static final Map<String, String> ADD_LANGUAGE_PARAMS2 = Map.of(
-            "opt_param[info_arr][0][label]", "First Name",
-            "opt_param[info_arr][0][required]", "true",
-            "opt_param[info_arr][0][class]", "input-xlarge",
-            "opt_param[info_arr][1][key]", "first_name_romanized",
-            "opt_param[info_arr][1][label]", "Romanized",
-            "opt_param[info_arr][1][class]", "input-xlarge",
-            "opt_param[info_arr][1][input_type]", "input_indented",
-            "opt_param[info_arr][2][key]", "last_name",
-            "opt_param[info_arr][2][label]", "Last Name",
-            "opt_param[info_arr][2][class]", "input-xlarge"
+        "opt_param[info_arr][0][label]", "First Name",
+        "opt_param[info_arr][0][required]", "true",
+        "opt_param[info_arr][0][class]", "input-xlarge",
+        "opt_param[info_arr][1][key]", "first_name_romanized",
+        "opt_param[info_arr][1][label]", "Romanized",
+        "opt_param[info_arr][1][class]", "input-xlarge",
+        "opt_param[info_arr][1][input_type]", "input_indented",
+        "opt_param[info_arr][2][key]", "last_name",
+        "opt_param[info_arr][2][label]", "Last Name",
+        "opt_param[info_arr][2][class]", "input-xlarge"
     );
 
 
     private static final Map<String, String> ADD_LANGUAGE_PARAMS3 = Map.of(
-            "opt_param[info_arr][3][key]", "last_name_romanized",
-            "opt_param[info_arr][3][label]", "Romanized",
-            "opt_param[info_arr][3][class]", "input-xlarge",
-            "opt_param[info_arr][3][input_type]", "input_indented",
-            "opt_param[info_arr][4][key]", "description",
-            "opt_param[info_arr][4][label]", "Intro / Description",
-            "opt_param[info_arr][4][class]", "input-xxlarge",
-            "opt_param[info_arr][4][input_type]", "textarea",
-            "opt_param[sort_arr][]", "first_name"
+        "opt_param[info_arr][3][key]", "last_name_romanized",
+        "opt_param[info_arr][3][label]", "Romanized",
+        "opt_param[info_arr][3][class]", "input-xlarge",
+        "opt_param[info_arr][3][input_type]", "input_indented",
+        "opt_param[info_arr][4][key]", "description",
+        "opt_param[info_arr][4][label]", "Intro / Description",
+        "opt_param[info_arr][4][class]", "input-xxlarge",
+        "opt_param[info_arr][4][input_type]", "textarea",
+        "opt_param[sort_arr][]", "first_name"
     );
 
-    private static Map<String, String> GetAddLanguageParams(){
+    private static Map<String, String> GetAddLanguageParams() {
         var m = new HashMap<String, String>(ADD_LANGUAGE_PARAMS1);
         m.putAll(ADD_LANGUAGE_PARAMS2);
         m.putAll(ADD_LANGUAGE_PARAMS3);
@@ -114,12 +115,17 @@ public class BookWindowServiceImpl implements BookWindowService {
         return String.format(AUTHOR_EDIT_URL_FORMAT, id);
     }
 
+    @Override
+    public String getPublisherLink(String id) {
+        return String.format(PUBLISHER_EDIT_URL_FORMAT, id);
+    }
+
     private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
-            "native_lang", "langCode",
-            "opt_param[table]", "author", //don't change
-            "opt_param[pk]", "authorId",
-            " opt_param[field]", "language_obj",
-            "opt_param[has_native]", "1"
+        "native_lang", "langCode",
+        "opt_param[table]", "author", //don't change
+        "opt_param[pk]", "authorId",
+        " opt_param[field]", "language_obj",
+        "opt_param[has_native]", "1"
     );
 
 
@@ -253,7 +259,7 @@ public class BookWindowServiceImpl implements BookWindowService {
 //    native_lang_status: 1
 
     @Override
-    public Book findIds(Book book){
+    public Book findIds(Book book) {
         SetAuthor(book);
         SetAuthor2(book);
         SetPublisher(book);
@@ -262,45 +268,45 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     private void SetAuthor(Book book) {
         var parts = findAuthorId(book.getAuthor());
-        if(parts.length > 0)
+        if (parts.length > 0)
             book.setAuthorId(Integer.parseInt(parts[0]));
-        if(parts.length > 2)
-        book.setAuthorBooks(String.join(" ", parts[1], parts[2]));
+        if (parts.length > 2)
+            book.setAuthorBooks(String.join(" ", parts[1], parts[2]));
     }
 
     private void SetAuthor2(Book book) {
         var parts = findAuthorId(book.getAuthor2());
-        if(parts.length > 0)
+        if (parts.length > 0)
             book.setAuthor2Id(Integer.parseInt(parts[0]));
-        if(parts.length > 2)
+        if (parts.length > 2)
             book.setAuthor2Books(String.join(" ", parts[1], parts[2]));
     }
 
     private void SetPublisher(Book book) {
         var parts = findPublisherId(book.getPublisher());
-        if(parts.length > 0)
+        if (parts.length > 0)
             book.setPublisherId(Integer.parseInt(parts[0]));
-        if(parts.length > 1)
+        if (parts.length > 1)
             book.setPublisherBooks(parts[1]);
     }
 
     @Override
-    public String[] findPublisherId(String publisher){
-        String url = makeURL("https://www.bookswindow.com/admin/mfg/manage/keyword/",publisher);
+    public String[] findPublisherId(String publisher) {
+        String url = makeURL("https://www.bookswindow.com/admin/mfg/manage/keyword/", publisher);
         var elements = retrieveElementAuthorPublisher(url);
         if (elements != null) {
             return elements.stream().map((e -> e.text())).toArray(String[]::new);
-        } else return new String[]{ "-1", "", ""};
+        } else return new String[]{"-1", "", ""};
     }
 
     @Override
-    public String[] findAuthorId(String author){
-        if(author == null || author.equals("") || author.equals("1494"))
-            return new String[]{ "-1", "", ""};
+    public String[] findAuthorId(String author) {
+        if (author == null || author.equals("") || author.equals("1494"))
+            return new String[]{"-1", "", ""};
         var elements = retrieveElementAuthorPublisher(makeURLAuthor(author));
         if (elements != null) {
             return elements.stream().map((e -> e.text())).toArray(String[]::new);
-        } else return new String[]{ "-1", "", ""};
+        } else return new String[]{"-1", "", ""};
     }
 
     private Elements retrieveElementAuthorPublisher(String url) {
@@ -308,10 +314,10 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private Elements retrieveElements(String url, String attr, String value) {
-        try{
+        try {
             return Login.getDocument(url).
-                    getElementsByAttributeValueMatching(attr, value);
-        } catch (NullPointerException e){
+                getElementsByAttributeValueMatching(attr, value);
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -326,25 +332,20 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     private String unicode(String name) {
         String unicodeName;
-        try {
-            unicodeName = URLEncoder.encode(
-                    name, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            System.out.println(e.toString());
-            unicodeName = name;
-        }
+        unicodeName = URLEncoder.encode(
+            name, StandardCharsets.UTF_8).replace("+", "%20");
         return unicodeName;
     }
 
     @Override
-    public boolean doesBookExist(String isbn){
+    public boolean doesBookExist(String isbn) {
         return retrieveElementISBN(isbn) != null;
     }
 
     private Element retrieveElementISBN(String keyword) {
         return retrieveElements(
-                makeURLTitle(keyword),
-                "style", "margin-top:10px; margin-bottom:10px;").first();
+            makeURLTitle(keyword),
+            "style", "margin-top:10px; margin-bottom:10px;").first();
     }
 
     private String makeURLTitle(String title) {
@@ -355,16 +356,16 @@ public class BookWindowServiceImpl implements BookWindowService {
     public int addAuthor(Author author) {
 
         var addAuthorDoc = Login.postBody(
-                ADD_URL,
-                Map.of("first_name", URLEncoder.encode(author.getEnglishFirstName(), StandardCharsets.UTF_8),
-                        "middle_name", "",
-                        "last_name", URLEncoder.encode(author.getEnglishLastName(), StandardCharsets.UTF_8),
-                        "contributor_role", AUTHOR_ROLE));
+            ADD_URL,
+            Map.of("first_name", URLEncoder.encode(author.getEnglishFirstName(), StandardCharsets.UTF_8),
+                "middle_name", "",
+                "last_name", URLEncoder.encode(author.getEnglishLastName(), StandardCharsets.UTF_8),
+                "contributor_role", AUTHOR_ROLE));
 
         var text = addAuthorDoc.html();
         var matcher = AUTHOR_NUMBER_REGEX.matcher(addAuthorDoc.html());
         int result = -1;
-        if(!matcher.find()) {
+        if (!matcher.find()) {
             return result;
         }
         result = Integer.parseInt(matcher.group(1).trim());

@@ -155,6 +155,11 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     @Override
+    public String getPublisherLink(int id) {
+        return bookWindowService.getPublisherLink(String.valueOf(id));
+    }
+
+    @Override
     public void setLanguage(Language language) {
         this.currentAuthorStrategy = this.authorStrategies.get(language);
     }
