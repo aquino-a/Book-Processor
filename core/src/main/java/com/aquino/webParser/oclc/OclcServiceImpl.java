@@ -2,7 +2,6 @@ package com.aquino.webParser.oclc;
 
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.Book;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.NotImplementedException;
@@ -346,8 +345,8 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
         var authors = StreamSupport.stream(contributors.spliterator(), false)
             .filter(c -> !c.has("fromStatementOfResponsibility"))
             .filter(c -> c.has("relatorCodes"))
-            .filter(this::isAuthor)
             .filter(c -> c.has("firstName"))
+            .filter(this::isAuthor)
             .collect(Collectors.toList());
 
         var book = new Book();
@@ -356,7 +355,7 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
 
         if (authors.size() > 1) {
             var author2 = createAuthor(authors.get(1));
-            book.setAuthor(author2);
+            book.setAuthor2(author2);
         }
 
         return book;
@@ -371,7 +370,7 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
 
         if (contributor.has("secondName")) {
             var secondName = contributor.path("secondName");
-            if(secondName.has("text")){
+            if (secondName.has("text")) {
                 author += ' ';
                 author += secondName.path("text").asText();
             }
@@ -381,9 +380,9 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
     }
 
     private boolean isAuthor(JsonNode contributor) {
-        return StreamSupport.stream(contributor.path("realtorCodes").spliterator(), false)
+        return StreamSupport.stream(contributor.path("relatorCodes").spliterator(), false)
             .map(JsonNode::toString)
-            .anyMatch(s -> s.equals("aut"));
+            .anyMatch(s -> s.equals("\"aut\""));
     }
 
     /**
