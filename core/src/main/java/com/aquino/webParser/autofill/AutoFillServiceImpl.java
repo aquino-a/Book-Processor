@@ -5,6 +5,7 @@ import com.aquino.webParser.ExcelReader;
 import com.aquino.webParser.ExcelUpdater;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -127,7 +128,7 @@ public class AutoFillServiceImpl implements AutoFillService {
     private Author CreateAuthor(Book book, Book wcBook) {
         if (containsId(book.getAuthor())) {
             return null;
-        } else if (book.getAuthor().isBlank()) {
+        } else if (StringUtils.isBlank(book.getAuthor()) || StringUtils.isBlank(wcBook.getAuthor())) {
             return CreateAuthor(book);
         }
         var author = new Author();

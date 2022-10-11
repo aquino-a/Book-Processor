@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -41,6 +42,8 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
     private static final String WC_TOKEN_REQUEST = "http://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
     private static final Pattern WC_BUILD_PATTERN = Pattern.compile("/_next/static/([a-z0-9]+)/_buildManifest\\.js");
     private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\":\"([-a-zA-Z0-9._~+/]+=*)\",");
+
+    private static final Predicate<String> HANGUL_PREDICATE = Pattern.compile("\\p{IsHangul}").asPredicate();
 
     private boolean firstTime = true;
     private CookieManager cookieManager;
@@ -355,11 +358,15 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
 
         var book = new Book();
         var author = createAuthor(authors.get(0));
-        book.setAuthor(author);
+        if (!HANGUL_PREDICATE.test(author)) {
+            book.setAuthor(author);
+        }
 
         if (authors.size() > 1) {
             var author2 = createAuthor(authors.get(1));
-            book.setAuthor2(author2);
+            if (!HANGUL_PREDICATE.test(author2)) {
+                book.setAuthor2(author2);
+            }
         }
 
         return book;
