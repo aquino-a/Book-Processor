@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class AutoFill extends JFrame {
 
@@ -46,7 +46,26 @@ public class AutoFill extends JFrame {
         var autoFill = new AutoFill(new AutoFillService() {
             @Override
             public List<BookWindowIds> readBooks(XSSFWorkbook workbook) {
-                return null;
+                var fakeAuthor = new Author();
+                fakeAuthor.setLanguage(Language.Korean);
+                fakeAuthor.setNativeFirstName("박근혜");
+                fakeAuthor.setNativeLastName("박근혜");
+
+                var fakeAuthor2 = new Author();
+                fakeAuthor2.setLanguage(Language.Korean);
+                fakeAuthor2.setNativeFirstName("김정은");
+                fakeAuthor2.setNativeLastName("김정은");
+                fakeAuthor2.setId(123);
+                
+                var publisher = new Publisher();
+                publisher.setNativeName("하로");
+
+                var ids = new BookWindowIds();
+                ids.author(fakeAuthor);
+                ids.author2(fakeAuthor2);
+                ids.publisher(publisher);
+
+                return List.of(ids);
             }
 
             @Override
@@ -85,7 +104,7 @@ public class AutoFill extends JFrame {
     }
 
     private void init() {
-        strategies = createStrategies();
+        createStrategies();
         this.setLayout(new BorderLayout());
         this.setSize(1400, 600);
         this.setLocationRelativeTo(null);
@@ -94,8 +113,13 @@ public class AutoFill extends JFrame {
         this.add(new JButton(Handlers.anonymousEventClass("Auto Fill", event -> autoFill())), BorderLayout.SOUTH);
     }
 
-    private Map<Type, AutoFillStrategy> createStrategies() {
-        throw new NotImplementedException("");
+    private void createStrategies() {
+        strategies = Map.of(
+            Type.Author, new AuthorStrategy(autoFillService),
+            Type.Author2, new AuthorStrategy(autoFillService),
+            Type.Publisher, new PublisherStrategy(autoFillService));
+
+        currentAutoFillStrategy = strategies.get(Type.Author);
     }
 
     private JMenuBar CreateMenu() {
@@ -132,7 +156,7 @@ public class AutoFill extends JFrame {
         var table = (JTable) tabPane.getSelectedComponent();
         var hasType = (HasType) table.getColumnModel();
 
-        switch (hasType.type()){
+        switch (hasType.type()) {
             case Author:
                 currentAutoFillStrategy = strategies.get(Type.Author);
                 break;
@@ -146,20 +170,16 @@ public class AutoFill extends JFrame {
     }
 
     private Component CreateAuthorTable() {
-        var fakeAuthor = new Author();
-        fakeAuthor.setLanguage(Language.Korean);
-        fakeAuthor.setNativeFirstName("박근혜");
-        fakeAuthor.setNativeLastName("박근혜");
+        var rows = books
+            .stream()
+            .filter(b -> b.author().getId() < 1)
+            .map(b -> new Row<>(b, b.author()))
+            .collect(Collectors.toList());
 
-        var fakeAuthor2 = new Author();
-        fakeAuthor2.setLanguage(Language.Korean);
-        fakeAuthor2.setNativeFirstName("김정은");
-        fakeAuthor2.setNativeLastName("김정은");
-        fakeAuthor2.setId(123);
-        var secondRow = new Row<>(fakeAuthor2);
-        secondRow.link("http://bookswindow.com");
+        var strategy = strategies.get(Type.Author);
+        strategy.rows(rows);
 
-        var model = new AuthorTableModel(List.of(new Row<>(fakeAuthor), secondRow));
+        var model = new AuthorTableModel(rows);
         var table = CreateTable();
         table.setModel(model);
         AuthorTableModel.setColumn(table);
@@ -318,18 +338,20 @@ public class AutoFill extends JFrame {
         };
     }
 
-    public interface HasType {
+    interface HasType {
         Type type();
     }
-    public enum Type {
+
+    enum Type {
         Author,
         Author2,
         Publisher
     }
 
-    private interface AutoFillStrategy {
-        List<BookWindowIds> ids();
-        void ids(List<BookWindowIds> ids);
+    interface AutoFillStrategy<T> {
+        List<Row<T>> rows();
+
+        void rows(List<Row<T>> rows);
 
         void fill();
     }
