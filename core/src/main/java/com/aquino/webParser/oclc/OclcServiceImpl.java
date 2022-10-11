@@ -1,8 +1,11 @@
 package com.aquino.webParser.oclc;
 
+import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +23,7 @@ import java.net.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public final class OclcServiceImpl implements OclcService {
+public final class OclcServiceImpl implements OclcService, BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -28,7 +31,7 @@ public final class OclcServiceImpl implements OclcService {
     private static final Set<String> SUCCESS_CODES = Set.of("0", "2", "4");
     private static final String ISBN_REQUEST = "http://classify.oclc.org/classify2/Classify?isbn=%s&summary=true";
     private static final String OWI_REQUEST = "http://classify.oclc.org/classify2/Classify?owi=%s";
-    private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=bn:%s&audience=&author=" +
+    private static final String WORLDCAT_REQUEST = "http://www.worldcat.org/api/search?q=%s&audience=&author=" +
         "&content=&datePublished=&inLanguage=&itemSubType=&itemType=&limit=10&offset=1&openAccess=&orderBy=library" +
         "&peerReviewed=&topic=&heldByInstitutionID=&preferredLanguage=eng&relevanceByGeoCoordinates=true" +
         "&lat=35.5625&lon=129.1235";
@@ -61,6 +64,30 @@ public final class OclcServiceImpl implements OclcService {
     }
 
     /**
+     * Gets the author, author2, and publisher from world cat using the oclc.
+     * Does not support searching by isbn.
+     *
+     * @param oclc the oclc of the book.
+     * @return a {@code Book} with author and publisher.
+     */
+    @Override
+    public Book createBookFromIsbn(String oclc) throws IOException {
+        try {
+            if (firstTime) {
+                initializeCookies();
+            }
+
+            var json = queryWorldCat("no:" + oclc);
+            var root = OBJECT_MAPPER.readTree(json);
+
+            return createBook(root);
+        } catch (InterruptedException| URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
      * Tries to get the oclc from worldcat.org.
      *
      * @param isbn the book's isbn.
@@ -71,7 +98,7 @@ public final class OclcServiceImpl implements OclcService {
             initializeCookies();
         }
 
-        var json = queryWorldCat(isbn);
+        var json = queryWorldCat("bn:" + isbn);
         var root = OBJECT_MAPPER.readTree(json);
 
         return findOclc(root);
@@ -222,6 +249,90 @@ public final class OclcServiceImpl implements OclcService {
         return oclcNode.asText();
     }
 
+    //    {
+//        "numberOfRecords": 1,
+//        "briefRecords": [
+//        {
+//            "oclcNumber": "1344342536",
+//            "isbns": [
+//            "9788934951056",
+//                "8934951052"
+//      ],
+//            "isbn13": "9788934951056",
+//            "title": "책 먹는 여우의 여름 이야기",
+//            "creator": "Franziska Biermann",
+//            "contributors": [
+//            {
+//                "firstName": {
+//                "text": "프란치스카 비어만 글·그림 ; 송순섭 옮김",
+//                    "romanizedText": "P'ŭranch'isŭk'a Piŏman kŭl · kŭrim ; Song Sun-sŏp omkim",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "isPrimary": false,
+//                "fromStatementOfResponsibility": true
+//            },
+//            {
+//                "firstName": {
+//                "text": "Franziska"
+//            },
+//                "secondName": {
+//                "text": "Biermann"
+//            },
+//                "isPrimary": true,
+//                "relatorCodes": [
+//                "aut",
+//                    "ill"
+//          ]
+//            },
+//            {
+//                "firstName": {
+//                "text": "송 순섭",
+//                    "romanizedText": "Sun-sŏp",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "secondName": {
+//                "romanizedText": "Song",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "isPrimary": false,
+//                "relatorCodes": [
+//                "trl"
+//          ]
+//            }
+//      ],
+//            "publicationDate": "2022",
+//            "catalogingLanguage": "kor",
+//            "generalFormat": "Book",
+//            "specificFormat": "PrintBook",
+//            "edition": "1-p'an",
+//            "totalEditions": 1,
+//            "publisher": "주니어 김영사",
+//            "publicationPlace": "Kyŏnggi-do P'aju-si",
+//            "digitalObjectInfo": null,
+//            "subjects": [
+//            "Foxes Juvenile fiction",
+//                "Authors Juvenile fiction",
+//                "Summer Juvenile fiction"
+//      ],
+//            "publication": null,
+//            "summaries": [
+//            "\"‘책 먹는 여우’의 두 번째 계절 모험 이야기. 재미난 이야기를 찾기 위해 도착한 섬에서 펼쳐진 뜻밖의 보물 같은 이야기!  해적들은 이졸라 아그네스섬에 무엇을 숨겨 놓았을까? ‘여우 아저씨’의 작가 수첩을 꽉 채운 신나는 여름 모험!\" -- Yes24.com"
+//      ],
+//            "summary": "\"‘책 먹는 여우’의 두 번째 계절 모험 이야기. 재미난 이야기를 찾기 위해 도착한 섬에서 펼쳐진 뜻밖의 보물 같은 이야기!  해적들은 이졸라 아그네스섬에 무엇을 숨겨 놓았을까? ‘여우 아저씨’의 작가 수첩을 꽉 채운 신나는 여름 모험!\" -- Yes24.com",
+//            "abstract": null,
+//            "otherFormats": null,
+//            "peerReviewed": false,
+//            "openAccessLink": null
+//        }
+//  ]
+//    }
+    private Book createBook(JsonNode root) {
+
+    }
+
     /**
      * Starts the cUrl process and returns it to get the input.
      * Doesn't use proxy if {@code proxy} is null.
@@ -316,5 +427,35 @@ public final class OclcServiceImpl implements OclcService {
         var responseCode = responseElement.attr("code");
 
         return SUCCESS_CODES.contains(responseCode);
+    }
+
+    @Override
+    public Book createBookFromBookPage(String bookPageUrl) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public Book fillInAllDetails(Book book) {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public String BookPagePrefix() {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public List<Book> bookListFromLink(String pageofLinks) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public List<Book> bookListFromIsbn(String pageofIsbns) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public void checkInventoryAndOclc(Book result) {
+        throw new NotImplementedException("Not supported");
     }
 }
