@@ -125,8 +125,7 @@ public class AutoFill extends JFrame {
     private JMenuBar CreateMenu() {
         var menuBar = new JMenuBar();
 
-        var fileMenu = new JMenu();
-        fileMenu.add(new JMenuItem("File"));
+        var fileMenu = new JMenu("File");
         fileMenu.add(new JMenuItem(Handlers.anonymousEventClass("Open", this::open)));
         fileMenu.add(new JMenuItem(Handlers.anonymousEventClass("Save", this::save)));
         fileMenu.add(new JMenuItem(Handlers.anonymousEventClass("Close", this::close)));
@@ -153,8 +152,10 @@ public class AutoFill extends JFrame {
 
     private void tabChange(ChangeEvent changeEvent) {
         var tabPane = (JTabbedPane) changeEvent.getSource();
-        var table = (JTable) tabPane.getSelectedComponent();
-        var hasType = (HasType) table.getColumnModel();
+        var scrollPane = (JScrollPane) tabPane.getSelectedComponent();
+        var viewport = (JViewport) scrollPane.getComponent(0);
+        var table = (JTable) viewport.getComponent(0);
+        var hasType = (HasType) table.getModel();
 
         switch (hasType.type()) {
             case Author:
@@ -225,6 +226,7 @@ public class AutoFill extends JFrame {
             if (books.size() > 0) {
                 this.setTitle(file.getName());
                 this.add(CreateTabPane(), BorderLayout.CENTER);
+                this.revalidate();
                 enableActions();
             } else {
                 closeWorkbook();
