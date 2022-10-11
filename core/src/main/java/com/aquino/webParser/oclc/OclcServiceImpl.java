@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public final class OclcServiceImpl implements OclcService, BookCreator {
 
@@ -81,8 +83,10 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
             var root = OBJECT_MAPPER.readTree(json);
 
             return createBook(root);
-        } catch (InterruptedException| URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException | URISyntaxException e) {
+            LOGGER.info(String.format("Couldn't get book for %s", oclc));
+            LOGGER.info(e.getMessage(), e);
+            return null;
         }
     }
 
@@ -249,7 +253,8 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
         return oclcNode.asText();
     }
 
-    //    {
+    //
+//    {
 //        "numberOfRecords": 1,
 //        "briefRecords": [
 //        {
@@ -275,15 +280,15 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
 //            {
 //                "firstName": {
 //                "text": "Franziska"
-//            },
+    //            },
 //                "secondName": {
-//                "text": "Biermann"
-//            },
+    //                "text": "Biermann"
+    //            },
 //                "isPrimary": true,
 //                "relatorCodes": [
-//                "aut",
-//                    "ill"
-//          ]
+    //                "aut",
+    //                    "ill"
+    //          ]
 //            },
 //            {
 //                "firstName": {
@@ -329,8 +334,56 @@ public final class OclcServiceImpl implements OclcService, BookCreator {
 //        }
 //  ]
 //    }
-    private Book createBook(JsonNode root) {
+    private Book createBook(JsonNode root) throws IOException {
+        var numOfRecords = root.path("numberOfRecords").asInt();
+        if (numOfRecords < 1) {
+            throw new IOException("OCLC not in world cat");
+        }
 
+        var firstRecord = root.path("briefRecords").get(0);
+        var contributors = firstRecord.path("contributors"); // array
+
+        var authors = StreamSupport.stream(contributors.spliterator(), false)
+            .filter(c -> !c.has("fromStatementOfResponsibility"))
+            .filter(c -> c.has("relatorCodes"))
+            .filter(this::isAuthor)
+            .filter(c -> c.has("firstName"))
+            .collect(Collectors.toList());
+
+        var book = new Book();
+        var author = createAuthor(authors.get(0));
+        book.setAuthor(author);
+
+        if (authors.size() > 1) {
+            var author2 = createAuthor(authors.get(1));
+            book.setAuthor(author2);
+        }
+
+        return book;
+    }
+
+    private String createAuthor(JsonNode contributor) {
+        var author = "";
+        var firstName = contributor.path("firstName");
+        if (firstName.has("text")) {
+            author = firstName.path("text").asText();
+        }
+
+        if (contributor.has("secondName")) {
+            var secondName = contributor.path("secondName");
+            if(secondName.has("text")){
+                author += ' ';
+                author += secondName.path("text").asText();
+            }
+        }
+
+        return author;
+    }
+
+    private boolean isAuthor(JsonNode contributor) {
+        return StreamSupport.stream(contributor.path("realtorCodes").spliterator(), false)
+            .map(JsonNode::toString)
+            .anyMatch(s -> s.equals("aut"));
     }
 
     /**
