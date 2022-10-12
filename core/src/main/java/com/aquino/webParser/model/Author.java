@@ -1,5 +1,7 @@
 package com.aquino.webParser.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Author {
 
     private Language language;
@@ -55,5 +57,13 @@ public class Author {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isBlank(){
+        return
+            StringUtils.isBlank(nativeFirstName) &&
+            StringUtils.isBlank(nativeLastName) &&
+            StringUtils.isBlank(englishFirstName) &&
+            StringUtils.isBlank(englishLastName);
     }
 }

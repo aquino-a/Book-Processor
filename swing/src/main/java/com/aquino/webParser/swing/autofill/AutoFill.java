@@ -178,6 +178,7 @@ public class AutoFill extends JFrame {
     private Component CreateAuthorTable() {
         var rows = books
             .stream()
+            .filter(b -> !b.author().isBlank())
             .filter(b -> b.author().getId() < 1)
             .map(b -> new Row<>(b, b.author()))
             .collect(Collectors.toList());
@@ -199,8 +200,7 @@ public class AutoFill extends JFrame {
         var rows = books
             .stream()
             .filter(b -> b.author2() != null)
-            .filter(b -> !StringUtils.isBlank(b.author2().getNativeLastName()) ||
-                !StringUtils.isBlank(b.author2().getNativeFirstName()))
+            .filter(b -> !b.author2().isBlank())
             .filter(b -> b.author2().getId() < 1)
             .map(b -> new Row<>(b, b.author2()))
             .collect(Collectors.toList());
