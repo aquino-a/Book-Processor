@@ -196,7 +196,24 @@ public class AutoFill extends JFrame {
     }
 
     private Component CreateAuthor2Table() {
-        return null;
+        var rows = books
+            .stream()
+            .filter(b -> b.author2() != null)
+            .filter(b -> b.author2().getId() < 1)
+            .map(b -> new Row<>(b, b.author2()))
+            .collect(Collectors.toList());
+
+        var strategy = strategies.get(Type.Author2);
+        strategy.rows(rows);
+
+        var model = new AuthorTableModel(rows);
+        var table = CreateTable();
+        table.setModel(model);
+        AuthorTableModel.setColumn(table);
+
+        table.addMouseListener(idClickListener);
+
+        return new JScrollPane(table);
     }
 
     private Component CreatePublisherTable() {
