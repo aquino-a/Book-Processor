@@ -35,7 +35,7 @@ public class ExcelReader {
             var book = CreateBook(row);
 
             if (book != null && isNotBlank(book)) {
-                list.add(Pair.of(i, CreateBook(row)));
+                list.add(Pair.of(i, book));
             }
         }
         return list;
