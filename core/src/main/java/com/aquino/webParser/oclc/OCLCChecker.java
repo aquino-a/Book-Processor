@@ -94,6 +94,14 @@ public class OCLCChecker {
 
             LOGGER.info(String.format("Books found: %d", filteredBooks.size()));
 
+            filteredBooks.forEach(b ->{
+                try {
+                    bookCreator.fillInAllDetails(b);
+                } catch (Exception e) {
+                    LOGGER.error(String.format("Error filling in details: %s", b.getIsbn()), e);
+                }
+            });
+
             if (filteredBooks.size() > 0) {
                 writer.writeBooks(filteredBooks);
             }

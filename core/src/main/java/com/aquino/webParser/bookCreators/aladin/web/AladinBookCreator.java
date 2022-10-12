@@ -324,11 +324,15 @@ public class AladinBookCreator implements BookCreator {
         if (!imageCheck(book.getImageURL())) {
             book.setImageURL("Problem with image");
         }
+
         book.setDescription(parseDescription(book));
         scrapeLazyAuthor(book);
         book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
         bookWindowService.findIds(book);
-        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+
+        if (book.getOclc() < 1) {
+            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+        }
 
         return book;
 
