@@ -1,9 +1,6 @@
 package com.aquino.webParser;
 
-import com.aquino.webParser.autofill.AuthorStrategy;
-import com.aquino.webParser.autofill.AutoFillService;
-import com.aquino.webParser.autofill.JapaneseAuthorStrategy;
-import com.aquino.webParser.autofill.KoreanAuthorStrategy;
+import com.aquino.webParser.autofill.*;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
 import com.aquino.webParser.bookCreators.aladin.web.AladinBookCreator;
@@ -22,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -109,8 +105,8 @@ public class ProcessorFactoryImpl {
     }
 
     public AutoFillService GetAutoFillService() throws IOException, URISyntaxException {
-        var autoFillService = new AutoFillService(
-            new WorldCatBookCreator(),
+        var autoFillService = new AutoFillServiceImpl(
+            (OclcServiceImpl) this.CreateOclcService(),
             this.CreateWindowService(),
             this.GetExcelMap(), getAuthorStrategies());
         return autoFillService;

@@ -1,8 +1,10 @@
 package com.aquino.webParser.oclc;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -18,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-public final class OclcServiceImpl implements OclcService {
+public final class OclcServiceImpl implements OclcService, BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -37,6 +42,8 @@ public final class OclcServiceImpl implements OclcService {
     private static final String WC_TOKEN_REQUEST = "http://www.worldcat.org/_next/data/%s/en/search.json?q=%s";
     private static final Pattern WC_BUILD_PATTERN = Pattern.compile("/_next/static/([a-z0-9]+)/_buildManifest\\.js");
     private static final Pattern WC_TOKEN_PATTERN = Pattern.compile("\"secureToken\":\"([-a-zA-Z0-9._~+/]+=*)\",");
+
+    private static final Predicate<String> HANGUL_PREDICATE = Pattern.compile("\\p{IsHangul}").asPredicate();
 
     private boolean firstTime = true;
     private CookieManager cookieManager;
@@ -61,6 +68,32 @@ public final class OclcServiceImpl implements OclcService {
     }
 
     /**
+     * Gets the author, author2, and publisher from world cat using the oclc.
+     * Does not support searching by isbn.
+     *
+     * @param oclc the oclc of the book.
+     * @return a {@code Book} with author and publisher.
+     */
+    @Override
+    public Book createBookFromIsbn(String oclc) throws IOException {
+        try {
+            if (firstTime) {
+                initializeCookies();
+            }
+
+            var json = queryWorldCat("no:" + oclc);
+            var root = OBJECT_MAPPER.readTree(json);
+
+            return createBook(root);
+        } catch (Exception e) {
+            LOGGER.info(String.format("Couldn't get book for %s", oclc));
+            LOGGER.info(e.getMessage(), e);
+            return null;
+        }
+    }
+
+
+    /**
      * Tries to get the oclc from worldcat.org.
      *
      * @param isbn the book's isbn.
@@ -71,7 +104,7 @@ public final class OclcServiceImpl implements OclcService {
             initializeCookies();
         }
 
-        var json = queryWorldCat(isbn);
+        var json = queryWorldCat("bn:" + isbn);
         var root = OBJECT_MAPPER.readTree(json);
 
         return findOclc(root);
@@ -222,6 +255,147 @@ public final class OclcServiceImpl implements OclcService {
         return oclcNode.asText();
     }
 
+    //
+//    {
+//        "numberOfRecords": 1,
+//        "briefRecords": [
+//        {
+//            "oclcNumber": "1344342536",
+//            "isbns": [
+//            "9788934951056",
+//                "8934951052"
+//      ],
+//            "isbn13": "9788934951056",
+//            "title": "책 먹는 여우의 여름 이야기",
+//            "creator": "Franziska Biermann",
+//            "contributors": [
+//            {
+//                "firstName": {
+//                "text": "프란치스카 비어만 글·그림 ; 송순섭 옮김",
+//                    "romanizedText": "P'ŭranch'isŭk'a Piŏman kŭl · kŭrim ; Song Sun-sŏp omkim",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "isPrimary": false,
+//                "fromStatementOfResponsibility": true
+//            },
+//            {
+//                "firstName": {
+//                "text": "Franziska"
+    //            },
+//                "secondName": {
+    //                "text": "Biermann"
+    //            },
+//                "isPrimary": true,
+//                "relatorCodes": [
+    //                "aut",
+    //                    "ill"
+    //          ]
+//            },
+//            {
+//                "firstName": {
+//                "text": "송 순섭",
+//                    "romanizedText": "Sun-sŏp",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "secondName": {
+//                "romanizedText": "Song",
+//                    "languageCode": "KO",
+//                    "textDirection": "LTR"
+//            },
+//                "isPrimary": false,
+//                "relatorCodes": [
+//                "trl"
+//          ]
+//            }
+//      ],
+//            "publicationDate": "2022",
+//            "catalogingLanguage": "kor",
+//            "generalFormat": "Book",
+//            "specificFormat": "PrintBook",
+//            "edition": "1-p'an",
+//            "totalEditions": 1,
+//            "publisher": "주니어 김영사",
+//            "publicationPlace": "Kyŏnggi-do P'aju-si",
+//            "digitalObjectInfo": null,
+//            "subjects": [
+//            "Foxes Juvenile fiction",
+//                "Authors Juvenile fiction",
+//                "Summer Juvenile fiction"
+//      ],
+//            "publication": null,
+//            "summaries": [
+//            "\"‘책 먹는 여우’의 두 번째 계절 모험 이야기. 재미난 이야기를 찾기 위해 도착한 섬에서 펼쳐진 뜻밖의 보물 같은 이야기!  해적들은 이졸라 아그네스섬에 무엇을 숨겨 놓았을까? ‘여우 아저씨’의 작가 수첩을 꽉 채운 신나는 여름 모험!\" -- Yes24.com"
+//      ],
+//            "summary": "\"‘책 먹는 여우’의 두 번째 계절 모험 이야기. 재미난 이야기를 찾기 위해 도착한 섬에서 펼쳐진 뜻밖의 보물 같은 이야기!  해적들은 이졸라 아그네스섬에 무엇을 숨겨 놓았을까? ‘여우 아저씨’의 작가 수첩을 꽉 채운 신나는 여름 모험!\" -- Yes24.com",
+//            "abstract": null,
+//            "otherFormats": null,
+//            "peerReviewed": false,
+//            "openAccessLink": null
+//        }
+//  ]
+//    }
+    private Book createBook(JsonNode root) throws IOException {
+        var numOfRecords = root.path("numberOfRecords").asInt();
+        if (numOfRecords < 1) {
+            throw new IOException("OCLC not in world cat");
+        }
+
+        var firstRecord = root.path("briefRecords").get(0);
+        var contributors = firstRecord.path("contributors"); // array
+
+        var authors = StreamSupport.stream(contributors.spliterator(), false)
+            .filter(c -> !c.has("fromStatementOfResponsibility"))
+            .filter(c -> c.has("relatorCodes"))
+            .filter(c -> c.has("firstName"))
+            .filter(this::isAuthor)
+            .collect(Collectors.toList());
+
+        if (authors.size() < 1) {
+            throw new RuntimeException("No authors found!");
+        }
+
+        var book = new Book();
+        var author = createAuthor(authors.get(0));
+        if (!HANGUL_PREDICATE.test(author)) {
+            book.setAuthor(author);
+        }
+
+        if (authors.size() > 1) {
+            var author2 = createAuthor(authors.get(1));
+            if (!HANGUL_PREDICATE.test(author2)) {
+                book.setAuthor2(author2);
+            }
+        }
+
+        return book;
+    }
+
+    private String createAuthor(JsonNode contributor) {
+        var author = "";
+        var firstName = contributor.path("firstName");
+        if (firstName.has("text")) {
+            author = firstName.path("text").asText();
+        }
+
+        if (contributor.has("secondName")) {
+            var secondName = contributor.path("secondName");
+            if (secondName.has("text")) {
+                author += ' ';
+                author += secondName.path("text").asText();
+            }
+        }
+
+        return author;
+    }
+
+    private boolean isAuthor(JsonNode contributor) {
+        return StreamSupport.stream(contributor.path("relatorCodes").spliterator(), false)
+            .map(JsonNode::toString)
+            .anyMatch(s -> s.equals("\"aut\""));
+    }
+
     /**
      * Starts the cUrl process and returns it to get the input.
      * Doesn't use proxy if {@code proxy} is null.
@@ -316,5 +490,35 @@ public final class OclcServiceImpl implements OclcService {
         var responseCode = responseElement.attr("code");
 
         return SUCCESS_CODES.contains(responseCode);
+    }
+
+    @Override
+    public Book createBookFromBookPage(String bookPageUrl) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public Book fillInAllDetails(Book book) {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public String BookPagePrefix() {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public List<Book> bookListFromLink(String pageofLinks) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public List<Book> bookListFromIsbn(String pageofIsbns) throws IOException {
+        throw new NotImplementedException("Not supported");
+    }
+
+    @Override
+    public void checkInventoryAndOclc(Book result) {
+        throw new NotImplementedException("Not supported");
     }
 }

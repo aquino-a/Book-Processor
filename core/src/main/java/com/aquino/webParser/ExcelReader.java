@@ -1,6 +1,7 @@
 package com.aquino.webParser;
 
 import com.aquino.webParser.model.Book;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +34,17 @@ public class ExcelReader {
         for (int i = startRow; row != null && row.getPhysicalNumberOfCells() > 2; i++, row = sheet.getRow(i)) {
             var book = CreateBook(row);
 
-            if (book != null) {
-                list.add(Pair.of(i, CreateBook(row)));
+            if (book != null && isNotBlank(book)) {
+                list.add(Pair.of(i, book));
             }
         }
         return list;
+    }
+
+    private boolean isNotBlank(Book book) {
+        return StringUtils.isNotBlank(book.getAuthor()) ||
+            StringUtils.isNotBlank(book.getAuthor2()) ||
+            StringUtils.isNotBlank(book.getPublisher());
     }
 
     private Book CreateBook(XSSFRow row) {
