@@ -11,7 +11,7 @@ public interface AutoFillService {
 
     void updateBook(XSSFWorkbook workbook, List<BookWindowIds> books);
 
-    Author CreateAuthor(Book book);
+    Author CreateAuthor(String name);
 
     int insertAuthor(Author author);
 

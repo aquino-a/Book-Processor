@@ -91,15 +91,18 @@ public class AutoFillServiceImpl implements AutoFillService {
             return null;
         }
 
-        afm.author(CreateAuthor(book, wcBook));
+        afm.author(CreateAuthor(book.getAuthor(), wcBook.getAuthor()));
+        afm.author2(CreateAuthor(book.getAuthor2(), wcBook.getAuthor2()));
         afm.publisher(CreatePublisher(book, wcBook));
         return afm;
     }
 
     private BookWindowIds getWithoutNoOclc(Book book) {
         var afm = new BookWindowIds();
-        afm.author(CreateAuthor(book));
+        afm.author(CreateAuthor(book.getAuthor()));
+        afm.author(CreateAuthor(book.getAuthor2()));
         afm.publisher(CreatePublisher(book));
+
         return afm;
     }
 
@@ -111,8 +114,8 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     @Override
-    public Author CreateAuthor(Book book) {
-        return currentAuthorStrategy.createAuthor(book);
+    public Author CreateAuthor(String name) {
+        return currentAuthorStrategy.createAuthor(name);
     }
 
     private Publisher CreatePublisher(Book book, Book wcBook) {
@@ -125,20 +128,20 @@ public class AutoFillServiceImpl implements AutoFillService {
         return publisher;
     }
 
-    private Author CreateAuthor(Book book, Book wcBook) {
-        if (containsId(book.getAuthor())) {
+    private Author CreateAuthor(String name, String wcName) {
+        if (containsId(name)) {
             return null;
-        } else if (StringUtils.isBlank(book.getAuthor()) || StringUtils.isBlank(wcBook.getAuthor())) {
-            return CreateAuthor(book);
+        } else if (StringUtils.isBlank(name) || StringUtils.isBlank(wcName)) {
+            return CreateAuthor(name);
         }
         var author = new Author();
         author.setLanguage(currentAuthorStrategy.getLanguage());
-        var split = book.getAuthor().split(" ");
+        var split = name.split(" ");
         author.setNativeFirstName(split[0]);
         if (split.length > 1)
             author.setNativeLastName(split[1]);
 
-        split = wcBook.getAuthor().split(" ");
+        split = wcName.split(" ");
         author.setEnglishFirstName(split[0]);
         if (split.length > 1) {
             author.setEnglishLastName(split[1]);

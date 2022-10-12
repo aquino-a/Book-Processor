@@ -53,7 +53,7 @@ public class AutoFillServiceTest {
     public void createAuthor() {
         var book = new Book();
         book.setAuthor(this.koreanName);
-        var a = this.autoFillService.CreateAuthor(book);
+        var a = this.autoFillService.CreateAuthor(book.getAuthor());
 
         Assert.assertEquals(this.englishLast, a.getEnglishFirstName());
         Assert.assertEquals(this.englishFirst, a.getEnglishLastName());

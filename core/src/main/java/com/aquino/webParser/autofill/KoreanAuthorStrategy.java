@@ -19,10 +19,10 @@ public class KoreanAuthorStrategy implements AuthorStrategy {
     }
 
     @Override
-    public Author createAuthor(Book book) {
+    public Author createAuthor(String name) {
         var author = new Author();
         author.setLanguage(getLanguage());
-        SetKoreanNames(author, book);
+        SetKoreanNames(author, name);
         return author;
     }
 
@@ -32,21 +32,21 @@ public class KoreanAuthorStrategy implements AuthorStrategy {
     }
 
     /**
-     * Sets the korean name of the {@link Author} from the {@link Book}.
+     * Sets the korean name of the {@link Author} from the {@param name}.
      * Bookswindows puts the korean last name as the first name.
      * The author's native first and last name are set as the full korean name.
      *
      * @param author the author to set the names of.
-     * @param book   the book to use to get the names.
+     * @param name   the book to use to get the names.
      */
-    private void SetKoreanNames(Author author, Book book) {
-        author.setNativeFirstName(book.getAuthor());
-        author.setNativeLastName(book.getAuthor());
+    private void SetKoreanNames(Author author, String name) {
+        author.setNativeFirstName(name);
+        author.setNativeLastName(name);
 
-        if (book.getAuthor().isBlank())
+        if (StringUtils.isBlank(name))
             return;
 
-        var first = book.getAuthor().substring(0, 1);
+        var first = name.substring(0, 1);
         first = koreanLastNames.containsKey(first)
             ? koreanLastNames.get(first)
             : Romanizer.hangulToRoman(first);
@@ -54,9 +54,9 @@ public class KoreanAuthorStrategy implements AuthorStrategy {
         author.setEnglishFirstName(first);
 
 
-        if (book.getAuthor().length() > 1) {
+        if (name.length() > 1) {
 
-            var last = Arrays.stream(book.getAuthor().substring(1)
+            var last = Arrays.stream(name.substring(1)
                 .split(""))
                 .map(s -> StringUtils.capitalize(Romanizer.hangulToRoman(s)))
                 .collect(Collectors.joining(" "));

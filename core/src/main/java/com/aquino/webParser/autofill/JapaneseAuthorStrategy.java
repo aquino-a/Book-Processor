@@ -17,10 +17,10 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public Author createAuthor(Book book) {
+    public Author createAuthor(String name) {
         var author = new Author();
         author.setLanguage(getLanguage());
-        SetJapNames(author, book);
+        SetJapNames(author, name);
         return author;
     }
 
@@ -29,9 +29,9 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
         return Language.Japanese;
     }
 
-    private void SetJapNames(Author author, Book book) {
+    private void SetJapNames(Author author, String name) {
         try {
-            var split = StringUtils.split(AmazonJapanBookCreator.RomanizeJapanese(book.getAuthor()));
+            var split = StringUtils.split(AmazonJapanBookCreator.RomanizeJapanese(name));
             var romanized = Arrays.stream(split)
                 .map(word -> StringUtils.capitalize(word))
                 .collect(Collectors.joining(" "));
@@ -39,11 +39,11 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
         }
         catch (IOException e) {
             //Don't set if fails.
-            LOGGER.error(String.format("Failed to romanize: %s", book.getAuthor()));
+            LOGGER.error(String.format("Failed to romanize: %s", name));
             LOGGER.error(e.getMessage(), e);
         }
 
-        author.setNativeFirstName(book.getAuthor());
+        author.setNativeFirstName(name);
     }
 
 }

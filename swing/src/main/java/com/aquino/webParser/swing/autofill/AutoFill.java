@@ -73,7 +73,7 @@ public class AutoFill extends JFrame {
             }
 
             @Override
-            public Author CreateAuthor(Book book) {
+            public Author CreateAuthor(String name) {
                 return null;
             }
 
