@@ -85,25 +85,26 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     private BookWindowIds getFromWorldCat(Book book) throws IOException {
-        var afm = new BookWindowIds();
+        var ids = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
         if (wcBook == null) {
             return null;
         }
 
-        afm.author(CreateAuthor(book.getAuthor(), wcBook.getAuthor()));
-        afm.author2(CreateAuthor(book.getAuthor2(), wcBook.getAuthor2()));
-        afm.publisher(CreatePublisher(book, wcBook));
-        return afm;
+        ids.author(CreateAuthor(book.getAuthor(), wcBook.getAuthor()));
+        ids.author2(CreateAuthor(book.getAuthor2(), wcBook.getAuthor2()));
+        ids.publisher(CreatePublisher(book, wcBook));
+
+        return ids;
     }
 
     private BookWindowIds getWithoutNoOclc(Book book) {
-        var afm = new BookWindowIds();
-        afm.author(CreateAuthor(book.getAuthor()));
-        afm.author(CreateAuthor(book.getAuthor2()));
-        afm.publisher(CreatePublisher(book));
+        var ids = new BookWindowIds();
+        ids.author(CreateAuthor(book.getAuthor()));
+        ids.author(CreateAuthor(book.getAuthor2()));
+        ids.publisher(CreatePublisher(book));
 
-        return afm;
+        return ids;
     }
 
     private Publisher CreatePublisher(Book book) {
