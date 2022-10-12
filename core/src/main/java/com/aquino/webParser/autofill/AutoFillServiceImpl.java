@@ -101,7 +101,7 @@ public class AutoFillServiceImpl implements AutoFillService {
     private BookWindowIds getWithoutNoOclc(Book book) {
         var ids = new BookWindowIds();
         ids.author(CreateAuthor(book.getAuthor()));
-        ids.author(CreateAuthor(book.getAuthor2()));
+        ids.author2(CreateAuthor(book.getAuthor2()));
         ids.publisher(CreatePublisher(book));
 
         return ids;

@@ -227,7 +227,7 @@ public class AutoFill extends JFrame {
             .map(b -> new Row<>(b, b.publisher()))
             .collect(Collectors.toList());
 
-        var strategy = strategies.get(Type.Author2);
+        var strategy = strategies.get(Type.Publisher);
         strategy.rows(rows);
 
         var model = new PublisherTableModel(rows);
