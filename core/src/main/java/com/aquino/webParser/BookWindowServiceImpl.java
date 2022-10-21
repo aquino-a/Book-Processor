@@ -34,7 +34,8 @@ public class BookWindowServiceImpl implements BookWindowService {
         "opt_param[table]", "author", //don't change
         "opt_param[field]", "language_obj", //don't change
         "opt_param[has_native]", "1", //don't change
-        "opt_param[info_arr][0][key]", "first_name"
+        "opt_param[info_arr][0][key]", "first_name",
+        "opt_param[info_arr][2][key]", "last_name"
     );
 
     private static final Map<String, String> SET_NATIVE_PARAMS = Map.of(
