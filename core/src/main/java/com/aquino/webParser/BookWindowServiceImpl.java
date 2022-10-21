@@ -52,7 +52,8 @@ public class BookWindowServiceImpl implements BookWindowService {
         "input_arr[name]", "pubName",
         "opt_param[table]", "mfg", //don't change
         "opt_param[field]", "language_obj",
-        "opt_param[has_native]", "1"
+        "opt_param[has_native]", "1",
+        "opt_param[info_arr][0][key]", "name"
     );
 
     @Override
