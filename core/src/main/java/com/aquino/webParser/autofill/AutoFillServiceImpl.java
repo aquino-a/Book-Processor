@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class AutoFillServiceImpl implements AutoFillService {
 
     private static final Predicate<String> ID_REGEX =
-        Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
+            Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
     private final BookCreator worldCatBookCreator;
     private final BookWindowService bookWindowService;
     private final Map<String, Integer> locationMap;
@@ -27,9 +27,9 @@ public class AutoFillServiceImpl implements AutoFillService {
     private AuthorStrategy currentAuthorStrategy;
 
     public AutoFillServiceImpl(
-        BookCreator worldCatBookCreator,
-        BookWindowService bookWindowService,
-        Map<String, Integer> locationMap, Map<Language, AuthorStrategy> authorStrategies) {
+            BookCreator worldCatBookCreator,
+            BookWindowService bookWindowService,
+            Map<String, Integer> locationMap, Map<Language, AuthorStrategy> authorStrategies) {
         this.worldCatBookCreator = worldCatBookCreator;
         this.bookWindowService = bookWindowService;
         this.locationMap = locationMap;
@@ -41,11 +41,11 @@ public class AutoFillServiceImpl implements AutoFillService {
         var reader = new ExcelReader(workbook);
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
-            .stream()
-            .map(this::createBooksWindowsId)
-            .filter(bwIds -> bwIds != null)
-            .filter(BookWindowIds::isMissingIds)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::createBooksWindowsId)
+                .filter(bwIds -> bwIds != null)
+                .filter(BookWindowIds::isMissingIds)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -74,6 +74,10 @@ public class AutoFillServiceImpl implements AutoFillService {
                 bookWindowIds = getWithoutNoOclc(book);
             }
 
+            bookWindowIds.author().setId(book.getAuthorId());
+            bookWindowIds.author2().setId(book.getAuthor2Id());
+            bookWindowIds.publisher().setId(book.getPublisherId());
+
             bookWindowIds.excelRow(p.getLeft());
             bookWindowIds.book(p.getRight());
 
@@ -85,6 +89,10 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     private BookWindowIds getFromWorldCat(Book book) throws IOException {
+        if (!hasMissingIds(book)) {
+            return null;
+        }
+
         var ids = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
         if (wcBook == null) {
@@ -96,6 +104,20 @@ public class AutoFillServiceImpl implements AutoFillService {
         ids.publisher(CreatePublisher(book, wcBook));
 
         return ids;
+    }
+
+    /**
+     * Determines if the book has any missing ids.
+     * If no ids are missing then it can be ignored.
+     */
+    private boolean hasMissingIds(Book book) {
+        var noAuthorId = !StringUtils.isBlank(book.getAuthor()) && book.getAuthorId() < 1;
+        var noAuthorId2 = !book.getAuthor2().equals("1494") &&
+                !StringUtils.isBlank(book.getAuthor2()) &&
+                book.getAuthor2Id() < 1;
+        var noPublisherId = !StringUtils.isBlank(book.getPublisher()) && book.getPublisherId() < 1;
+
+        return noAuthorId || noAuthorId2 || noPublisherId;
     }
 
     private BookWindowIds getWithoutNoOclc(Book book) {
