@@ -42,6 +42,7 @@ public class AutoFillServiceImpl implements AutoFillService {
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
                 .stream()
+                .filter(p -> hasMissingIds(p.getRight()))
                 .map(this::createBooksWindowsId)
                 .filter(bwIds -> bwIds != null)
                 .filter(BookWindowIds::isMissingIds)
@@ -89,10 +90,6 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     private BookWindowIds getFromWorldCat(Book book) throws IOException {
-        if (!hasMissingIds(book)) {
-            return null;
-        }
-
         var ids = new BookWindowIds();
         var wcBook = worldCatBookCreator.createBookFromIsbn(String.valueOf(book.getOclc()));
         if (wcBook == null) {
