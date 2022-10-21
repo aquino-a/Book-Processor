@@ -109,8 +109,8 @@ public class AutoFillServiceImpl implements AutoFillService {
      */
     private boolean hasMissingIds(Book book) {
         var noAuthorId = !StringUtils.isBlank(book.getAuthor()) && book.getAuthorId() < 1;
-        var noAuthorId2 = !book.getAuthor2().equals("1494") &&
-                !StringUtils.isBlank(book.getAuthor2()) &&
+        var noAuthorId2 = !StringUtils.isBlank(book.getAuthor2()) &&
+                !book.getAuthor2().equals("1494") &&
                 book.getAuthor2Id() < 1;
         var noPublisherId = !StringUtils.isBlank(book.getPublisher()) && book.getPublisherId() < 1;
 
