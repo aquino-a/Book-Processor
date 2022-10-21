@@ -201,6 +201,7 @@ public class AutoFill extends JFrame {
             .stream()
             .filter(b -> b.author2() != null)
             .filter(b -> !b.author2().isBlank())
+            .filter(b -> !b.author2().getNativeFirstName().equals("1494"))
             .filter(b -> b.author2().getId() < 1)
             .map(b -> new Row<>(b, b.author2()))
             .collect(Collectors.toList());
