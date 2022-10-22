@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class AuthorTableModel extends AbstractTableModel implements AutoFill.HasType {
 
+    public static int LINK_COLUMN = 5;
     private static final LinkButtonRenderer LINK_BUTTON_RENDERER = new LinkButtonRenderer();
     private static final List<String> COLUMNS = List.of(
         "",
@@ -139,7 +140,6 @@ public class AuthorTableModel extends AbstractTableModel implements AutoFill.Has
     public void type(AutoFill.Type type){
         this.type = type;
     }
-
 
     private static class LinkButtonRenderer implements TableCellRenderer {
 

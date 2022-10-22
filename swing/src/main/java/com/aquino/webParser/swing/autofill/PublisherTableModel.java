@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class PublisherTableModel extends AbstractTableModel implements AutoFill.HasType {
 
+    public static int LINK_COLUMN = 3;
     private static final PublisherTableModel.LinkButtonRenderer LINK_BUTTON_RENDERER = new PublisherTableModel.LinkButtonRenderer();
     private static final List<String> COLUMNS = List.of(
         "",

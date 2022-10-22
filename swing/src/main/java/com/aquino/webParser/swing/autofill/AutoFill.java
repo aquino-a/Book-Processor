@@ -28,7 +28,6 @@ public class AutoFill extends JFrame {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final AutoFillService autoFillService;
-    private final MouseAdapter idClickListener = CreateMouseAdapter();
     private XSSFWorkbook workbook;
     private List<BookWindowIds> books;
     private JMenu languageMenu;
@@ -197,7 +196,7 @@ public class AutoFill extends JFrame {
         table.setModel(model);
         AuthorTableModel.setColumn(table);
 
-        table.addMouseListener(idClickListener);
+        table.addMouseListener(CreateMouseAdapter(AuthorTableModel.LINK_COLUMN));
 
         return new JScrollPane(table);
     }
@@ -220,7 +219,7 @@ public class AutoFill extends JFrame {
         table.setModel(model);
         AuthorTableModel.setColumn(table);
 
-        table.addMouseListener(idClickListener);
+        table.addMouseListener(CreateMouseAdapter(AuthorTableModel.LINK_COLUMN));
 
         return new JScrollPane(table);
     }
@@ -242,7 +241,7 @@ public class AutoFill extends JFrame {
         table.setModel(model);
         PublisherTableModel.setColumn(table);
 
-        table.addMouseListener(idClickListener);
+        table.addMouseListener(CreateMouseAdapter(PublisherTableModel.LINK_COLUMN));
 
         return new JScrollPane(table);
     }
@@ -371,7 +370,7 @@ public class AutoFill extends JFrame {
         workbook = null;
     }
 
-    private MouseAdapter CreateMouseAdapter() {
+    private MouseAdapter CreateMouseAdapter(int clickableColumnNum) {
         var mouseParent = this;
         return new MouseAdapter() {
             private final Component parent = mouseParent;
@@ -382,7 +381,7 @@ public class AutoFill extends JFrame {
                 int rowIndex = table.getSelectedRow();
                 int columnIndex = table.getSelectedColumn();
 
-                if (columnIndex != 5) {
+                if (columnIndex != clickableColumnNum) {
                     return;
                 }
 
