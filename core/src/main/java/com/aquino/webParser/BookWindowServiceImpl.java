@@ -381,7 +381,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     private void AddEnglishLanguage(int id, Publisher publisher) {
         var data = new HashMap<>(ADD_PUBLISHER_LANG_PARAMS);
         data.put("input_arr[prj_language]", ENGLISH_LANG_CODE);
-        data.put("input_arr[name]:", publisher.getEnglishName());
+        data.put("input_arr[name]", publisher.getEnglishName());
         data.put("opt_param[pk]", String.valueOf(id));
 
         var doc = Login.postDocument(ADD_LANGUAGE_URL, data);
@@ -390,7 +390,7 @@ public class BookWindowServiceImpl implements BookWindowService {
     private void AddNativeLanguage(int id, Publisher publisher) {
         var data = new HashMap<>(ADD_PUBLISHER_LANG_PARAMS);
         data.put("input_arr[prj_language]", publisher.getLanguage().LanguageCode);
-        data.put("input_arr[name]:", publisher.getNativeName());
+        data.put("input_arr[name]", publisher.getNativeName());
         data.put("opt_param[pk]", String.valueOf(id));
 
         var doc = Login.postDocument(ADD_LANGUAGE_URL, data);
