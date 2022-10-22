@@ -34,6 +34,7 @@ public class AutoFill extends JFrame {
     private JMenu languageMenu;
     private AutoFillStrategy currentAutoFillStrategy;
     private Map<Type, AutoFillStrategy> strategies;
+    private JTabbedPane tabPane;
 
 
     public AutoFill(AutoFillService autoFillService) {
@@ -157,9 +158,7 @@ public class AutoFill extends JFrame {
 
     private void tabChange(ChangeEvent changeEvent) {
         var tabPane = (JTabbedPane) changeEvent.getSource();
-        var scrollPane = (JScrollPane) tabPane.getSelectedComponent();
-        var viewport = (JViewport) scrollPane.getComponent(0);
-        var table = (JTable) viewport.getComponent(0);
+        var table = getCurrentTable(tabPane);
         var hasType = (HasType) table.getModel();
 
         switch (hasType.type()) {
@@ -173,6 +172,13 @@ public class AutoFill extends JFrame {
                 currentAutoFillStrategy = strategies.get(Type.Publisher);
                 break;
         }
+    }
+
+    private JTable getCurrentTable(JTabbedPane tabPane) {
+        var scrollPane = (JScrollPane) tabPane.getSelectedComponent();
+        var viewport = (JViewport) scrollPane.getComponent(0);
+
+        return (JTable) viewport.getComponent(0);
     }
 
     private Component CreateAuthorTable() {
@@ -271,7 +277,8 @@ public class AutoFill extends JFrame {
 
             if (books.size() > 0) {
                 this.setTitle(file.getName());
-                this.add(CreateTabPane(), BorderLayout.CENTER);
+                tabPane = CreateTabPane();
+                this.add(tabPane, BorderLayout.CENTER);
                 this.revalidate();
                 enableActions();
             } else {
@@ -327,6 +334,11 @@ public class AutoFill extends JFrame {
     }
 
     private void autoFill() {
+        var currentTable = getCurrentTable(tabPane);
+        if (currentTable.isEditing()) {
+            currentTable.getCellEditor().stopCellEditing();
+        }
+
         try {
             var result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
