@@ -30,14 +30,17 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
     }
 
     private void SetJapNames(Author author, String name) {
+        if (name == null) {
+            return;
+        }
+
         try {
             var split = StringUtils.split(AmazonJapanBookCreator.RomanizeJapanese(name));
             var romanized = Arrays.stream(split)
                 .map(word -> StringUtils.capitalize(word))
                 .collect(Collectors.joining(" "));
             author.setEnglishLastName(romanized);
-        }
-        catch (IOException e) {
+        } catch (Exception e) {
             //Don't set if fails.
             LOGGER.error(String.format("Failed to romanize: %s", name));
             LOGGER.error(e.getMessage(), e);
