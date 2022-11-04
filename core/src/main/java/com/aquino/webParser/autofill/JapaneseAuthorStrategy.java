@@ -5,6 +5,7 @@ import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,19 +35,52 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
             return;
         }
 
+        setEnglish(author, name);
+        setNative(author, name);
+    }
+
+    private void setEnglish(Author author, String name) {
         try {
             var split = StringUtils.split(AmazonJapanBookCreator.RomanizeJapanese(name));
             var romanized = Arrays.stream(split)
                 .map(word -> StringUtils.capitalize(word))
                 .collect(Collectors.joining(" "));
-            author.setEnglishLastName(romanized);
+
+            var names = splitName(romanized);
+
+            author.setEnglishFirstName(names.getLeft());
+            author.setEnglishLastName(names.getRight());
         } catch (Exception e) {
             //Don't set if fails.
             LOGGER.error(String.format("Failed to romanize: %s", name));
             LOGGER.error(e.getMessage(), e);
         }
-
-        author.setNativeFirstName(name);
     }
 
+    private void setNative(Author author, String name) {
+        var names = splitName(name);
+
+        author.setNativeFirstName(names.getLeft());
+        author.setNativeLastName(names.getRight());
+    }
+
+    private Pair<String, String> splitName(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        var firstSpace = name.indexOf(' ');
+        if (firstSpace < 0) {
+            firstSpace = name.indexOf('・');
+        }
+
+        if (firstSpace < 0) {
+            return Pair.of(name, null);
+        }
+
+        var first = name.substring(0, firstSpace);
+        var last = name.substring(firstSpace + 1);
+
+        return Pair.of(first, last);
+    }
 }
