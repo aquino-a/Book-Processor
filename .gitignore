@@ -21,3 +21,4 @@ config.properties
 .vscode
 
 .idea
+nbactions.xml
