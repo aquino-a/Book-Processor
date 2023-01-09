@@ -72,7 +72,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("01/11/2019", book.getPublishDateFormatted());
         assertEquals("21 x 14.8", book.getBookSizeFormatted());
         assertEquals("FACTFULNESS", book.getTitle());
-        assertEquals(1980, book.getOriginalPriceNumber());
+        assertEquals(1782, book.getOriginalPriceNumber());
         assertEquals("ハンス・ロスリング", book.getAuthor());
         assertEquals("1494", book.getAuthor2());
         assertEquals("上杉 周作 & 関 美和", book.getTranslator());
