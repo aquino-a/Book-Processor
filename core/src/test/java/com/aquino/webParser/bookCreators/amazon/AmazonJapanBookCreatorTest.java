@@ -77,7 +77,7 @@ public class AmazonJapanBookCreatorTest {
         assertEquals("1494", book.getAuthor2());
         assertEquals("上杉 周作 & 関 美和", book.getTranslator());
         assertEquals("日経BP", book.getPublisher());
-        assertThat(book.getImageURL(), startsWith("https://images-na.ssl-images-amazon.com/images/I/"));
+        assertThat(book.getImageURL(), startsWith("https://m.media-amazon.com/images/I/"));
         assertThat(book.getCategory(), is(not(emptyOrNullString())));
         assertThat(book.getDescription(), is(not(emptyOrNullString())));
     }

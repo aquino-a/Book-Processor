@@ -46,8 +46,8 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern IMAGE_URL_SCRIPT_PATTERN = Pattern.compile(
-            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://images\\-na.ssl\\-images\\-amazon.com/images/I/[A-Za-z0-9%\\-+]+.jpg)");
-
+            "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://m\\.media\\-amazon\\.com/images/I/[A-Za-z0-9%\\-\\+]+\\.jpg)");
+    
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
 
@@ -343,10 +343,17 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String parseImageUrl(Document doc) {
         try {
-            Element element = doc.getElementById("booksImageBlock_feature_div").getElementsByTag("script").first();
+            Element element = doc
+                    .getElementById("booksImageBlock_feature_div")
+                    .getElementsByTag("script")
+                    .first();
+            
             return findImageUrl(element.data());
         } catch (Exception e) {
-            LOGGER.warn(String.format("Couldn't find image url: %s", e.getMessage()));
+            LOGGER.warn(String.format(
+                    "Couldn't find image url: %s", 
+                    e.getMessage()));
+            
             return "";
         }
     }
