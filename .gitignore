@@ -22,3 +22,4 @@ config.properties
 
 .idea
 nbactions.xml
+*.iml
