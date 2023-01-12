@@ -26,9 +26,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.Document;
 
 /**
  * @author alex
@@ -45,7 +48,7 @@ public class JWPUserInterface extends JPanel {
     private ExcelWriter writer;
     private DescriptionWriter desWriter;
     private File saveFile;
-    private JLabel fileName, state;
+    private JLabel fileName, state, bookCountLabel;
     private Timer timer;
     private JTextField checkField;
     private String checkedLink;
@@ -157,7 +160,7 @@ public class JWPUserInterface extends JPanel {
     //TODO fix savebutton
     private void addcomponents() throws IOException {
 
-        frame = new JFrame("Jeein's OldBook Processor");
+        frame = new JFrame("Jeein's Book Processor");
         desWriter = new DescriptionWriter();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         mainPanel = new JPanel();
@@ -168,10 +171,13 @@ public class JWPUserInterface extends JPanel {
         newLineFilter = new NewLineFilter(dataType, bookCreator);
         ((AbstractDocument) textArea.getDocument()).
             setDocumentFilter(newLineFilter);
+        
         addButton = new JButton(addAction);
         saveButton = new JButton(saveAction);
         fileName = new JLabel("", SwingConstants.LEFT);
         state = new JLabel("", SwingConstants.RIGHT);
+        bookCountLabel = new JLabel("0", SwingConstants.LEFT);
+        textArea.getDocument().addDocumentListener(new BookCountListener(bookCountLabel));
 
         //Textfield checker
         checkField = new JTextField(25);
@@ -182,7 +188,7 @@ public class JWPUserInterface extends JPanel {
                     checkedLink = (String) t;
                 }
             }, frame, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
-
+        
         //timer for state
         timer = new Timer(2000, deleteState);
         timer.setRepeats(true);
@@ -208,6 +214,7 @@ public class JWPUserInterface extends JPanel {
         menuBar.add(language);
         //panel
         mainPanel.add(new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+        buttonPanel.add(bookCountLabel);
         buttonPanel.add(fileName);
         buttonPanel.add(addButton);
         buttonPanel.add(saveButton);
@@ -428,5 +435,47 @@ public class JWPUserInterface extends JPanel {
         this.dataType = dataType;
         newLineFilter.setDataType(dataType);
 
+    }
+
+    private static class BookCountListener implements DocumentListener {
+
+        private final JLabel countLabel;
+
+        public BookCountListener(JLabel countLabel) {
+            this.countLabel = countLabel;
+        }
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            SetCount(e.getDocument());
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            SetCount(e.getDocument());
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            SetCount(e.getDocument());
+        }
+
+        private void SetCount(Document document) {
+            try {
+                var length = document.getLength();
+                var text = document.getText(0, length);
+                var count = countBooks(text);
+                
+                countLabel.setText("" + count);
+            } catch (Exception ex) {
+                JWPUserInterface.LOGGER.error("Problem with book count", ex);
+            }
+        }
+
+        private long countBooks(String text) {
+            return Arrays.stream(text.split("\n"))
+                    .filter(s -> !s.isBlank())
+                    .count();
+        }
     }
 }
