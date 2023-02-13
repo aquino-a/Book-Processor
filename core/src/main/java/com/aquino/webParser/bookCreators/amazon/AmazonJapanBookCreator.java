@@ -74,23 +74,23 @@ public class AmazonJapanBookCreator implements BookCreator {
         if (doc == null) {
             throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
         }
-        Element linkElement;
-        linkElement = findLink(doc, "a-size-base a-link-normal s-link-style a-text-bold");
+        
+        var firstSection = doc.getElementsByAttributeValue("data-index", "1")
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> createLinkNotFound(isbn));
+        
+        var link = firstSection.getElementsByClass("a-section a-spacing-none a-spacing-top-micro s-price-instructions-style")
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> createLinkNotFound(isbn))
+                .getElementsByTag("a")
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> createLinkNotFound(isbn))
+                .attr("href");
 
-        if (linkElement == null) {
-            linkElement = findLink(doc, "a-size-base a-color-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold");
-        }
-
-        if(linkElement == null) {
-            linkElement = findLink(doc, "a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold");
-        }
-
-        if (linkElement == null) {
-            throw new NoSuchElementException(String.format("Book link not found for: %s", isbn));
-        } else {
-            var link = linkElement.attr("href");
-            return createBookFromBookPage(BOOK_PAGE_PREFIX + link);
-        }
+        return createBookFromBookPage(BOOK_PAGE_PREFIX + link);
     }
 
     @Override
@@ -120,12 +120,14 @@ public class AmazonJapanBookCreator implements BookCreator {
         return book;
     }
 
+    @Deprecated()
     private Element findLink(Document doc, String linkClass) {
         return doc.getElementsByClass(linkClass)
                 .stream()
                 .filter(e -> e.wholeText().contains("単行本")
                         || e.wholeText().contains("大型本")
                         || e.wholeText().contains("文庫")
+                        || e.wholeText().contains("ペーパーバック")
                         || e.wholeText().contains("新書"))
                 .findFirst()
                 .orElse(null);
@@ -489,6 +491,10 @@ public class AmazonJapanBookCreator implements BookCreator {
             }
         }
         return new String(chars);
+    }
+    
+    private RuntimeException createLinkNotFound(String isbn) {
+        return new NoSuchElementException(String.format("Book link not found for: %s", isbn));
     }
 
     @Override
