@@ -57,12 +57,9 @@ public class CheckFilter extends DocumentFilter {
                 try {
                     Book book = setupBook(text);
                     return String.format(
-                            "%s... → Inventory: %s, oclc: %s",
+                            "%s... → %s inventory.",
                             getBookTitle(book),
-                            book.isTitleExists() ? "YES" : "NO",
-                            // oclc function is broken
-                            //  book.getOclc() == -1L ? "NO" : "YES");
-                            "BROKEN");
+                            book.isTitleExists() ? "IN" : "NOT in");
                 } catch (Exception e) {
                     LOGGER.error("Problem setting up book.");
                     LOGGER.error(e.getMessage(), e);
