@@ -438,6 +438,8 @@ public class AladinBookCreator implements BookCreator {
         }
         String isbn = String.valueOf(book.getIsbn());
         book.setTitleExists(bookWindowService.doesBookExist(isbn));
-        book.setOclc(oclcService.findOclc(isbn));
+        //todo all oclc is locked down. need to redo this
+        //book.setOclc(oclcService.findOclc(isbn));
+        book.setOclc(-1L);
     }
 }

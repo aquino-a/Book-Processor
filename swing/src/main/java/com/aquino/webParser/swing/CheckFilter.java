@@ -5,8 +5,6 @@
  */
 package com.aquino.webParser.swing;
 
-
-
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.bookCreators.BookCreator;
 
@@ -17,18 +15,26 @@ import java.util.function.Consumer;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author alex
  */
-public class CheckFilter extends DocumentFilter { 
+public class CheckFilter extends DocumentFilter {
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private Consumer<String> consumer;
     private Component component;
 
     private BookCreator bookCreator;
 
-    public CheckFilter(Consumer<String> consumer, Component component, BookCreator bookCreator) {
+    public CheckFilter(
+            Consumer<String> consumer,
+            Component component,
+            BookCreator bookCreator) {
         this.consumer = consumer;
         this.component = component;
         this.bookCreator = bookCreator;
@@ -38,21 +44,28 @@ public class CheckFilter extends DocumentFilter {
 
     @Override
     public void replace(
-            DocumentFilter.FilterBypass fb,  int offset, 
-            int length, String text, AttributeSet attrs) throws BadLocationException{
+            DocumentFilter.FilterBypass fb,
+            int offset,
+            int length,
+            String text,
+            AttributeSet attrs) throws BadLocationException {
 
-//        if (!checking &&text.contains("aladin.co.kr/shop/wproduct.aspx?ItemId")) {
-        if (!checking &&text.contains(bookCreator.BookPagePrefix())) {
+        if (!checking && text.contains(bookCreator.BookPagePrefix())) {
             checking = true;
             component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->{
+            CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
                 try {
                     Book book = setupBook(text);
-                    String exists = (!book.isTitleExists()) ? "NO" : "YES";
-                    return String.format("%s... → Inventory: %s, oclc: %s", book.getTitle().substring(0, book.getTitle().length() >= 10 ? 10 : book.getTitle().length()),exists, book.getOclc() == -1 ? "NO" : "YES");
-                }
-                catch (Exception e){
-                    e.printStackTrace();
+                    return String.format(
+                            "%s... → Inventory: %s, oclc: %s",
+                            getBookTitle(book),
+                            book.isTitleExists() ? "YES" : "NO",
+                            // oclc function is broken
+                            //  book.getOclc() == -1L ? "NO" : "YES");
+                            "BROKEN");
+                } catch (Exception e) {
+                    LOGGER.error("Problem setting up book.");
+                    LOGGER.error(e.getMessage(), e);
                     return String.format("Error: %s", e.getMessage());
                 }
             });
@@ -62,8 +75,8 @@ public class CheckFilter extends DocumentFilter {
                 try {
                     super.replace(fb, 0, fb.getDocument().getLength(), s, attrs);
                 } catch (BadLocationException e) {
-                    //TODO properly handle this... shouldn't cause a problem.... This exception isn't caught anywhere anyway
-                    e.printStackTrace();
+                    LOGGER.error("Problem setting text..");
+                    LOGGER.error(e.getMessage(), e);
                 }
                 consumer.accept(text);
             });
@@ -72,16 +85,19 @@ public class CheckFilter extends DocumentFilter {
 
     private Book setupBook(String text) throws IOException {
         Book result = bookCreator.createBookFromBookPage(text);
-        String isbn = String.valueOf(result.getIsbn());
         bookCreator.checkInventoryAndOclc(result);
+        
         return result;
     }
-
+    
+    private String getBookTitle(Book book){
+        var titleLength = book.getTitle().length();
+        var length = titleLength >= 10 ? 10 : titleLength;
+        
+        return book.getTitle().substring(0, length);
+    }
 
     public void setBookCreator(BookCreator bookCreator) {
         this.bookCreator = bookCreator;
     }
-    
-    
-    
 }
