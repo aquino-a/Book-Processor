@@ -380,7 +380,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     @Override
     public Book fillInAllDetails(Book book) {
         bookWindowService.findIds(book);
-        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+//        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         setHonyaDetails(book);
         SetHontoLink(book);
@@ -525,7 +525,9 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         String isbn = String.valueOf(book.getIsbn());
         book.setTitleExists(bookWindowService.doesBookExist(isbn));
-        book.setOclc(oclcService.findOclc(isbn));
+        //todo all oclc is locked down. need to redo this
+        //book.setOclc(oclcService.findOclc(isbn));
+        book.setOclc(-1L);
     }
 
     public void setHontoBookCreator(HontoBookCreator hontoBookCreator) {

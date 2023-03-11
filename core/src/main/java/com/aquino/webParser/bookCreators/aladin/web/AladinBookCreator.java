@@ -330,9 +330,9 @@ public class AladinBookCreator implements BookCreator {
         book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
         bookWindowService.findIds(book);
 
-        if (book.getOclc() < 1) {
-            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
-        }
+//        if (book.getOclc() < 1) {
+//            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+//        }
 
         return book;
 
