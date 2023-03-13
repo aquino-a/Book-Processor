@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.JTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,15 +29,18 @@ public class CheckFilter extends DocumentFilter {
 
     private Consumer<String> consumer;
     private Component component;
+    private JTextComponent textComponent;
 
     private BookCreator bookCreator;
 
     public CheckFilter(
             Consumer<String> consumer,
             Component component,
+            JTextComponent textComponent,
             BookCreator bookCreator) {
         this.consumer = consumer;
         this.component = component;
+        this.textComponent = textComponent;
         this.bookCreator = bookCreator;
     }
 
@@ -47,54 +51,87 @@ public class CheckFilter extends DocumentFilter {
             DocumentFilter.FilterBypass fb,
             int offset,
             int length,
-            String text,
+            String input,
             AttributeSet attrs) throws BadLocationException {
 
-        if (!checking && text.contains(bookCreator.BookPagePrefix())) {
+        if (!checking && input.contains(bookCreator.BookPagePrefix())) {
             checking = true;
             component.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
-                try {
-                    Book book = setupBook(text);
-                    return String.format(
-                            "%s... → %s inventory.",
-                            getBookTitle(book),
-                            book.isTitleExists() ? "IN" : "NOT in");
-                } catch (Exception e) {
-                    LOGGER.error("Problem setting up book.");
-                    LOGGER.error(e.getMessage(), e);
-                    return String.format("Error: %s", e.getMessage());
-                }
-            });
-            completableFuture.thenAccept(s -> {
+            CompletableFuture<Book> completableFuture = CompletableFuture.supplyAsync(() -> getBook(input));
+            completableFuture.thenAccept(b -> {
                 checking = false;
                 component.setCursor(null);
-                try {
-                    super.replace(fb, 0, fb.getDocument().getLength(), s, attrs);
-                } catch (BadLocationException e) {
-                    LOGGER.error("Problem setting text..");
-                    LOGGER.error(e.getMessage(), e);
-                }
-                consumer.accept(text);
+                acceptBook(fb, attrs, b, input);
             });
+        }
+    }
+
+    private Book getBook(String text) {
+        try {
+            return setupBook(text);
+        } catch (Exception e) {
+            LOGGER.error("Problem setting up book.");
+            LOGGER.error(e.getMessage(), e);
+            return null;
         }
     }
 
     private Book setupBook(String text) throws IOException {
         Book result = bookCreator.createBookFromBookPage(text);
         bookCreator.checkInventoryAndOclc(result);
-        
+
         return result;
     }
-    
-    private String getBookTitle(Book book){
+
+    private void acceptBook(
+            DocumentFilter.FilterBypass fb,
+            AttributeSet attrs,
+            Book book,
+            String input) {
+
+        var msg = getMessage(book);
+        setColors(book);
+
+        try {
+            super.replace(fb, 0, fb.getDocument().getLength(), msg, attrs);
+        } catch (BadLocationException e) {
+            LOGGER.error("Problem setting text..");
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        consumer.accept(input);
+    }
+
+    private String getBookTitle(Book book) {
         var titleLength = book.getTitle().length();
         var length = titleLength >= 10 ? 10 : titleLength;
-        
+
         return book.getTitle().substring(0, length);
     }
 
     public void setBookCreator(BookCreator bookCreator) {
         this.bookCreator = bookCreator;
+    }
+
+    private String getMessage(Book book) {
+        return book == null
+                ? "Problem setting text.. Check Logs."
+                : String.format(
+                        "%s... → %s inventory.",
+                        getBookTitle(book),
+                        book.isTitleExists() ? "IN" : "NOT in");
+    }
+
+    private void setColors(Book book) {
+        if (book == null) {
+            textComponent.setBackground(Color.white);
+            textComponent.setForeground(Color.black);
+        } else if (book.isTitleExists()) {
+            textComponent.setBackground(Color.red);
+            textComponent.setForeground(Color.black);
+        } else {
+            textComponent.setBackground(Color.green);
+            textComponent.setForeground(Color.black);
+        }
     }
 }

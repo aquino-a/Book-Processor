@@ -187,7 +187,7 @@ public class JWPUserInterface extends JPanel {
                 public void accept(Object t) {
                     checkedLink = (String) t;
                 }
-            }, frame, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
+            }, frame, checkField, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
         
         //timer for state
         timer = new Timer(2000, deleteState);
