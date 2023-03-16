@@ -10,9 +10,14 @@ import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.chatgpt.ChatGptService;
+import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
+import com.aquino.webParser.chatgpt.SummaryRepository;
+import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,6 +52,7 @@ public class ProcessorFactoryImpl {
     private BookWindowService bookWindowService;
     private OclcService oclcService;
     private String aladinApiKey;
+    private String openaiApiKey;
 
 
     public BookWindowService CreateWindowService() {
@@ -86,11 +92,28 @@ public class ProcessorFactoryImpl {
             oclcService = new OclcServiceImpl();
         return oclcService;
     }
+    
+    public ChatGptService createChatGptService() throws IOException{
+        return new ChatGptServiceImpl(
+                new ObjectMapper(), 
+                getOpenAiApiKey(),
+                createSummaryRepository());
+    }
+
+    private SummaryRepository createSummaryRepository() {
+        return new SummaryRepositoryImpl("./summary");
+    }
 
     private String getAladinApiKey() throws IOException {
         if (aladinApiKey == null)
             loadProperties();
         return aladinApiKey;
+    }
+    
+    private String getOpenAiApiKey() throws IOException {
+        if (openaiApiKey == null)
+            loadProperties();
+        return openaiApiKey;
     }
 
     private void loadProperties() throws IOException {
@@ -98,6 +121,7 @@ public class ProcessorFactoryImpl {
         prop.load(ProcessorFactoryImpl.class.getClassLoader()
             .getResourceAsStream("config.properties"));
         aladinApiKey = prop.getProperty("aladin.api.key");
+        openaiApiKey = prop.getProperty("openai.api.key");
     }
 
     public Map<String, Integer> GetExcelMap() {
