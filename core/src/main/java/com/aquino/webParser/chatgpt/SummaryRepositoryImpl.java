@@ -24,8 +24,14 @@ import org.apache.logging.log4j.Logger;
 public class SummaryRepositoryImpl implements SummaryRepository {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    
+    private final String filePath;
     private final Map<String, String> cache = new HashMap<>();
     private Connection connection;
+
+    public SummaryRepositoryImpl(String filePath) {
+        this.filePath = filePath;
+    }
 
     @Override
     public String get(String isbn) {
@@ -46,7 +52,7 @@ public class SummaryRepositoryImpl implements SummaryRepository {
             pstmt.setString(1, isbn);
             pstmt.setString(2, summary);
             pstmt.executeUpdate();
-            LOGGER.log(Level.INFO, "Data saved successfully.");
+            LOGGER.log(Level.INFO, "Summary saved successfully.");
         } catch (SQLException e) {
             LOGGER.log(Level.ERROR, "Problem saving summary", e);
         }
@@ -54,8 +60,8 @@ public class SummaryRepositoryImpl implements SummaryRepository {
 
     private Connection getConnection() {
         try {
-            if (connection != null || connection.isClosed()) {
-                connection = DriverManager.getConnection("jdbc:h2:./summaries", "sa", "");
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection("jdbc:h2:" + filePath, "sa", "");
             }
 
             return connection;
@@ -72,7 +78,7 @@ public class SummaryRepositoryImpl implements SummaryRepository {
             pstmt.setString(1, key);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    String summary = rs.getString("COL2");
+                    String summary = rs.getString("SUMMARY");
                     cache.put(isbn, summary);
 
                     return summary;
@@ -101,5 +107,4 @@ public class SummaryRepositoryImpl implements SummaryRepository {
             LOGGER.log(Level.ERROR, "Problem creating Summary table", e);
         }
     }
-
 }
