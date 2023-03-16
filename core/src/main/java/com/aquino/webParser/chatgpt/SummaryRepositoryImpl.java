@@ -41,7 +41,15 @@ public class SummaryRepositoryImpl implements SummaryRepository {
     @Override
     public void save(String isbn, String summary) {
         checkTable();
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection conn = getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO SUMMARY (ISBN, SUMMARY) VALUES (?, ?)")) {
+            pstmt.setString(1, isbn);
+            pstmt.setString(2, summary);
+            pstmt.executeUpdate();
+            LOGGER.log(Level.INFO, "Data saved successfully.");
+        } catch (SQLException e) {
+            LOGGER.log(Level.ERROR, "Problem saving summary", e);
+        }
     }
 
     private Connection getConnection() {
