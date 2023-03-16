@@ -23,3 +23,5 @@ config.properties
 .idea
 nbactions.xml
 *.iml
+/core/nbproject/
+*.db
