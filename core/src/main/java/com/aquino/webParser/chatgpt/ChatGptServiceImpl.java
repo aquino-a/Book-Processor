@@ -8,6 +8,7 @@ import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -82,11 +83,13 @@ public class ChatGptServiceImpl implements ChatGptService {
     }
 
     private String getResponseContent(JsonNode root) {
-        var content = root.path("choices")
-                .path("message")
-                .asText("content");
-        
-        return StringUtils.remove(content, '\n');
+        var choices = (ArrayNode) root.path("choices");
+        var content = choices.get(0)
+            .path("message")
+            .path("content")
+            .asText();
+       
+       return StringUtils.remove(content, '\n');
     }
 
     private void logUsage(JsonNode root) {
