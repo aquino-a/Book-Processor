@@ -6,6 +6,7 @@ package com.aquino.webParser.chatgpt;
 
 import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -54,12 +55,43 @@ public class ChatGptServiceImpl implements ChatGptService {
             return summary;
         }
 
-        summary = requestSummary(book.getDescription());
+        summary = getChatGptSummary(book.getDescription());
         if (!StringUtils.isBlank(summary)) {
             summaryRepository.save(isbn, summary);
         }
-        
+
         return summary;
+    }
+
+    private String getChatGptSummary(String descriptionText) {
+        var responseJson = requestSummary(descriptionText);
+        if (responseJson == null || StringUtils.isBlank(responseJson)) {
+            return null;
+        }
+
+        try {
+            var root = objectMapper.readTree(responseJson);
+            String content = getResponseContent(root);
+            logUsage(root);
+
+            return content;
+        } catch (JsonProcessingException e) {
+            LOGGER.log(Level.ERROR, "Problem reading chatgpt response.", e);
+            return null;
+        }
+    }
+
+    private String getResponseContent(JsonNode root) {
+        var content = root.path("choices")
+                .path("message")
+                .asText("content");
+        
+        return StringUtils.remove(content, '\n');
+    }
+
+    private void logUsage(JsonNode root) {
+        var totalTokens = root.path("usage").path("total_tokens").asInt();
+        LOGGER.log(Level.INFO, String.format("Used %d tokens.", totalTokens));
     }
 
     private String requestSummary(String descriptionText) {
