@@ -7,6 +7,7 @@ import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.ExtraInfo;
 import com.aquino.webParser.oclc.OclcService;
@@ -50,6 +51,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
+    private final ChatGptService chatGptService;
 
     private HontoBookCreator hontoBookCreator;
     private HonyaClubBookCreator honyaClubBookCreator;
@@ -57,9 +59,13 @@ public class AmazonJapanBookCreator implements BookCreator {
     private WorldCatBookCreator worldCatBookCreator;
     private KinoBookCreator kinoBookCreator;
 
-    public AmazonJapanBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
+    public AmazonJapanBookCreator(
+            BookWindowService bookWindowService, 
+            OclcService oclcService,
+            ChatGptService chatGptService) {
         this.bookWindowService = bookWindowService;
         this.oclcService = oclcService;
+        this.chatGptService = chatGptService;
     }
 
     public static String RomanizeJapanese(String japText) throws IOException {
@@ -380,6 +386,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     @Override
     public Book fillInAllDetails(Book book) {
         bookWindowService.findIds(book);
+        book.setSummary(chatGptService.getSummary(book));
 //        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         setHonyaDetails(book);

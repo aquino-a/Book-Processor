@@ -2,6 +2,7 @@ package com.aquino.webParser.bookCreators.amazon;
 
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.oclc.OclcService;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -25,11 +26,14 @@ public class AmazonJapanBookCreatorTest {
     BookWindowService bookWindowService;
     @Mock
     OclcService oclcService;
+    @Mock
+    ChatGptService chatGptService;
+    
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        bc = new AmazonJapanBookCreator(bookWindowService, oclcService);
+        bc = new AmazonJapanBookCreator(bookWindowService, oclcService, chatGptService);
     }
 
     @Test
