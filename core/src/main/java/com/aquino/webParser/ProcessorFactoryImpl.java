@@ -110,7 +110,7 @@ public class ProcessorFactoryImpl {
         return aladinApiKey;
     }
     
-    private String getOpenAiApiKey() throws IOException {
+    public String getOpenAiApiKey() throws IOException {
         if (openaiApiKey == null)
             loadProperties();
         return openaiApiKey;
