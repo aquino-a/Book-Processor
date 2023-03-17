@@ -66,10 +66,10 @@ public class ProcessorFactoryImpl {
             BookCreator newCreator;
             switch (creatorType) {
                 case AladinApi:
-                    newCreator = new AladinBookCreator(CreateWindowService(), CreateOclcService(), null);
+                    newCreator = new AladinBookCreator(CreateWindowService(), CreateOclcService(), createChatGptService());
                     break;
                 case AmazonJapan: {
-                    AmazonJapanBookCreator abc = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService(), null);
+                    AmazonJapanBookCreator abc = new AmazonJapanBookCreator(CreateWindowService(), CreateOclcService(), createChatGptService());
                     abc.setHontoBookCreator(new HontoBookCreator());
                     abc.setHonyaClubBookCreator(new HonyaClubBookCreator());
                     abc.setYahooBookCreator(new YahooBookCreator());

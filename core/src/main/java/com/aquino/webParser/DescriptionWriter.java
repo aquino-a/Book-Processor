@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.apache.commons.text.TextStringBuilder;
 
 /**
  * @author alex
@@ -21,17 +22,22 @@ import java.util.List;
 public class DescriptionWriter {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private String bookDescriptions = "";
+    private TextStringBuilder bookDescriptionBuilder = new TextStringBuilder();
 
     public boolean writeBooks(List<Book> books) {
-        StringBuilder sb = new StringBuilder(bookDescriptions);
         for (Book book : books) {
-            sb.append(String.format("%s%n%s%s%s%n%n%n%n",
-                book.getTitle(), originalTitle(book.getEnglishTitle())
-                , originalAuthor(book.getAuthorOriginal()),
-                book.getDescription() + "  " + book.getTranslator()));
+            bookDescriptionBuilder.appendln(book.getTitle());
+            bookDescriptionBuilder.appendln(originalTitle(book.getEnglishTitle()));
+            bookDescriptionBuilder.appendln(originalAuthor(book.getAuthorOriginal()));
+            bookDescriptionBuilder.appendln(book.getDescription());
+            bookDescriptionBuilder.appendln(book.getSummary());
+            bookDescriptionBuilder.appendln(book.getTranslator());
+            bookDescriptionBuilder.appendNewLine();
+            bookDescriptionBuilder.appendNewLine();
+            bookDescriptionBuilder.appendNewLine();
+            bookDescriptionBuilder.appendNewLine();
         }
-        bookDescriptions = sb.toString();
+
         LOGGER.info("Done setting up descriptions");
         return true;
     }
@@ -47,8 +53,8 @@ public class DescriptionWriter {
                 new FileOutputStream(saveFile, true), StandardCharsets.UTF_8))) {
             bw.write(LocalDateTime.now().toString());
             bw.newLine();
-            bw.write(bookDescriptions);
-            bookDescriptions = "";
+            bw.write(bookDescriptionBuilder.toString());
+            bookDescriptionBuilder.clear();
         }
         catch (IOException ex) {
             LOGGER.error("Problem with writing the book {0}", ex.getMessage());
