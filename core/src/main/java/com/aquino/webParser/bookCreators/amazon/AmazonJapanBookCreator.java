@@ -389,6 +389,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setSummary(chatGptService.getSummary(book));
 //        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
+        book.setTitleExists(bookWindowService.doesBookExist(String.valueOf(book.getIsbn())));
         setHonyaDetails(book);
         SetHontoLink(book);
         SetYahooLink(book);
