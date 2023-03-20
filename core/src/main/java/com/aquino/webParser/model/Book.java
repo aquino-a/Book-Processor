@@ -10,7 +10,7 @@ public class Book {
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, category2, authorOriginal,
             locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
-            authorBooks, author2Books, publisherBooks;
+            authorBooks, author2Books, publisherBooks, summary;
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -338,5 +338,23 @@ public class Book {
 
     public void setMiscellaneous(List<ExtraInfo> miscellaneous) {
         this.miscellaneous = miscellaneous;
+    }
+    
+    /**
+     * Get the chatGpt summary
+     *
+     * @return the value of summary
+     */
+    public String getSummary() {
+        return summary;
+    }
+
+    /**
+     * Set the chatGpt summary
+     *
+     * @param summary new value of summary
+     */
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

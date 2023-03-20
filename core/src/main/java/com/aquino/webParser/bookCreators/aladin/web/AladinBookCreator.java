@@ -2,6 +2,7 @@ package com.aquino.webParser.bookCreators.aladin.web;
 
 import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.romanization.Romanizer;
@@ -41,11 +42,16 @@ public class AladinBookCreator implements BookCreator {
     private static final Logger LOGGER = LogManager.getLogger();
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
+    private final ChatGptService chatGptService;
 
 
-    public AladinBookCreator(BookWindowService bookWindowService, OclcService oclcService) {
+    public AladinBookCreator(
+            BookWindowService bookWindowService, 
+            OclcService oclcService,
+            ChatGptService chatGptService) {
         this.bookWindowService = bookWindowService;
         this.oclcService = oclcService;
+        this.chatGptService = chatGptService;
     }
 
     private static String findDescription(Document doc) {
@@ -329,7 +335,7 @@ public class AladinBookCreator implements BookCreator {
         scrapeLazyAuthor(book);
         book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
         bookWindowService.findIds(book);
-
+        book.setSummary(chatGptService.getSummary(book));
 //        if (book.getOclc() < 1) {
 //            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
 //        }
