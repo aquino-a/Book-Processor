@@ -29,6 +29,9 @@ public class ExcelWriter {
     
     private static final Logger LOGGER = LogManager.getLogger();
     
+    private XSSFCellStyle bwExistsStyle;
+    private XSSFCellStyle bwDoesntExistStyle;
+    
     private final XSSFWorkbook workbook;
     private int startRow;
     //private final File saveFile;
@@ -36,6 +39,7 @@ public class ExcelWriter {
     
     public ExcelWriter(XSSFWorkbook workbook) {
         this.workbook = workbook;
+        createStyles();
         //this.saveFile = saveFile;
         this.sheet = workbook.getSheetAt(0);
         retrieveStartRow();
@@ -69,8 +73,18 @@ public class ExcelWriter {
         }
         row.createCell(2).setHyperlink(createHyperLink(book.getBookPageUrl()));
         row.getCell(2).setCellValue("Book page");
-        if(book.getOclc() != -1)
-            row.createCell(3).setCellValue(book.getOclc());
+        
+        var oclcRow = row.createCell(3);
+        if (book.isTitleExists()){
+            oclcRow.setCellStyle(bwExistsStyle);
+        } else {
+           oclcRow.setCellStyle(bwDoesntExistStyle);
+        }
+        
+        if(book.getOclc() != -1){
+            oclcRow.setCellValue(book.getOclc());
+        }
+        
         if(!book.getEnglishTitle().equals(""))
             row.createCell(4).setCellValue(book.getEnglishTitle());
         row.createCell(6).setCellValue(book.getRomanizedTitle());
@@ -166,5 +180,15 @@ public class ExcelWriter {
     public void writeBooks(List<Book> books) {
         retrieveStartRow();
         writeEntries(books);
+    }
+
+    private void createStyles() {
+        bwExistsStyle = workbook.createCellStyle();
+        bwExistsStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        bwExistsStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+        
+        bwDoesntExistStyle = workbook.createCellStyle();
+        bwDoesntExistStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        bwDoesntExistStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
     }
 }
