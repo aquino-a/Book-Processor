@@ -47,6 +47,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern IMAGE_URL_SCRIPT_PATTERN = Pattern.compile(
             "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://m\\.media\\-amazon\\.com/images/I/[A-Za-z0-9%\\-\\+]+\\.jpg)");
+    private static final Pattern KEYWORD_PARAMETER_PATTERN = Pattern.compile("keywords=(?:\"|%22)(\\d+)(?:\"|%22)");
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
@@ -101,6 +102,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     @Override
     public Book createBookFromBookPage(String bookPageUrl) throws IOException {
         Book book = new Book();
+        book.setIsbn(getIsbnFromUrl(bookPageUrl));
         Document doc = Connect.connectToURL(bookPageUrl);
         if (doc == null) {
             throw new IOException(String.format("Document wasn't loaded: %s", bookPageUrl));
@@ -410,7 +412,7 @@ public class AmazonJapanBookCreator implements BookCreator {
             //already in bookswindow so it wont be used.
             return book;
         }
-        
+
         bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
 //        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
@@ -582,5 +584,14 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     public void setKinoBookCreator(KinoBookCreator kinoBookCreator) {
         this.kinoBookCreator = kinoBookCreator;
+    }
+
+    private long getIsbnFromUrl(String bookPageUrl) {
+        var matcher = KEYWORD_PARAMETER_PATTERN.matcher(bookPageUrl);
+        if (matcher.find()) {
+            return Long.parseLong(matcher.group(1));
+        } else {
+            return 0L;
+        }
     }
 }
