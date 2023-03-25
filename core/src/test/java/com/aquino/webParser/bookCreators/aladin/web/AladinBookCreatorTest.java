@@ -3,6 +3,7 @@ package com.aquino.webParser.bookCreators.aladin.web;
 import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BasicBookCreatorTest;
 import com.aquino.webParser.bookCreators.DocumentCreator;
+import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.oclc.OclcService;
 import org.jsoup.nodes.Document;
@@ -27,6 +28,8 @@ public final class AladinBookCreatorTest extends BasicBookCreatorTest {
     BookWindowService bookWindowService;
     @Mock
     OclcService oclcService;
+    @Mock
+    ChatGptService chatGptService;
     private AladinBookCreator bookCreator;
 
     public AladinBookCreatorTest(Document doc, Book expected) {
@@ -119,7 +122,7 @@ public final class AladinBookCreatorTest extends BasicBookCreatorTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        bookCreator = new AladinBookCreator(bookWindowService, oclcService);
+        bookCreator = new AladinBookCreator(bookWindowService, oclcService, chatGptService);
     }
 
     @Test
