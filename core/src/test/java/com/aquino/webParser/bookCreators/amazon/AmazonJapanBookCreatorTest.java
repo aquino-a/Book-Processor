@@ -57,6 +57,23 @@ public class AmazonJapanBookCreatorTest {
         assertEquals(book.getOriginalPriceNumber(), 1980);
         assertEquals(book.getAuthor(), "白井 恭弘");
     }
+    
+    /**
+     * Comic books show the kindle link first.
+     * Tests that links with the word "kindle" are filtered out.
+     * 
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    public void comicKindleBugFix() throws IOException, URISyntaxException {
+
+        String isbn = "9784757584259";
+        Book book = bc.createBookFromIsbn(isbn);
+        assertThat(book.getIsbn(), is(9784757584259L));
+        assertThat(book.getPages(), is(184));
+        assertThat(book.getOriginalPriceNumber(), is(730));
+    }
 
     @Test
     public void bookLinkBugFix() throws IOException, URISyntaxException {

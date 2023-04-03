@@ -86,12 +86,9 @@ public class AmazonJapanBookCreator implements BookCreator {
                 .findFirst()
                 .orElseThrow(() -> createLinkNotFound(isbn));
 
-        var link = firstSection.getElementsByClass("a-section a-spacing-none a-spacing-top-micro s-price-instructions-style")
+        var link = firstSection.getElementsByClass("a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold")
                 .stream()
-                .findFirst()
-                .orElseThrow(() -> createLinkNotFound(isbn))
-                .getElementsByTag("a")
-                .stream()
+                .filter(e -> !StringUtils.containsIgnoreCase(e.ownText(), "kindle"))
                 .findFirst()
                 .orElseThrow(() -> createLinkNotFound(isbn))
                 .attr("href");
