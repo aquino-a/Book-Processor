@@ -12,7 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.Consumer;
 
 public class ExcelReader {
 
@@ -43,8 +43,8 @@ public class ExcelReader {
 
     private boolean isNotBlank(Book book) {
         return StringUtils.isNotBlank(book.getAuthor()) ||
-            StringUtils.isNotBlank(book.getAuthor2()) ||
-            StringUtils.isNotBlank(book.getPublisher());
+                StringUtils.isNotBlank(book.getAuthor2()) ||
+                StringUtils.isNotBlank(book.getPublisher());
     }
 
     private Book CreateBook(XSSFRow row) {
@@ -53,7 +53,8 @@ public class ExcelReader {
         try {
             book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
         } catch (Exception e) {
-            LOGGER.warn(String.format("Problem with Isbn. Skipping Row. Row#: %d, %s", row.getRowNum(), e.getMessage()));
+            LOGGER.warn(
+                    String.format("Problem with Isbn. Skipping Row. Row#: %d, %s", row.getRowNum(), e.getMessage()));
             return null;
         }
 
@@ -70,6 +71,26 @@ public class ExcelReader {
         return book;
     }
 
+    private void SetProperty(XSSFRow row, PropertySetter setter) {
+        var valueCell = locationMap.get(setter.key);
+        var idCell = valueCell - 1;
+
+        try {
+            var id = GetNum(row, idCell);
+            setter.setId.accept(id);
+        } catch (Exception e) {
+            LOGGER.warn(String.format("Problem with %s id. Isbn: %d, %s", setter.key, setter.isbn, e.getMessage()));
+        }
+
+        var cell = row.getCell(valueCell);
+        if (cell != null) {
+            var value = cell.getStringCellValue();
+            setter.setValue.accept(value);
+        } else
+            LOGGER.warn(String.format("Problem with %s. Isbn: %d", setter.key, setter.isbn));
+
+    }
+
     private void SetAuthor(XSSFRow row, Book book) {
         var authorCell = locationMap.get("author");
         var authorIdCell = authorCell - 1;
@@ -84,7 +105,8 @@ public class ExcelReader {
         var cell = row.getCell(authorCell);
         if (cell != null) {
             book.setAuthor(cell.getStringCellValue());
-        } else LOGGER.warn(String.format("Problem with author. Isbn: %d", book.getIsbn()));
+        } else
+            LOGGER.warn(String.format("Problem with author. Isbn: %d", book.getIsbn()));
     }
 
     private void SetAuthor2(XSSFRow row, Book book) {
@@ -101,7 +123,8 @@ public class ExcelReader {
         var cell = row.getCell(author2Cell);
         if (cell != null)
             book.setAuthor2(cell.getStringCellValue());
-        else LOGGER.warn(String.format("Problem with author2. Isbn: %d", book.getIsbn()));
+        else
+            LOGGER.warn(String.format("Problem with author2. Isbn: %d", book.getIsbn()));
 
     }
 
@@ -118,7 +141,8 @@ public class ExcelReader {
         var cell = row.getCell(publisherCell);
         if (cell != null)
             book.setPublisher(cell.getStringCellValue());
-        else LOGGER.warn(String.format("Problem with publisher. Isbn: %d", book.getIsbn()));
+        else
+            LOGGER.warn(String.format("Problem with publisher. Isbn: %d", book.getIsbn()));
     }
 
     private int GetNum(XSSFRow row, int cellNum) {
@@ -143,5 +167,49 @@ public class ExcelReader {
 
     public void setLocationMap(Map<String, Integer> locationMap) {
         this.locationMap = locationMap;
+    }
+
+    private static class AuthorSetter extends PropertySetter {
+        public AuthorSetter(Book book) {
+            super(
+                    book,
+                    "author",
+                    id -> book.setAuthorId(id),
+                    v -> book.setAuthor(v));
+        }
+    }
+
+    private static class Author2Setter extends PropertySetter {
+        public Author2Setter(Book book) {
+            super(
+                    book,
+                    "author2",
+                    id -> book.setAuthor2Id(id),
+                    v -> book.setAuthor2(v));
+        }
+    }
+
+    private static class PublisherSetter extends PropertySetter {
+        public PublisherSetter(Book book) {
+            super(
+                    book,
+                    "publisher",
+                    id -> book.setPublisherId(id),
+                    v -> book.setPublisher(v));
+        }
+    }
+
+    private static class PropertySetter {
+        public final String isbn;
+        public final String key;
+        public final Consumer<Integer> setId;
+        public final Consumer<String> setValue;
+
+        public PropertySetter(Book book, String key, Consumer<Integer> setId, Consumer<String> setValue) {
+            this.isbn = String.valueOf(book.getIsbn());
+            this.key = key;
+            this.setId = setId;
+            this.setValue = setValue;
+        }
     }
 }
