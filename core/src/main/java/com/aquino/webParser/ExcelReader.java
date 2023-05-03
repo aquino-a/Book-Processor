@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ExcelReader {
 
@@ -146,28 +146,15 @@ public class ExcelReader {
             }
 
             try {
-                var value = getValue(row, valueCell);
-                setValue.accept(book, value);
+                var cell = row.getCell(valueCell);
+                if (cell != null) {
+                    cell.setCellType(CellType.STRING);
+                    var value = cell.getStringCellValue();
+                    setValue.accept(book, value);
+                }
             } catch (Exception e) {
                 LOGGER.warn(
                         String.format("Problem with %s value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
-            }
-        }
-
-        private String getValue(XSSFRow row, int cellNum) {
-            var cell = row.getCell(cellNum);
-            if (cell == null) {
-                throw new NullPointerException("Not found");
-            }
-
-            var type = cell.getCellTypeEnum();
-            switch (type) {
-                case STRING:
-                    return cell.getStringCellValue();
-                case NUMERIC:
-                    return String.valueOf(cell.getRawValue());
-                default:
-                    throw new NullPointerException("Wrong cell type");
             }
         }
 
