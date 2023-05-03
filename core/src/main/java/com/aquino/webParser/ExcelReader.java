@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -123,6 +124,8 @@ public class ExcelReader {
         private final BiConsumer<Book, String> setValue;
         private final Map<String, Integer> locationMap;
 
+        private final DataFormatter dataFormatter = new DataFormatter();
+
         public PropertySetter(
                 Map<String, Integer> locationMap,
                 String key,
@@ -147,11 +150,9 @@ public class ExcelReader {
 
             try {
                 var cell = row.getCell(valueCell);
-                if (cell != null) {
-                    cell.setCellType(CellType.STRING);
-                    var value = cell.getStringCellValue();
-                    setValue.accept(book, value);
-                }
+                var value = dataFormatter.formatCellValue(cell);
+
+                setValue.accept(book, value);
             } catch (Exception e) {
                 LOGGER.warn(
                         String.format("Problem with %s value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
