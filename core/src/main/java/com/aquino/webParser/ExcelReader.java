@@ -76,7 +76,7 @@ public class ExcelReader {
         var idCell = valueCell - 1;
 
         try {
-            var id = GetNum(row, idCell);
+            var id = getNum(row, idCell);
             setter.setId.accept(id);
         } catch (Exception e) {
             LOGGER.warn(String.format("Problem with %s id. Isbn: %d, %s", setter.key, setter.isbn, e.getMessage()));
@@ -107,7 +107,7 @@ public class ExcelReader {
         }
     }
 
-    private int GetNum(XSSFRow row, int cellNum) {
+    private int getNum(XSSFRow row, int cellNum) {
         var cell = row.getCell(cellNum);
         if (cell == null)
             throw new NullPointerException("Not found");
