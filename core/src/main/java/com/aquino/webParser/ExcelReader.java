@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ExcelReader {
@@ -22,6 +23,10 @@ public class ExcelReader {
     private final XSSFSheet sheet;
     private int startRow = 1;
     private Map<String, Integer> locationMap;
+
+    private PropertySetter authorSetter;
+    private PropertySetter author2Setter;
+    private PropertySetter publisherSetter;
 
     public ExcelReader(XSSFWorkbook workbook) {
         this.workbook = workbook;
@@ -64,63 +69,11 @@ public class ExcelReader {
             book.setOclc(-1);
         }
 
-        SetProperty(row, new AuthorSetter(book));
-        SetProperty(row, new Author2Setter(book));
-        SetProperty(row, new PublisherSetter(book));
+        authorSetter.SetProperty(row, book);
+        author2Setter.SetProperty(row, book);
+        publisherSetter.SetProperty(row, book);
 
         return book;
-    }
-
-    private void SetProperty(XSSFRow row, PropertySetter setter) {
-        var valueCell = locationMap.get(setter.key);
-        var idCell = valueCell - 1;
-
-        try {
-            var id = getNum(row, idCell);
-            setter.setId.accept(id);
-        } catch (Exception e) {
-            LOGGER.warn(String.format("Problem with %s id. Isbn: %d, %s", setter.key, setter.isbn, e.getMessage()));
-        }
-
-        try {
-            var value = getValue(row, valueCell);
-            setter.setValue.accept(value);
-        } catch (Exception e) {
-            LOGGER.warn(String.format("Problem with %s value. Isbn: %d, %s", setter.key, setter.isbn, e.getMessage()));
-        }
-    }
-
-    private String getValue(XSSFRow row, int cellNum) {
-        var cell = row.getCell(cellNum);
-        if (cell == null) {
-            throw new NullPointerException("Not found");
-        }
-
-        var type = cell.getCellTypeEnum();
-        switch (type) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            default:
-                throw new NullPointerException("Wrong cell type");
-        }
-    }
-
-    private int getNum(XSSFRow row, int cellNum) {
-        var cell = row.getCell(cellNum);
-        if (cell == null)
-            throw new NullPointerException("Not found");
-
-        var type = cell.getCellTypeEnum();
-        switch (type) {
-            case STRING:
-                return Integer.parseInt(cell.getStringCellValue());
-            case NUMERIC:
-                return (int) cell.getNumericCellValue();
-            default:
-                throw new NullPointerException("Wrong cell type");
-        }
     }
 
     public void setStartRow(int startRow) {
@@ -129,49 +82,109 @@ public class ExcelReader {
 
     public void setLocationMap(Map<String, Integer> locationMap) {
         this.locationMap = locationMap;
+        authorSetter = new AuthorSetter(locationMap);
+        author2Setter = new Author2Setter(locationMap);
+        publisherSetter = new PublisherSetter(locationMap);
     }
 
     private static class AuthorSetter extends PropertySetter {
-        public AuthorSetter(Book book) {
+        public AuthorSetter(Map<String, Integer> locationMap) {
             super(
-                    book,
+                    locationMap,
                     "author",
-                    id -> book.setAuthorId(id),
-                    v -> book.setAuthor(v));
+                    (b, id) -> b.setAuthorId(id),
+                    (b, v) -> b.setAuthor(v));
         }
     }
 
     private static class Author2Setter extends PropertySetter {
-        public Author2Setter(Book book) {
+        public Author2Setter(Map<String, Integer> locationMap) {
             super(
-                    book,
+                    locationMap,
                     "author2",
-                    id -> book.setAuthor2Id(id),
-                    v -> book.setAuthor2(v));
+                    (b, id) -> b.setAuthor2Id(id),
+                    (b, v) -> b.setAuthor2(v));
         }
     }
 
     private static class PublisherSetter extends PropertySetter {
-        public PublisherSetter(Book book) {
+        public PublisherSetter(Map<String, Integer> locationMap) {
             super(
-                    book,
+                    locationMap,
                     "publisher",
-                    id -> book.setPublisherId(id),
-                    v -> book.setPublisher(v));
+                    (b, id) -> b.setPublisherId(id),
+                    (b, v) -> b.setPublisher(v));
         }
     }
 
     private static class PropertySetter {
-        public final String isbn;
-        public final String key;
-        public final Consumer<Integer> setId;
-        public final Consumer<String> setValue;
+        private final String key;
+        private final BiConsumer<Book, Integer> setId;
+        private final BiConsumer<Book, String> setValue;
+        private final Map<String, Integer> locationMap;
 
-        public PropertySetter(Book book, String key, Consumer<Integer> setId, Consumer<String> setValue) {
-            this.isbn = String.valueOf(book.getIsbn());
+        public PropertySetter(
+                Map<String, Integer> locationMap,
+                String key,
+                BiConsumer<Book, Integer> setId,
+                BiConsumer<Book, String> setValue) {
+            this.locationMap = locationMap;
             this.key = key;
             this.setId = setId;
             this.setValue = setValue;
+        }
+
+        public void SetProperty(XSSFRow row, Book book) {
+            var valueCell = locationMap.get(key);
+            var idCell = valueCell - 1;
+
+            try {
+                var id = getNum(row, idCell);
+                setId.accept(book, id);
+            } catch (Exception e) {
+                LOGGER.warn(String.format("Problem with %s id. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+            }
+
+            try {
+                var value = getValue(row, valueCell);
+                setValue.accept(book, value);
+            } catch (Exception e) {
+                LOGGER.warn(
+                        String.format("Problem with %s value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+            }
+        }
+
+        private String getValue(XSSFRow row, int cellNum) {
+            var cell = row.getCell(cellNum);
+            if (cell == null) {
+                throw new NullPointerException("Not found");
+            }
+
+            var type = cell.getCellTypeEnum();
+            switch (type) {
+                case STRING:
+                    return cell.getStringCellValue();
+                case NUMERIC:
+                    return String.valueOf(cell.getRawValue());
+                default:
+                    throw new NullPointerException("Wrong cell type");
+            }
+        }
+
+        private int getNum(XSSFRow row, int cellNum) {
+            var cell = row.getCell(cellNum);
+            if (cell == null)
+                throw new NullPointerException("Not found");
+
+            var type = cell.getCellTypeEnum();
+            switch (type) {
+                case STRING:
+                    return Integer.parseInt(cell.getStringCellValue());
+                case NUMERIC:
+                    return (int) cell.getNumericCellValue();
+                default:
+                    throw new NullPointerException("Wrong cell type");
+            }
         }
     }
 }
