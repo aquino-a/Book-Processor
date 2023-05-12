@@ -57,7 +57,8 @@ public class ChatGptServiceImpl implements ChatGptService {
             return summary;
         }
 
-        summary = getChatGptSummary(book.getDescription());
+        var content = getSummaryContent(book.getDescription());
+        summary = getChatGptResponse(content);
         if (!StringUtils.isBlank(summary)) {
             summaryRepository.save(isbn, summary);
         }
@@ -79,16 +80,19 @@ public class ChatGptServiceImpl implements ChatGptService {
             return title;
         }
 
-        title = getChatGptSummary(book.getTitle());
+        var content = String.format(TITLE_PROMPT_FORMAT, book.getTitle());
+        title = getChatGptResponse(content);
         if (!StringUtils.isBlank(title)) {
-            summaryRepository.saveTitle(isbn, title);
+            var cleaned = title.replaceAll("\"", "");
+            summaryRepository.saveTitle(isbn, cleaned);
+
+            return cleaned;
         }
 
         return title;
     }
 
-    private String getChatGptSummary(String descriptionText) {
-        var textContent = getSummaryContent(descriptionText);
+    private String getChatGptResponse(String textContent) {
         var responseJson = requestSummary(textContent);
         if (responseJson == null || StringUtils.isBlank(responseJson)) {
             return null;
