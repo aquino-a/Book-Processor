@@ -20,7 +20,7 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String SUMMARY_PROMPT_FORMAT = "Give a summary of the contents of the book mentioned in the following text in less than 100 words:\n%s";
+    private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
@@ -30,7 +30,7 @@ public class ChatGptServiceImpl implements ChatGptService {
      * Interfaces with chat GPT.
      *
      * @param objectMapper
-     * @param apiKey API key for open ai.
+     * @param apiKey            API key for open ai.
      * @param summaryRepository
      */
     public ChatGptServiceImpl(
@@ -85,11 +85,11 @@ public class ChatGptServiceImpl implements ChatGptService {
     private String getResponseContent(JsonNode root) {
         var choices = (ArrayNode) root.path("choices");
         var content = choices.get(0)
-            .path("message")
-            .path("content")
-            .asText();
-       
-       return StringUtils.remove(content, '\n');
+                .path("message")
+                .path("content")
+                .asText();
+
+        return StringUtils.remove(content, '\n');
     }
 
     private void logUsage(JsonNode root) {
