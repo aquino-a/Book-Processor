@@ -67,8 +67,24 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     @Override
     public String getTitle(Book book) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTitle'");
+        if (book == null || StringUtils.isBlank(book.getTitle())) {
+            LOGGER.log(Level.ERROR, "null book or null title");
+            return null;
+        }
+
+        var isbn = String.valueOf(book.getIsbn());
+        var title = summaryRepository.getTitle(isbn);
+        if (title != null) {
+            LOGGER.log(Level.INFO, String.format("Book(%s) found in repository.", isbn));
+            return title;
+        }
+
+        title = getChatGptSummary(book.getTitle());
+        if (!StringUtils.isBlank(title)) {
+            summaryRepository.saveTitle(isbn, title);
+        }
+
+        return title;
     }
 
     private String getChatGptSummary(String descriptionText) {
