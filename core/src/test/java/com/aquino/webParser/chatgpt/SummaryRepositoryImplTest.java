@@ -5,8 +5,6 @@
 package com.aquino.webParser.chatgpt;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -15,17 +13,30 @@ import static org.junit.Assert.*;
  * @author alex
  */
 public class SummaryRepositoryImplTest {
-    
+
     @Test
     public void testSave() throws IOException {
         var path = "./test";
         var sr = new SummaryRepositoryImpl(path);
-        
+
         var isbn = "1234";
         var summary = "hehe";
         sr.save(isbn, summary);
         var result = sr.get(isbn);
-        
+
         assertEquals("result must match", summary, result);
+    }
+
+    @Test
+    public void testTitleSave() throws IOException {
+        var path = "./test";
+        var sr = new SummaryRepositoryImpl(path);
+
+        var isbn = "1234";
+        var title = "hehe";
+        sr.saveTitle(isbn, title);
+        var result = sr.getTitle(isbn);
+
+        assertEquals("result must match", title, result);
     }
 }

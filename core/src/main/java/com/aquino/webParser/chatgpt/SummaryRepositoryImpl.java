@@ -65,12 +65,25 @@ public class SummaryRepositoryImpl implements SummaryRepository {
 
     private void save(String isbn, String value, String column) {
         Connection conn = getConnection();
-        var statement = String.format("INSERT INTO SUMMARY (ISBN, %s) VALUES (?, ?)", column);
-        try (PreparedStatement pstmt = conn.prepareStatement(statement)) {
-            pstmt.setString(1, isbn);
-            pstmt.setString(2, value);
-            pstmt.executeUpdate();
-            LOGGER.log(Level.INFO, "Summary saved successfully.");
+        var updateStatement = String.format("UPDATE SUMMARY set %s = ? WHERE ISBN = ?", column);
+        try (PreparedStatement updatePstmt = conn.prepareStatement(updateStatement)) {
+            updatePstmt.setString(1, value);
+            updatePstmt.setString(2, isbn);
+            var result = updatePstmt.executeUpdate();
+
+            if (result > 0) {
+                LOGGER.log(Level.INFO, "Summary updated successfully.");
+                return;
+            }
+
+            var insertStatement = String.format("INSERT INTO SUMMARY (ISBN, %s) VALUES (?, ?)", column);
+            try (PreparedStatement insertPstmt = conn.prepareStatement(insertStatement)) {
+                insertPstmt.setString(1, isbn);
+                insertPstmt.setString(2, value);
+                insertPstmt.executeUpdate();
+            }
+
+            LOGGER.log(Level.INFO, "Summary inserted successfully.");
         } catch (SQLException e) {
             LOGGER.log(Level.ERROR, "Problem saving summary", e);
         }
@@ -118,7 +131,7 @@ public class SummaryRepositoryImpl implements SummaryRepository {
             if (!rs.next()) {
                 // Create table if it doesn't exist
                 stmt.executeUpdate(
-                        "CREATE TABLE SUMMARY (ISBN VARCHAR2(30), TITLE VARCHAR2(300), SUMMARY VARCHAR2(4000))");
+                        "CREATE TABLE SUMMARY (ISBN VARCHAR2(30), TITLE VARCHAR2(300), SUMMARY VARCHAR2(4000), PRIMARY KEY (ISBN))");
                 LOGGER.log(Level.INFO, "Summary table created successfully.");
             } else {
                 LOGGER.log(Level.INFO, "Summary table already exists.");
