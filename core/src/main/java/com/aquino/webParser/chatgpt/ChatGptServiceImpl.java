@@ -21,6 +21,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
+    private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
@@ -64,8 +65,15 @@ public class ChatGptServiceImpl implements ChatGptService {
         return summary;
     }
 
+    @Override
+    public String getTitle(Book book) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTitle'");
+    }
+
     private String getChatGptSummary(String descriptionText) {
-        var responseJson = requestSummary(descriptionText);
+        var textContent = getSummaryContent(descriptionText);
+        var responseJson = requestSummary(textContent);
         if (responseJson == null || StringUtils.isBlank(responseJson)) {
             return null;
         }
@@ -97,9 +105,8 @@ public class ChatGptServiceImpl implements ChatGptService {
         LOGGER.log(Level.INFO, String.format("Used %d tokens.", totalTokens));
     }
 
-    private String requestSummary(String descriptionText) {
+    private String requestSummary(String content) {
         try {
-            var content = getFullContent(descriptionText);
             var body = getRequestBody(content);
 
             return Jsoup.connect(COMPLETION_URL)
@@ -129,7 +136,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         return objectMapper.writeValueAsString(root);
     }
 
-    private String getFullContent(String descriptionText) {
+    private String getSummaryContent(String descriptionText) {
         return String.format(SUMMARY_PROMPT_FORMAT, descriptionText);
     }
 }
