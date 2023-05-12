@@ -10,5 +10,10 @@ package com.aquino.webParser.chatgpt;
  */
 public interface SummaryRepository {
     public String get(String isbn);
+
     public void save(String isbn, String summary);
+
+    public String getTitle(String isbn);
+
+    public void saveTitle(String isbn, String title);
 }

@@ -89,6 +89,7 @@ public class ExcelWriter {
             row.createCell(4).setCellValue(book.getEnglishTitle());
         row.createCell(6).setCellValue(book.getRomanizedTitle());
         row.createCell(7).setCellValue(book.getTitle());
+        row.createCell(8).setCellValue(book.getTranslatedTitle());
 
         row.createCell(9).setCellValue(book.getAuthorId());
         row.createCell(10).setCellValue(book.getAuthor());

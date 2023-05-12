@@ -54,9 +54,19 @@ public class ChatGptServiceImplTest {
                 + "本格ミステリ・ベスト10 2023 国内ランキング(原書房) 第2位\n"
                 + "このミステリーがすごい! 2023年版 国内編(宝島社) 第4位\n"
                 + "ミステリが読みたい! 2023年版 国内篇(早川書房) 第6位\n" +
-        "ダ・ヴィンチ BOOK OF THE YEAR 2022 小説部門(KADOKAWA) 第7位");
+                "ダ・ヴィンチ BOOK OF THE YEAR 2022 小説部門(KADOKAWA) 第7位");
         var summary = chat.getSummary(book);
 
         assertThat(summary, is(notNullValue()));
+    }
+    
+    @Test
+    public void testGetTitle() {
+        var book = new Book();
+        book.setIsbn(12345L);
+        book.setTitle("混ぜるだけサラダとさっと煮るだけスープ");
+        var title = chat.getTitle(book);
+
+        assertThat(title, is(notNullValue()));
     }
 }

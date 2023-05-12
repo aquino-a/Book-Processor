@@ -20,7 +20,8 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String SUMMARY_PROMPT_FORMAT = "Give a summary of the contents of the book mentioned in the following text in less than 100 words:\n%s";
+    private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
+    private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
@@ -30,7 +31,7 @@ public class ChatGptServiceImpl implements ChatGptService {
      * Interfaces with chat GPT.
      *
      * @param objectMapper
-     * @param apiKey API key for open ai.
+     * @param apiKey            API key for open ai.
      * @param summaryRepository
      */
     public ChatGptServiceImpl(
@@ -56,7 +57,8 @@ public class ChatGptServiceImpl implements ChatGptService {
             return summary;
         }
 
-        summary = getChatGptSummary(book.getDescription());
+        var content = getSummaryContent(book.getDescription());
+        summary = getChatGptResponse(content);
         if (!StringUtils.isBlank(summary)) {
             summaryRepository.save(isbn, summary);
         }
@@ -64,8 +66,34 @@ public class ChatGptServiceImpl implements ChatGptService {
         return summary;
     }
 
-    private String getChatGptSummary(String descriptionText) {
-        var responseJson = requestSummary(descriptionText);
+    @Override
+    public String getTitle(Book book) {
+        if (book == null || StringUtils.isBlank(book.getTitle())) {
+            LOGGER.log(Level.ERROR, "null book or null title");
+            return null;
+        }
+
+        var isbn = String.valueOf(book.getIsbn());
+        var title = summaryRepository.getTitle(isbn);
+        if (title != null) {
+            LOGGER.log(Level.INFO, String.format("Book(%s) found in repository.", isbn));
+            return title;
+        }
+
+        var content = String.format(TITLE_PROMPT_FORMAT, book.getTitle());
+        title = getChatGptResponse(content);
+        if (!StringUtils.isBlank(title)) {
+            var cleaned = title.replaceAll("\"", "");
+            summaryRepository.saveTitle(isbn, cleaned);
+
+            return cleaned;
+        }
+
+        return title;
+    }
+
+    private String getChatGptResponse(String textContent) {
+        var responseJson = requestSummary(textContent);
         if (responseJson == null || StringUtils.isBlank(responseJson)) {
             return null;
         }
@@ -85,11 +113,11 @@ public class ChatGptServiceImpl implements ChatGptService {
     private String getResponseContent(JsonNode root) {
         var choices = (ArrayNode) root.path("choices");
         var content = choices.get(0)
-            .path("message")
-            .path("content")
-            .asText();
-       
-       return StringUtils.remove(content, '\n');
+                .path("message")
+                .path("content")
+                .asText();
+
+        return StringUtils.remove(content, '\n');
     }
 
     private void logUsage(JsonNode root) {
@@ -97,9 +125,8 @@ public class ChatGptServiceImpl implements ChatGptService {
         LOGGER.log(Level.INFO, String.format("Used %d tokens.", totalTokens));
     }
 
-    private String requestSummary(String descriptionText) {
+    private String requestSummary(String content) {
         try {
-            var content = getFullContent(descriptionText);
             var body = getRequestBody(content);
 
             return Jsoup.connect(COMPLETION_URL)
@@ -129,7 +156,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         return objectMapper.writeValueAsString(root);
     }
 
-    private String getFullContent(String descriptionText) {
+    private String getSummaryContent(String descriptionText) {
         return String.format(SUMMARY_PROMPT_FORMAT, descriptionText);
     }
 }
