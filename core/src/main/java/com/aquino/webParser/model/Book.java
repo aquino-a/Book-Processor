@@ -10,7 +10,7 @@ public class Book {
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, category2, authorOriginal,
             locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
-            authorBooks, author2Books, publisherBooks, summary;
+            authorBooks, author2Books, publisherBooks, summary, translatedTitle;
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -356,5 +356,13 @@ public class Book {
      */
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getTranslatedTitle() {
+        return translatedTitle;
+    }
+
+    public void setTranslatedTitle(String translatedTitle) {
+        this.translatedTitle = translatedTitle;
     }
 }
