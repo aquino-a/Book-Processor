@@ -6,10 +6,11 @@ package com.aquino.webParser.chatgpt;
 
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Category;
+
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -135,36 +136,43 @@ public class ChatGptServiceImpl implements ChatGptService {
     }
 
     private Book setFromChatGpt(Book book) {
-        Stream<Category> secondLayerCategories = this.categories
-        .stream()
-        .flatMap(c -> c.getSubCategories().stream());
-        
-        var secondLayerCombined = combineCategories(secondLayerCategories);
+        List<Category> secondLayerCategories = this.categories
+            .stream()
+            .flatMap(c -> c.getSubCategories().stream())
+            .collect(Collectors.toList());
+
+        var secondLayerCombined = combineCategories(secondLayerCategories.stream());
         var secondCategoryCode = getCategoryResponse(book, secondLayerCombined);
         if (secondCategoryCode == null) {
             return book;
         }
 
-        book.setCategory2(secondCategoryCode);
+        var secondCategory = secondLayerCategories.stream()
+            .filter(c -> c.getCode().equals(secondCategoryCode))
+            .findFirst()
+            .get();
+        book.setCategory2(String.format(CATEGORY_FORMAT, secondCategoryCode, secondCategory.getName()));
 
         var firstCategory = this.categories.stream()
             .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(secondCategoryCode)))
             .findFirst()
             .get();
-        book.setCategory(firstCategory.getCode());
+        book.setCategory(String.format(CATEGORY_FORMAT, firstCategory.getCode(), firstCategory.getName()));
 
-        Stream<Category> thirdLayerCategories = firstCategory
+        List<Category> thirdLayerCategories = secondCategory
             .getSubCategories()
             .stream()
-            .filter(c -> c.getCode().equals(secondCategoryCode))
-            .findFirst()
-            .get()
-            .getSubCategories()
-            .stream();
-        var thirdLayerCombined = combineCategories(thirdLayerCategories);
+            .collect(Collectors.toList());
+        var thirdLayerCombined = combineCategories(thirdLayerCategories.stream());
 
         var thirdCategoryCode = getCategoryResponse(book, thirdLayerCombined);
-        book.setCategory3(thirdCategoryCode);
+        var thirdCategory = thirdLayerCategories
+            .stream()
+            .filter(c -> c.getCode().equals(thirdCategoryCode))
+            .findFirst()
+            .get();
+
+        book.setCategory3(String.format(CATEGORY_FORMAT, thirdCategoryCode, thirdCategory.getName()));
 
         return book;
     }
