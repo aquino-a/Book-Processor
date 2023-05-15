@@ -125,7 +125,12 @@ public class ChatGptServiceImpl implements ChatGptService {
             return book;
         }
 
-        return setFromChatGpt(book);
+        setFromChatGpt(book);
+
+        var combinedCodes = String.join(",", book.getCategory(), book.getCategory2(), book.getCategory3());
+        summaryRepository.saveCategory(String.valueOf(book.getIsbn()), combinedCodes);
+
+        return book;
     }
 
     private Book setFromChatGpt(Book book) {
@@ -160,9 +165,8 @@ public class ChatGptServiceImpl implements ChatGptService {
 
         var thirdCategoryCode = getCategoryResponse(book, thirdLayerCombined);
         book.setCategory3(thirdCategoryCode);
-        
-        // TODO Auto-generated method stub
-        return null;
+
+        return book;
     }
 
     private String getCategoryResponse(Book book, String combinedCategories) {

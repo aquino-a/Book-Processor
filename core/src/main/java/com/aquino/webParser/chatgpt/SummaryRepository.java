@@ -24,4 +24,6 @@ public interface SummaryRepository {
      * @return
      */
     public String getCategories(String isbn);
+
+    public void saveCategory(String isbn, String combinedCodes);
 }
