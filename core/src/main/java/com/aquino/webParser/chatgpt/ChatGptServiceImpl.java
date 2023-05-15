@@ -5,6 +5,11 @@
 package com.aquino.webParser.chatgpt;
 
 import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.Category;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,10 +28,13 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\((\\d+)\\)");
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
     private final ObjectMapper objectMapper;
+
+    private List<Category> categories;
 
     /**
      * Interfaces with chat GPT.
@@ -97,7 +105,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     public Book setCategory(Book book) {
         if (book == null || StringUtils.isBlank(book.getDescription())) {
             LOGGER.log(Level.ERROR, "null book or null description");
-            return null;
+            return book;
         }
 
         var isbn = String.valueOf(book.getIsbn());
@@ -112,10 +120,66 @@ public class ChatGptServiceImpl implements ChatGptService {
             return book;
         }
 
-        
+        if (this.categories == null || this.categories.size() == 0) {
+            LOGGER.log(Level.ERROR, "no categories set");
+            return book;
+        }
 
+        return setFromChatGpt(book);
+    }
+
+    private Book setFromChatGpt(Book book) {
+        Stream<Category> secondLayerCategories = this.categories
+        .stream()
+        .flatMap(c -> c.getSubCategories().stream());
+        
+        var secondLayerCombined = combineCategories(secondLayerCategories);
+        var secondCategoryCode = getCategoryResponse(book, secondLayerCombined);
+        if (secondCategoryCode == null) {
+            return book;
+        }
+
+        book.setCategory2(secondCategoryCode);
+
+        var firstCategory = this.categories.stream()
+            .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(c.getCode())))
+            .findFirst()
+            .get();
+        book.setCategory(firstCategory.getCode());
+
+        Stream<Category> thirdLayerCategories = firstCategory
+            .getSubCategories()
+            .stream()
+            .flatMap(c -> c.getSubCategories().stream())
+            .filter(c -> c.getCode().equals(secondCategoryCode))
+            .findFirst()
+            .get()
+            .getSubCategories()
+            .stream();
+        var thirdLayerCombined = combineCategories(thirdLayerCategories);
+
+        var thirdCategoryCode = getCategoryResponse(book, thirdLayerCombined);
+        book.setCategory3(thirdCategoryCode);
+        
         // TODO Auto-generated method stub
         return null;
+    }
+
+    private String getCategoryResponse(Book book, String combinedCategories) {
+        var content = String.format(CATEGORY_PROMPT_FORMAT, combinedCategories, book.getDescription());
+        var matcher = NUMBER_PATTERN.matcher(content);
+        if (!matcher.find()) {
+            return null;
+        }
+
+        return matcher.group(1);
+    }
+
+    private String combineCategories(Stream<Category> categories) {
+        return categories
+            .map(c -> String.format("%s (%s)", c.getName(), c.getCode()))
+            .reduce((x, y) -> String.format("%s, %s", x, y))
+            .get();
     }
 
     private String getChatGptResponse(String textContent) {
@@ -184,5 +248,13 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private String getSummaryContent(String descriptionText) {
         return String.format(SUMMARY_PROMPT_FORMAT, descriptionText);
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }
