@@ -22,6 +22,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
+    private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
