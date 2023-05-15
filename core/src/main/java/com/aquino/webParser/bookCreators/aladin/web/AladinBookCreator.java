@@ -337,6 +337,7 @@ public class AladinBookCreator implements BookCreator {
         bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
         book.setTranslatedTitle(chatGptService.getTitle(book));
+        chatGptService.setCategory(book);
 //        if (book.getOclc() < 1) {
 //            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
 //        }
