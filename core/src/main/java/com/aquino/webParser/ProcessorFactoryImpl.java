@@ -19,10 +19,10 @@ import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
@@ -46,7 +46,7 @@ public class ProcessorFactoryImpl {
         {"author2", 13},
         {"publisher", 16}
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (int) data[1]));
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = createMapper();
 
     private final HashMap<BookCreatorType, BookCreator> bookCreatorHashMap = new HashMap<>();
 
@@ -137,7 +137,10 @@ public class ProcessorFactoryImpl {
             .getResourceAsStream("config.properties"));
         aladinApiKey = prop.getProperty("aladin.api.key");
         openaiApiKey = prop.getProperty("openai.api.key");
-        categories = OBJECT_MAPPER.readValue(new File("categories.json"), new TypeReference<List<Category>>(){});
+        try(var stream = ProcessorFactoryImpl.class.getClassLoader()
+                .getResourceAsStream("categories.json")) {
+            categories = OBJECT_MAPPER.readValue(stream, new TypeReference<List<Category>>(){});
+        }
     }
 
     public Map<String, Integer> GetExcelMap() {
@@ -173,5 +176,12 @@ public class ProcessorFactoryImpl {
             }
         }
         return koreanLastNames;
+    }
+
+    private static ObjectMapper createMapper() {
+        var mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+
+        return mapper;
     }
 }
