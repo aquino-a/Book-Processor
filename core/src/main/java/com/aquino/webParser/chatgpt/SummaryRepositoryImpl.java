@@ -54,7 +54,7 @@ public class SummaryRepositoryImpl implements SummaryRepository {
     }
 
     @Override
-    public String getCategories(String isbn) {
+    public String getCategory(String isbn) {
         return getFromDatabase(isbn, "CATEGORY", new HashMap<>());
     }
 

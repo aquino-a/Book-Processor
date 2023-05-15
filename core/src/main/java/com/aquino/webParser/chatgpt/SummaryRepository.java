@@ -23,7 +23,7 @@ public interface SummaryRepository {
      * @param isbn
      * @return
      */
-    public String getCategories(String isbn);
+    public String getCategory(String isbn);
 
     public void saveCategory(String isbn, String combinedCodes);
 }
