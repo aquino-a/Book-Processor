@@ -37,6 +37,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private final ObjectMapper objectMapper;
 
     private List<Category> categories;
+    private List<Category> layer2Categories;
 
     /**
      * Interfaces with chat GPT.
@@ -136,11 +137,6 @@ public class ChatGptServiceImpl implements ChatGptService {
     }
 
     private Book setFromChatGpt(Book book) {
-        List<Category> layer2Categories = this.categories
-            .stream()
-            .flatMap(c -> c.getSubCategories().stream())
-            .collect(Collectors.toList());
-
         var layer2Combined = combineCategories(layer2Categories.stream());
         var category2Code = getCategoryResponse(book, layer2Combined);
         if (category2Code == null) {
@@ -269,5 +265,9 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
+        this.layer2Categories = categories
+        .stream()
+        .flatMap(c -> c.getSubCategories().stream())
+        .collect(Collectors.toList());
     }
 }
