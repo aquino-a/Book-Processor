@@ -93,6 +93,31 @@ public class ChatGptServiceImpl implements ChatGptService {
         return title;
     }
 
+    @Override
+    public Book setCategory(Book book) {
+        if (book == null || StringUtils.isBlank(book.getDescription())) {
+            LOGGER.log(Level.ERROR, "null book or null description");
+            return null;
+        }
+
+        var isbn = String.valueOf(book.getIsbn());
+        var categories = summaryRepository.getCategories(isbn);
+        if (categories != null) {
+            LOGGER.log(Level.INFO, String.format("Book(%s) found in repository.", isbn));
+            var split = StringUtils.split(categories, ',');
+            book.setCategory(split[0]);
+            book.setCategory2(split[1]);
+            book.setCategory3(split[2]);
+
+            return book;
+        }
+
+        
+
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     private String getChatGptResponse(String textContent) {
         var responseJson = requestSummary(textContent);
         if (responseJson == null || StringUtils.isBlank(responseJson)) {
