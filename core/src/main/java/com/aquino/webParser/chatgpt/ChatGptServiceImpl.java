@@ -147,7 +147,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         book.setCategory2(secondCategoryCode);
 
         var firstCategory = this.categories.stream()
-            .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(c.getCode())))
+            .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(secondCategoryCode)))
             .findFirst()
             .get();
         book.setCategory(firstCategory.getCode());
@@ -155,7 +155,6 @@ public class ChatGptServiceImpl implements ChatGptService {
         Stream<Category> thirdLayerCategories = firstCategory
             .getSubCategories()
             .stream()
-            .flatMap(c -> c.getSubCategories().stream())
             .filter(c -> c.getCode().equals(secondCategoryCode))
             .findFirst()
             .get()
@@ -171,7 +170,8 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private String getCategoryResponse(Book book, String combinedCategories) {
         var content = String.format(CATEGORY_PROMPT_FORMAT, combinedCategories, book.getDescription());
-        var matcher = NUMBER_PATTERN.matcher(content);
+        var response = getChatGptResponse(content);
+        var matcher = NUMBER_PATTERN.matcher(response);
         if (!matcher.find()) {
             return null;
         }
