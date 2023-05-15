@@ -29,6 +29,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\((\\d+)\\)");
+    private static final String CATEGORY_FORMAT = "%s - %s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
