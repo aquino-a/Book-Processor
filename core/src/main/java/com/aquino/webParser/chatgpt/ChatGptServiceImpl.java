@@ -29,7 +29,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\((\\d+)\\)");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
     private static final String CATEGORY_FORMAT = "%s - %s";
 
     private final SummaryRepository summaryRepository;
@@ -178,6 +178,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         var response = getChatGptResponse(content);
         var matcher = NUMBER_PATTERN.matcher(response);
         if (!matcher.find()) {
+            LOGGER.log(Level.ERROR, String.format("no category code found! [%s]", response));
             return null;
         }
 
