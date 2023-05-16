@@ -131,7 +131,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         setFromChatGpt(book);
 
         var combinedCodes = String.join(",", book.getCategory(), book.getCategory2(), book.getCategory3());
-        summaryRepository.saveCategory(String.valueOf(book.getIsbn()), combinedCodes);
+        summaryRepository.saveCategory(isbn, combinedCodes);
 
         return book;
     }
