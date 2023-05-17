@@ -39,4 +39,17 @@ public class SummaryRepositoryImplTest {
 
         assertEquals("result must match", title, result);
     }
+
+    @Test
+    public void testCategorySave() throws IOException {
+        var path = "./test";
+        var sr = new SummaryRepositoryImpl(path);
+
+        var isbn = "1234";
+        var category = "hehe";
+        sr.saveCategory(isbn, category);
+        var result = sr.getCategory(isbn);
+
+        assertEquals("result must match", category, result);
+    }
 }

@@ -16,4 +16,14 @@ public interface SummaryRepository {
     public String getTitle(String isbn);
 
     public void saveTitle(String isbn, String title);
+
+    /**
+     * Gets the 3 categories joined by a ',' based on isbn.
+     * 
+     * @param isbn
+     * @return
+     */
+    public String getCategory(String isbn);
+
+    public void saveCategory(String isbn, String combinedCodes);
 }

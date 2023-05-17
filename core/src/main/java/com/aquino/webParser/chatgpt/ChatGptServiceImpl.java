@@ -5,6 +5,12 @@
 package com.aquino.webParser.chatgpt;
 
 import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.Category;
+
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +28,16 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
+    private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
+    private static final String CATEGORY_FORMAT = "%s - %s";
 
     private final SummaryRepository summaryRepository;
     private final String authorization;
     private final ObjectMapper objectMapper;
+
+    private List<Category> categories;
+    private List<Category> layer2Categories;
 
     /**
      * Interfaces with chat GPT.
@@ -90,6 +102,94 @@ public class ChatGptServiceImpl implements ChatGptService {
         }
 
         return title;
+    }
+
+    @Override
+    public Book setCategory(Book book) {
+        if (book == null || StringUtils.isBlank(book.getDescription())) {
+            LOGGER.log(Level.ERROR, "null book or null description");
+            return book;
+        }
+
+        var isbn = String.valueOf(book.getIsbn());
+        var categories = summaryRepository.getCategory(isbn);
+        if (categories != null) {
+            LOGGER.log(Level.INFO, String.format("Book(%s) found in repository.", isbn));
+            var split = StringUtils.split(categories, ',');
+            book.setCategory(split[0]);
+            book.setCategory2(split[1]);
+            book.setCategory3(split[2]);
+
+            return book;
+        }
+
+        if (this.categories == null || this.categories.size() == 0) {
+            LOGGER.log(Level.ERROR, "no categories set");
+            return book;
+        }
+
+        setFromChatGpt(book);
+
+        var combinedCodes = String.join(",", book.getCategory(), book.getCategory2(), book.getCategory3());
+        summaryRepository.saveCategory(isbn, combinedCodes);
+
+        return book;
+    }
+
+    private Book setFromChatGpt(Book book) {
+        var layer2Combined = combineCategories(layer2Categories.stream());
+        var category2Code = getCategoryResponse(book, layer2Combined);
+        if (category2Code == null) {
+            return book;
+        }
+
+        var category2 = layer2Categories.stream()
+            .filter(c -> c.getCode().equals(category2Code))
+            .findFirst()
+            .get();
+        book.setCategory2(String.format(CATEGORY_FORMAT, category2Code, category2.getName()));
+
+        var firstCategory = this.categories.stream()
+            .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(category2Code)))
+            .findFirst()
+            .get();
+        book.setCategory(String.format(CATEGORY_FORMAT, firstCategory.getCode(), firstCategory.getName()));
+
+        List<Category> layer3Categories = category2
+            .getSubCategories()
+            .stream()
+            .collect(Collectors.toList());
+        var layer3Combined = combineCategories(layer3Categories.stream());
+
+        var category3Code = getCategoryResponse(book, layer3Combined);
+        var category3 = layer3Categories
+            .stream()
+            .filter(c -> c.getCode().equals(category3Code))
+            .findFirst()
+            .get();
+
+        book.setCategory3(String.format(CATEGORY_FORMAT, category3Code, category3.getName()));
+
+        return book;
+    }
+
+    private String getCategoryResponse(Book book, String combinedCategories) {
+        var content = String.format(CATEGORY_PROMPT_FORMAT, combinedCategories, book.getDescription());
+        var response = getChatGptResponse(content);
+        var matcher = NUMBER_PATTERN.matcher(response);
+        if (!matcher.find()) {
+            LOGGER.log(Level.ERROR, String.format("no category code found! [%s]", response));
+            return null;
+        }
+
+        return matcher.group(1);
+    }
+
+    private String combineCategories(Stream<Category> categories) {
+        return categories
+            .map(c -> String.format("%s (%s)", c.getName(), c.getCode()))
+            .reduce((x, y) -> String.format("%s, %s", x, y))
+            .get();
     }
 
     private String getChatGptResponse(String textContent) {
@@ -158,5 +258,17 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private String getSummaryContent(String descriptionText) {
         return String.format(SUMMARY_PROMPT_FORMAT, descriptionText);
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+        this.layer2Categories = categories
+        .stream()
+        .flatMap(c -> c.getSubCategories().stream())
+        .collect(Collectors.toList());
     }
 }

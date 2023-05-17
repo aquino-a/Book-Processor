@@ -24,4 +24,13 @@ public interface ChatGptService {
      * @return translated title
      */
     public String getTitle(Book book);
+
+
+    /**
+     * Sets the 3 categories of the book based on the description.
+     * 
+     * @param book
+     * @return the given book with the categories added.
+     */
+    public Book setCategory(Book book);
 }

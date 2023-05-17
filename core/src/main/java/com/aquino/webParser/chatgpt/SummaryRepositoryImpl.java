@@ -54,6 +54,11 @@ public class SummaryRepositoryImpl implements SummaryRepository {
     }
 
     @Override
+    public String getCategory(String isbn) {
+        return getFromDatabase(isbn, "CATEGORY", new HashMap<>());
+    }
+
+    @Override
     public void save(String isbn, String summary) {
         save(isbn, summary, "SUMMARY");
     }
@@ -61,6 +66,11 @@ public class SummaryRepositoryImpl implements SummaryRepository {
     @Override
     public void saveTitle(String isbn, String title) {
         save(isbn, title, "TITLE");
+    }
+
+    @Override
+    public void saveCategory(String isbn, String combinedCodes) {
+        save(isbn, combinedCodes, "CATEGORY");
     }
 
     private void save(String isbn, String value, String column) {
@@ -131,7 +141,7 @@ public class SummaryRepositoryImpl implements SummaryRepository {
             if (!rs.next()) {
                 // Create table if it doesn't exist
                 stmt.executeUpdate(
-                        "CREATE TABLE SUMMARY (ISBN VARCHAR2(30), TITLE VARCHAR2(300), SUMMARY VARCHAR2(4000), PRIMARY KEY (ISBN))");
+                        "CREATE TABLE SUMMARY (ISBN VARCHAR2(30), TITLE VARCHAR2(300), CATEGORY VARCHAR2(400), SUMMARY VARCHAR2(4000), PRIMARY KEY (ISBN))");
                 LOGGER.log(Level.INFO, "Summary table created successfully.");
             } else {
                 LOGGER.log(Level.INFO, "Summary table already exists.");

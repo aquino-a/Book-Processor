@@ -14,9 +14,12 @@ import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
 import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
+import com.aquino.webParser.model.Category;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -25,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -42,6 +46,7 @@ public class ProcessorFactoryImpl {
         {"author2", 13},
         {"publisher", 16}
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (int) data[1]));
+    private static final ObjectMapper OBJECT_MAPPER = createMapper();
 
     private final HashMap<BookCreatorType, BookCreator> bookCreatorHashMap = new HashMap<>();
 
@@ -53,6 +58,7 @@ public class ProcessorFactoryImpl {
     private OclcService oclcService;
     private String aladinApiKey;
     private String openaiApiKey;
+    private List<Category> categories;
 
 
     public BookWindowService CreateWindowService() {
@@ -94,10 +100,13 @@ public class ProcessorFactoryImpl {
     }
     
     public ChatGptService createChatGptService() throws IOException{
-        return new ChatGptServiceImpl(
-                new ObjectMapper(), 
+        var chatGptService = new ChatGptServiceImpl(
+                OBJECT_MAPPER, 
                 getOpenAiApiKey(),
                 createSummaryRepository());
+        chatGptService.setCategories(categories);
+
+        return chatGptService;
     }
 
     private SummaryRepository createSummaryRepository() {
@@ -116,12 +125,22 @@ public class ProcessorFactoryImpl {
         return openaiApiKey;
     }
 
+    public List<Category> getCategories() throws IOException {
+        if (categories == null)
+            loadProperties();
+        return categories;
+    }
+
     private void loadProperties() throws IOException {
         Properties prop = new Properties();
         prop.load(ProcessorFactoryImpl.class.getClassLoader()
             .getResourceAsStream("config.properties"));
         aladinApiKey = prop.getProperty("aladin.api.key");
         openaiApiKey = prop.getProperty("openai.api.key");
+        try(var stream = ProcessorFactoryImpl.class.getClassLoader()
+                .getResourceAsStream("categories.json")) {
+            categories = OBJECT_MAPPER.readValue(stream, new TypeReference<List<Category>>(){});
+        }
     }
 
     public Map<String, Integer> GetExcelMap() {
@@ -157,5 +176,12 @@ public class ProcessorFactoryImpl {
             }
         }
         return koreanLastNames;
+    }
+
+    private static ObjectMapper createMapper() {
+        var mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+
+        return mapper;
     }
 }

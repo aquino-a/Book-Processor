@@ -8,7 +8,7 @@ public class Book {
     private String title, publishDate, originalPrice, bookSize,
             cover, publishDateFormatted, bookSizeFormatted,
             imageURL, author, englishTitle, translator,
-            publisher, author2, isbnString, description, category, category2, authorOriginal,
+            publisher, author2, isbnString, description, category, category2, category3, authorOriginal,
             locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
             authorBooks, author2Books, publisherBooks, summary, translatedTitle;
     private long isbn, oclc;
@@ -328,6 +328,14 @@ public class Book {
 
     public void setCategory2(String category2) {
         this.category2 = category2;
+    }
+
+    public String getCategory3() {
+        return category3;
+    }
+
+    public void setCategory3(String category3) {
+        this.category3 = category3;
     }
 
     public List<ExtraInfo> getMiscellaneous() {
