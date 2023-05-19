@@ -128,7 +128,12 @@ public class ChatGptServiceImpl implements ChatGptService {
             return book;
         }
 
-        setFromChatGpt(book);
+        try {
+            setFromChatGpt(book);            
+        } catch (Exception e) {
+            LOGGER.error(String.format("Problem setting category from chatgpt. (%s)", isbn), e);
+            return book;
+        }
 
         var combinedCodes = String.join(",", book.getCategory(), book.getCategory2(), book.getCategory3());
         summaryRepository.saveCategory(isbn, combinedCodes);
