@@ -155,6 +155,13 @@ public class ChatGptServiceImpl implements ChatGptService {
             .get();
         book.setCategory(String.format(CATEGORY_FORMAT, firstCategory.getCode(), firstCategory.getName()));
 
+        if (category2.getSubCategories() == null || category2.getSubCategories().isEmpty()) {
+            LOGGER.log(Level.INFO, String.format("Category (%s) doesn't have any sub categories.", category2.getName()));
+            book.setCategory3(StringUtils.EMPTY);
+
+            return book;
+        }
+
         List<Category> layer3Categories = category2
             .getSubCategories()
             .stream()
