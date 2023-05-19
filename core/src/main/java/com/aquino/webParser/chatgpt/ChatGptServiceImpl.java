@@ -115,7 +115,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         var categories = summaryRepository.getCategory(isbn);
         if (categories != null) {
             LOGGER.log(Level.INFO, String.format("Book(%s) found in repository.", isbn));
-            var split = StringUtils.split(categories, ',');
+            var split = StringUtils.splitByWholeSeparatorPreserveAllTokens(categories, ",");
             book.setCategory(split[0]);
             book.setCategory2(split[1]);
             book.setCategory3(split[2]);
