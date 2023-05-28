@@ -4,6 +4,8 @@ import com.aquino.webParser.model.Author;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Publisher;
 import com.aquino.webParser.utilities.Login;
+
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -75,6 +77,10 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void SetAuthor(Book book) {
+        if (StringUtils.isEmpty(book.getAuthor())) {
+            return;
+        }
+
         var parts = findAuthorId(book.getAuthor());
         if (parts.length > 0)
             book.setAuthorId(Integer.parseInt(parts[0]));
@@ -83,6 +89,10 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void SetAuthor2(Book book) {
+        if (StringUtils.isEmpty(book.getAuthor2())) {
+            return;
+        }
+
         var parts = findAuthorId(book.getAuthor2());
         if (parts.length > 0)
             book.setAuthor2Id(Integer.parseInt(parts[0]));
@@ -91,6 +101,10 @@ public class BookWindowServiceImpl implements BookWindowService {
     }
 
     private void SetPublisher(Book book) {
+        if (StringUtils.isEmpty(book.getPublisher())) {
+            return;
+        }
+
         var parts = findPublisherId(book.getPublisher());
         if (parts.length > 0)
             book.setPublisherId(Integer.parseInt(parts[0]));
