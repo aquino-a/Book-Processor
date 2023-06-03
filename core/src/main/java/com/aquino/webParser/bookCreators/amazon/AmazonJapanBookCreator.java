@@ -81,8 +81,9 @@ public class AmazonJapanBookCreator implements BookCreator {
             throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
         }
 
-        var firstSection = doc.getElementsByAttributeValue("data-index", "1")
+        var firstSection = doc.getElementsByAttribute("data-index")
                 .stream()
+                .filter(e -> StringUtils.isNotEmpty(e.attr("data-asin")))
                 .findFirst()
                 .orElseThrow(() -> createLinkNotFound(isbn));
 
