@@ -159,7 +159,7 @@ public class KinoBookCreator implements BookCreator {
             return doc.getElementsByClass("infobox ml10 mt10")
                     .first()
                     .getElementsByTag("li")
-                    .get(4)
+                    .get(3)
                     .getElementsByTag("a")
                     .first()
                     .ownText()
@@ -182,11 +182,13 @@ public class KinoBookCreator implements BookCreator {
     // </p>
     private String findImage(Document doc) {
         try {
-            return doc.getElementsByClass("left_box")
+            var relativeUrl = doc.getElementsByClass("left_box")
                     .first()
                     .getElementsByTag("a")
                     .first()
                     .attr("href");
+            
+            return KINO_URL + relativeUrl.substring(2);
         } catch (Exception e) {
             LOGGER.error("Couldn't get image", e);
             return null;
