@@ -6,6 +6,7 @@ import com.aquino.webParser.model.Book;
 import java.io.IOException;
 import java.util.List;
 
+// isbn, title, author, publisher, picture, page count
 public class KinoBookCreator implements BookCreator {
 
     private static final String KINO_URL = "https://www.kinokuniya.co.jp";

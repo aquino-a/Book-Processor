@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.List;
 
+// publish date, age group, size
 public class HontoBookCreator implements BookCreator {
 
     //dyTitle
