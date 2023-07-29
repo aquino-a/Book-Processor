@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-// isbn, title, category 1, cost
+// isbn, title, category 1, cost, description
 public class HonyaClubBookCreator implements BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();

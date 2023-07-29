@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ public class KinoBookCreator implements BookCreator {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String KINO_URL = "https://www.kinokuniya.co.jp";
     private static final String KINO_ISBN_URL = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
+    private static final Pattern PAGES_PATTERN = Pattern.compile("(?:ページ数)? ?(\\d+) ?p");
 
     private Map<String, String> cookies;
 
@@ -142,6 +144,8 @@ public class KinoBookCreator implements BookCreator {
                 return Map.entry(authorList.get(0), authorList.get(1));
             } else if (authorList.size() > 0) {
                 return Map.entry(authorList.get(0), null);
+            } else {
+                throw new RuntimeException("no author <a> tags.");
             }
 
         } catch (Exception e) {
@@ -151,15 +155,65 @@ public class KinoBookCreator implements BookCreator {
     }
 
     private String findPublisher(Document doc) {
-        return null;
+        try {
+            return doc.getElementsByClass("infobox ml10 mt10")
+                    .first()
+                    .getElementsByTag("li")
+                    .get(4)
+                    .getElementsByTag("a")
+                    .first()
+                    .ownText()
+                    .trim();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't get publisher", e);
+            return null;
+        }
     }
 
+    // <div class="left_box">
+    // <p>
+    // <a href="../images/goods/ar2/web/imgdata2/large/40225/4022518960.jpg"
+    // target="_blank">
+    // <img itemprop="image" onerror="alterImage(this,
+    // '../images/web/nowprint.gif')"
+    // src="../images/goods/ar2/web/imgdata2/40225/4022518960.jpg"
+    // alt="ふるさとに風が吹く―福島からの発信と地域ブランディングの明日" width="195" />
+    // </a>
+    // </p>
     private String findImage(Document doc) {
-        return null;
+        try {
+            return doc.getElementsByClass("left_box")
+                    .first()
+                    .getElementsByTag("a")
+                    .first()
+                    .attr("href");
+        } catch (Exception e) {
+            LOGGER.error("Couldn't get image", e);
+            return null;
+        }
     }
 
+    // <div class="infbox dotted ml10 mt05 pt05">
+    // <ul>
+    // <li>
+    // サイズ 46判／ページ数 272p／高さ 19cm</li>
     private int findPages(Document doc) {
-        return 0;
+        try {
+            var pageLi = doc.getElementsByClass("infbox dotted ml10 mt05 pt05")
+                    .first()
+                    .getElementsByTag("li")
+                    .first();
+            var matcher = PAGES_PATTERN.matcher(pageLi.ownText());
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(1));
+            } else {
+                throw new RuntimeException("page regex didn't match.");
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Couldn't get pages", e);
+            return -1;
+        }
     }
 
     private Document getDoc(String bookPageUrl) throws IOException {
