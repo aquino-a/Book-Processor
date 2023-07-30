@@ -10,7 +10,8 @@ public class Book {
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, category2, category3, authorOriginal,
             locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
-            authorBooks, author2Books, publisherBooks, summary, translatedTitle;
+            authorBooks, author2Books, publisherBooks, summary, translatedTitle, ageGroup;
+
     private long isbn, oclc;
     private boolean titleExists;
 
@@ -372,5 +373,13 @@ public class Book {
 
     public void setTranslatedTitle(String translatedTitle) {
         this.translatedTitle = translatedTitle;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(String ageGroup) {
+        this.ageGroup = ageGroup;
     }
 }
