@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.notNull;
 
 public class HonyaClubBookCreatorIntegrationTest {
 
