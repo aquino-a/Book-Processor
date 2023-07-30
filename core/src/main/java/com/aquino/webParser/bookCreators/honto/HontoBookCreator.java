@@ -28,7 +28,7 @@ public class HontoBookCreator implements BookCreator {
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d+/\\d+/\\d+");
-    private static final Pattern SIZE_PATTERN = Pattern.compile(":([\\d０-９]+) ?(?:×|x) ?([\\d０-９]+)(?:ｃｍ|cm)");
+    private static final Pattern SIZE_PATTERN = Pattern.compile("：([\\d０-９]+) ?(?:×|x) ?([\\d０-９]+)(?:ｃｍ|cm)");
     private static final Predicate<String> AGE_GROUP_PREDICATE = Pattern.compile("(カテゴリ|利用対象)").asPredicate();
     private static final String SIZE_FORMAT = "%s x %s";
     private Map<String, String> cookies;
