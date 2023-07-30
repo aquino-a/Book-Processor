@@ -88,6 +88,16 @@ public class AmazonJapanBookCreator implements BookCreator {
         return new String(chars);
     }
 
+    public static Book setWeight(Book book) {
+        int pages = book.getPages();
+        if (pages > -1) {
+            book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
+        } else {
+            book.setWeight(-1);
+        }
+        return book;
+    }
+    
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
         //data-component-id="8"
@@ -345,16 +355,6 @@ public class AmazonJapanBookCreator implements BookCreator {
         } catch (NumberFormatException e) {
             return -1;
         }
-    }
-
-    private Book setWeight(Book book) {
-        int pages = book.getPages();
-        if (pages > -1) {
-            book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
-        } else {
-            book.setWeight(-1);
-        }
-        return book;
     }
 
     private String parseType(Document doc) {

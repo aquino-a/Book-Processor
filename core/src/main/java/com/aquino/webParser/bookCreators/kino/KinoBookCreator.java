@@ -135,6 +135,7 @@ public class KinoBookCreator implements BookCreator {
         book.setPublisher(findPublisher(doc));
         book.setImageURL(findImage(doc));
         book.setPages(findPages(doc));
+        book = AmazonJapanBookCreator.setWeight(book);
 
         book.setLanguageCode("JAP");
         book.setCurrencyType("Yen");
