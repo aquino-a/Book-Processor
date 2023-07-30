@@ -23,7 +23,7 @@ public class JWPdemo {
         java.awt.EventQueue.invokeLater(() ->
         {
             try {
-                (new JWPUserInterface(processorFactory,processorFactory.CreateBookCreator(BookCreatorType.AladinApi))).createAndShowGUI();
+                (new JWPUserInterface(processorFactory,processorFactory.createBookCreator(BookCreatorType.AladinApi))).createAndShowGUI();
             } catch (IOException e) {
                 e.printStackTrace();
             }

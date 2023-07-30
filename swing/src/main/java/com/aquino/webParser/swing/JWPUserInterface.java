@@ -132,7 +132,7 @@ public class JWPUserInterface extends JPanel {
     });
     private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
         try {
-            changeBookCreator(BookCreatorType.AmazonJapan);
+            changeBookCreator(BookCreatorType.KinoHontoHonya);
             changeDataType(DataType.Isbn);
             language.setText("Japanese");
         }
@@ -187,7 +187,7 @@ public class JWPUserInterface extends JPanel {
                 public void accept(Object t) {
                     checkedLink = (String) t;
                 }
-            }, frame, checkField, processorFactory.CreateBookCreator(BookCreatorType.AladinApi)));
+            }, frame, checkField, processorFactory.createBookCreator(BookCreatorType.AladinApi)));
         
         //timer for state
         timer = new Timer(2000, deleteState);
@@ -382,7 +382,7 @@ public class JWPUserInterface extends JPanel {
             public Void doInBackground() {
                 try {
                     disableActions();
-                    OCLCChecker checker = new OCLCChecker(processorFactory.CreateBookCreator(BookCreatorType.AladinApi));
+                    OCLCChecker checker = new OCLCChecker(processorFactory.createBookCreator(BookCreatorType.AladinApi));
                     checker.type(type);
                     if (oclcProgress == null)
                         oclcProgress = new OclcProgress(frame);
@@ -427,7 +427,7 @@ public class JWPUserInterface extends JPanel {
     }
 
     private void changeBookCreator(BookCreatorType creatorType) throws IOException {
-        bookCreator = processorFactory.CreateBookCreator(creatorType);
+        bookCreator = processorFactory.createBookCreator(creatorType);
         newLineFilter.setBookCreator(bookCreator);
     }
 

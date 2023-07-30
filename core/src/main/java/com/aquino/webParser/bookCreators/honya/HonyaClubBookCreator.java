@@ -12,19 +12,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+// isbn, title, category 1, cost, description
 public class HonyaClubBookCreator implements BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String HONYA_CLUB_URL = "https://www.honyaclub.com";
-    private static final String SEARCH_URL_FORMAT =
-        "https://www.honyaclub.com/shop/goods/search.aspx?cat_p=&search=x&keyw=%s";
+    private static final String SEARCH_URL_FORMAT = "https://www.honyaclub.com/shop/goods/search.aspx?cat_p=&search=x&keyw=%s";
     private static final Pattern PRICE_PATTERN = Pattern.compile("([\\d,]+)円");
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
         Document doc = Connect.connectToURL(String.format(SEARCH_URL_FORMAT, isbn));
-        if(doc == null)
-            throw new IOException(String.format("Search Document wasn't loaded: %s",isbn));
+        if (doc == null)
+            throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
 
         try {
             String bookPageUrl = doc.getElementsByClass("item-img")
@@ -32,7 +32,7 @@ public class HonyaClubBookCreator implements BookCreator {
                     .first().attr("href");
             return createBookFromBookPage(HONYA_CLUB_URL.concat(bookPageUrl));
         } catch (Exception e) {
-            throw new IOException(String.format("Book page not found: %s",isbn));
+            throw new IOException(String.format("Book page not found: %s", isbn));
         }
     }
 
@@ -41,8 +41,8 @@ public class HonyaClubBookCreator implements BookCreator {
         Book book = new Book();
         book.setBookPageUrl(bookPageUrl);
         Document doc = Connect.connectToURL(bookPageUrl);
-        if(doc == null)
-            throw new IOException(String.format("Document wasn't loaded: %s",bookPageUrl));
+        if (doc == null)
+            throw new IOException(String.format("Document wasn't loaded: %s", bookPageUrl));
         return fillInBasicData(book, doc);
     }
 
@@ -55,22 +55,33 @@ public class HonyaClubBookCreator implements BookCreator {
 
     private int parsePrice(Document doc) {
         var priceSection = doc.select("dl.item-price")
-            .first().wholeText();
+                .first().wholeText();
         var priceMatcher = PRICE_PATTERN.matcher(priceSection);
-        if(priceMatcher.find()){
+        if (priceMatcher.find()) {
             return Integer.parseInt(priceMatcher.group(1).strip().replace(",", ""));
         }
         return -1;
     }
 
+    // <div class="navitopicpath_">
+    // <a href="https://www.honyaclub.com/shop/"
+    // class="topicpath_home_">トップページ</a>&nbsp;&gt;&nbsp;
+    // <a href="/shop/c/c00/">本・コミック</a>&nbsp;&gt;&nbsp;
+    // <a href="/shop/c/c0007/">人文</a>&nbsp;&gt;&nbsp;
+    // <a href="/shop/c/c000709/">社会・文化</a>&nbsp;&gt;&nbsp;
+    // <a href="/shop/c/c00070905/">地方文化</a>&nbsp;</div>
     private String parseCategory(Document doc) {
         try {
             return doc.getElementsByClass("navitopicpath_")
-                .first()
-                .wholeText()
-                .strip();
-        }
-        catch (Exception e) {
+                    .first()
+                    .getElementsByTag("a")
+                    .stream()
+                    .skip(2)
+                    .map(e -> e.ownText())
+                    .map(String::strip)
+                    .reduce((a, b) -> String.format("%s > %s", a, b))
+                    .get();
+        } catch (Exception e) {
             LOGGER.error("Problem with honya category");
             LOGGER.error(e.getMessage(), e);
             return StringUtils.EMPTY;

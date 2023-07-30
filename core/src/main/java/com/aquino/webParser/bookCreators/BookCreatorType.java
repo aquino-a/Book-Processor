@@ -1,5 +1,5 @@
 package com.aquino.webParser.bookCreators;
 
 public enum BookCreatorType {
-    AmazonJapan, AladinApi
+    AmazonJapan, AladinApi, KinoHontoHonya
 }

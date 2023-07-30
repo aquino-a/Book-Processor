@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 
 /**
@@ -65,13 +67,13 @@ public class DescriptionWriter {
     }
 
     private String originalTitle(String title) {
-        if (!title.equals(""))
+        if (!StringUtils.isBlank(title))
             return title + "\n";
         return title;
     }
 
     private String originalAuthor(String author) {
-        if (!author.equals(""))
+        if (!StringUtils.isBlank(author))
             return author + "\n";
         return author;
     }

@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class AmazonJapanBookCreator implements BookCreator {
 
     private static final String BOOK_PAGE_PREFIX = "https://www.amazon.co.jp";
@@ -73,6 +74,30 @@ public class AmazonJapanBookCreator implements BookCreator {
         return c.ignoreContentType(true).execute().body().replaceAll("\"", "");
     }
 
+    public static String capitalizeFirstLetter(String text) {
+        if (text == null || text.length() == 0) {
+            return text;
+        }
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isAlphabetic(chars[i])) {
+                chars[i] = Character.toUpperCase(chars[i]);
+                break;
+            }
+        }
+        return new String(chars);
+    }
+
+    public static Book setWeight(Book book) {
+        int pages = book.getPages();
+        if (pages > -1) {
+            book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
+        } else {
+            book.setWeight(-1);
+        }
+        return book;
+    }
+    
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
         //data-component-id="8"
@@ -332,16 +357,6 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
-    private Book setWeight(Book book) {
-        int pages = book.getPages();
-        if (pages > -1) {
-            book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
-        } else {
-            book.setWeight(-1);
-        }
-        return book;
-    }
-
     private String parseType(Document doc) {
         try {
             for (Element e : doc.getElementById("title").getElementsByClass("a-size-medium a-color-secondary a-text-normal")) {
@@ -513,20 +528,6 @@ public class AmazonJapanBookCreator implements BookCreator {
         } catch (IOException e) {
             return "";
         }
-    }
-
-    private String capitalizeFirstLetter(String text) {
-        if (text == null || text.length() == 0) {
-            return text;
-        }
-        char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (Character.isAlphabetic(chars[i])) {
-                chars[i] = Character.toUpperCase(chars[i]);
-                break;
-            }
-        }
-        return new String(chars);
     }
 
     private RuntimeException createLinkNotFound(String isbn) {
