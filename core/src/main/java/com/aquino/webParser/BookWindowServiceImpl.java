@@ -123,7 +123,7 @@ public class BookWindowServiceImpl implements BookWindowService {
 
     @Override
     public String[] findAuthorId(String author) {
-        if (author == null || author.equals("") || author.equals("1494"))
+        if (StringUtils.isBlank(author) || author.equals("1494"))
             return new String[]{"-1", "", ""};
         var elements = retrieveElementAuthorPublisher(makeURLAuthor(author));
         if (elements != null) {

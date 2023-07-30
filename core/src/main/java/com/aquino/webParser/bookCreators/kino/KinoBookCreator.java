@@ -277,7 +277,7 @@ public class KinoBookCreator implements BookCreator {
     }
 
     private String lookupRomanizedTitle(String title) {
-        if (title == null || title.equals("")) {
+        if (StringUtils.isBlank(title)) {
             return title;
         }
 

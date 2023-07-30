@@ -158,7 +158,7 @@ public class ExcelWriter {
     }
 
     private Hyperlink createHyperLink(String imageURL) {
-        if(imageURL == null || imageURL.equals(""))
+        if(StringUtils.isBlank(imageURL))
             return null;
         XSSFHyperlink result = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
         result.setAddress(imageURL);
