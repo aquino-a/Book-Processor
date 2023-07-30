@@ -1,7 +1,14 @@
 package com.aquino.webParser.bookCreators.kino;
 
+import com.aquino.webParser.BookWindowService;
 import com.aquino.webParser.bookCreators.BookCreator;
+import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
+import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
+import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
+import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.model.Book;
+import com.aquino.webParser.model.ExtraInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +32,25 @@ public class KinoBookCreator implements BookCreator {
     private static final String KINO_ISBN_URL = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final Pattern PAGES_PATTERN = Pattern.compile("(?:ページ数)? ?(\\d+) ?p");
 
+    private final BookWindowService bookWindowService;
+    private final ChatGptService chatGptService;
+    private final HonyaClubBookCreator honya;
+    private final HontoBookCreator honto;
+
+    private YahooBookCreator yahoo;
+
     private Map<String, String> cookies;
+
+    public KinoBookCreator(
+            BookWindowService bookWindowService,
+            ChatGptService chatGptService,
+            HontoBookCreator honto,
+            HonyaClubBookCreator honya) {
+        this.bookWindowService = bookWindowService;
+        this.chatGptService = chatGptService;
+        this.honto = honto;
+        this.honya = honya;
+    }
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
@@ -46,7 +71,36 @@ public class KinoBookCreator implements BookCreator {
 
     @Override
     public Book fillInAllDetails(Book book) {
-        throw new UnsupportedOperationException();
+        book.setTitleExists(bookWindowService.doesBookExist(String.valueOf(book.getIsbn())));
+        if (book.isTitleExists()) {
+            // already in bookswindow so it wont be used.
+            return book;
+        }
+
+        bookWindowService.findIds(book);
+        book.setSummary(chatGptService.getSummary(book));
+        book.setTranslatedTitle(chatGptService.getTitle(book));
+        book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
+
+        // 3.5 not accurate
+        // chatGptService.setCategory(book);
+        setHonyaDetails(book);
+        setHontoDetails(book);
+        setYahooLink(book);
+        setAmazonLink(book);
+
+        return book;
+    }
+
+    private void setAmazonLink(Book book) {
+        ExtraInfo ei = new ExtraInfo(
+                48,
+                String.format(
+                        "https://www.amazon.co.jp/s?k=%%22%s%%22&i=stripbooks&ref=nb_sb_noss",
+                        book.getIsbn()),
+                ExtraInfo.Type.HyperLink);
+        ei.setName("Amazon");
+        book.getMiscellaneous().add(ei);
     }
 
     @Override
@@ -81,6 +135,9 @@ public class KinoBookCreator implements BookCreator {
         book.setPublisher(findPublisher(doc));
         book.setImageURL(findImage(doc));
         book.setPages(findPages(doc));
+
+        book.setLanguageCode("JAP");
+        book.setCurrencyType("Yen");
     }
 
     // <input type="hidden" name="GOODS_STK_NO" value="9784022518965" />
@@ -187,7 +244,7 @@ public class KinoBookCreator implements BookCreator {
                     .getElementsByTag("a")
                     .first()
                     .attr("href");
-            
+
             return KINO_URL + relativeUrl.substring(2);
         } catch (Exception e) {
             LOGGER.error("Couldn't get image", e);
@@ -218,6 +275,70 @@ public class KinoBookCreator implements BookCreator {
         }
     }
 
+    private String lookupRomanizedTitle(String title) {
+        if (title == null || title.equals("")) {
+            return title;
+        }
+
+        try {
+            var romanized = AmazonJapanBookCreator.RomanizeJapanese(title);
+
+            return AmazonJapanBookCreator.capitalizeFirstLetter(romanized);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't romanize title", e);
+            return "";
+        }
+    }
+
+    private void setHonyaDetails(Book book) {
+        try {
+            var honyaBook = honya.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            var ei = new ExtraInfo(46, honyaBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Honya");
+            book.getMiscellaneous().add(ei);
+
+            book.setCategory(honyaBook.getCategory());
+            book.setOriginalPriceNumber(honyaBook.getOriginalPriceNumber());
+            book.setDescription(honyaBook.getDescription());
+        } catch (IOException e) {
+            LOGGER.error("Problem setting Honya details.", e);
+            return;
+        }
+    }
+
+    private void setHontoDetails(Book book) {
+        try {
+            Book hontoBook = honto.createBookFromIsbn(String.valueOf(book.getIsbn()));
+
+            ExtraInfo ei = new ExtraInfo(45, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Honto");
+            book.getMiscellaneous().add(ei);
+
+            book.setAgeGroup(hontoBook.getAgeGroup());
+            book.setPublishDateFormatted(hontoBook.getPublishDateFormatted());
+            book.setBookSizeFormatted(hontoBook.getBookSizeFormatted());
+        } catch (IOException e) {
+            LOGGER.error("Problem setting Honto details.", e);
+            return;
+        }
+    }
+
+    private void setYahooLink(Book book) {
+        if (yahoo == null) {
+            return;
+        }
+
+        try {
+            Book yahooBook = yahoo.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            ExtraInfo ei = new ExtraInfo(47, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Yahoo");
+            book.getMiscellaneous().add(ei);
+        } catch (IOException e) {
+            LOGGER.error("Problem setting Yahoo details.", e);
+            return;
+        }
+    }
+
     private Document getDoc(String bookPageUrl) throws IOException {
         if (cookies == null) {
             cookies = getCookies();
@@ -234,5 +355,13 @@ public class KinoBookCreator implements BookCreator {
                 .execute();
 
         return response.cookies();
+    }
+
+    public YahooBookCreator getYahoo() {
+        return yahoo;
+    }
+
+    public void setYahoo(YahooBookCreator yahoo) {
+        this.yahoo = yahoo;
     }
 }
