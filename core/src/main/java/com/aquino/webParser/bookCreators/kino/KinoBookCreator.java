@@ -201,14 +201,14 @@ public class KinoBookCreator implements BookCreator {
             if (authorList.size() > 1) {
                 return Map.entry(authorList.get(0), authorList.get(1));
             } else if (authorList.size() > 0) {
-                return Map.entry(authorList.get(0), null);
+                return Map.entry(authorList.get(0), StringUtils.EMPTY);
             } else {
                 throw new RuntimeException("no author <a> tags.");
             }
 
         } catch (Exception e) {
             LOGGER.error("Couldn't get author", e);
-            return Map.entry(null, null);
+            return Map.entry( StringUtils.EMPTY,  StringUtils.EMPTY);
         }
     }
 
