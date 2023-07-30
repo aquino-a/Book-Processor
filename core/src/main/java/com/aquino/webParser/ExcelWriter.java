@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.common.usermodel.HyperlinkType;
@@ -85,7 +86,7 @@ public class ExcelWriter {
             oclcRow.setCellValue(book.getOclc());
         }
         
-        if(!book.getEnglishTitle().equals(""))
+        if(!StringUtils.isBlank(book.getEnglishTitle()))
             row.createCell(4).setCellValue(book.getEnglishTitle());
         row.createCell(6).setCellValue(book.getRomanizedTitle());
         row.createCell(7).setCellValue(book.getTitle());
@@ -108,7 +109,7 @@ public class ExcelWriter {
         row.createCell(20).setCellValue(book.getCategory3());
         row.createCell(21).setCellValue(book.getVendorName());
         row.createCell(22).setCellValue(book.getLanguageCode());
-        if(!book.getEnglishTitle().equals("")){
+        if(!StringUtils.isBlank(book.getEnglishTitle())){
             row.createCell(24).setCellValue(book.getAuthorOriginal());
         }
         row.createCell(25).setCellValue(book.getPublishDateFormatted());
@@ -117,10 +118,13 @@ public class ExcelWriter {
 //        row.getCell(21).setCellStyle(yellowBackground);
         row.createCell(28).setCellValue(book.getImageURL());
         row.getCell(28).setCellStyle(workbook.createCellStyle());
-        if(!book.getTranslator().equals(""))
+        if(!StringUtils.isBlank(book.getTranslator()))
             row.createCell(29).setCellValue(book.getTranslator());
         row.createCell(30).setHyperlink(createHyperLink(book.getImageURL()));
         row.getCell(30).setCellValue("Image");
+        if(!StringUtils.isBlank(book.getAgeGroup())){
+            row.createCell(31).setCellValue(book.getAgeGroup());
+        }
         row.createCell(32).setCellValue(book.getBookSizeFormatted());
         row.createCell(33).setCellValue(book.getType());
         row.createCell(34).setCellValue(book.getPages());
