@@ -73,6 +73,20 @@ public class AmazonJapanBookCreator implements BookCreator {
         return c.ignoreContentType(true).execute().body().replaceAll("\"", "");
     }
 
+    public static String capitalizeFirstLetter(String text) {
+        if (text == null || text.length() == 0) {
+            return text;
+        }
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isAlphabetic(chars[i])) {
+                chars[i] = Character.toUpperCase(chars[i]);
+                break;
+            }
+        }
+        return new String(chars);
+    }
+
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
         //data-component-id="8"
@@ -513,20 +527,6 @@ public class AmazonJapanBookCreator implements BookCreator {
         } catch (IOException e) {
             return "";
         }
-    }
-
-    private String capitalizeFirstLetter(String text) {
-        if (text == null || text.length() == 0) {
-            return text;
-        }
-        char[] chars = text.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (Character.isAlphabetic(chars[i])) {
-                chars[i] = Character.toUpperCase(chars[i]);
-                break;
-            }
-        }
-        return new String(chars);
     }
 
     private RuntimeException createLinkNotFound(String isbn) {
