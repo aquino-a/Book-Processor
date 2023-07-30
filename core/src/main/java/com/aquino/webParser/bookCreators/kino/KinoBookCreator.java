@@ -76,14 +76,14 @@ public class KinoBookCreator implements BookCreator {
             // already in bookswindow so it wont be used.
             return book;
         }
+        setHonyaDetails(book);
+        setHontoDetails(book);
 
-        bookWindowService.findIds(book);
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         
         // 3.5 not accurate
         // chatGptService.setCategory(book);
-        setHonyaDetails(book);
-        setHontoDetails(book);
+        bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
         book.setTranslatedTitle(chatGptService.getTitle(book));
         
