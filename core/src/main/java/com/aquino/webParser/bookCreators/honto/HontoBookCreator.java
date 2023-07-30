@@ -30,6 +30,7 @@ public class HontoBookCreator implements BookCreator {
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d+/\\d+/\\d+");
     private static final Pattern SIZE_PATTERN = Pattern.compile("：([\\d０-９]+) ?(?:×|x) ?([\\d０-９]+)(?:ｃｍ|cm)");
     private static final Predicate<String> AGE_GROUP_PREDICATE = Pattern.compile("(カテゴリ|利用対象)").asPredicate();
+    private static final Predicate<String> PUBLISHER_PREDICATE = Pattern.compile("(出版社)").asPredicate();
     private static final String SIZE_FORMAT = "%s x %s";
     private Map<String, String> cookies;
 
@@ -85,9 +86,33 @@ public class HontoBookCreator implements BookCreator {
 
     // publish date, age group, size
     private void fillInBasicData(Book book, Document doc) {
+        book.setPublisher(findPublisher(doc));
         book.setPublishDateFormatted(getFormattedPublishDate(doc));
         book.setAgeGroup(findAgeGroup(doc));
         book.setBookSizeFormatted(getFormattedBookSize(doc));
+    }
+
+    private String findPublisher(Document doc) {
+        try {
+            var optionalAgeGroup = doc.getElementsByClass("stItemData")
+                    .first()
+                    .getElementsByTag("li")
+                    .stream()
+                    .filter(e -> PUBLISHER_PREDICATE.test(e.text()))
+                    .map(e -> e.text())
+                    .map(s -> StringUtils.substringAfter(s, "："))
+                    .map(String::strip)
+                    .findFirst();
+                    
+            if (optionalAgeGroup.isEmpty()) {
+                throw new RuntimeException("no publisher found in item data.");
+            } else {
+                return optionalAgeGroup.get();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Couldn't find publisher.", e);
+            return null;
+        }
     }
 
     // <ul class="stItemData">

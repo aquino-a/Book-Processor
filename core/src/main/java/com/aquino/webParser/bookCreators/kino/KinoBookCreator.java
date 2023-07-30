@@ -132,7 +132,8 @@ public class KinoBookCreator implements BookCreator {
         book.setAuthor(authors.getKey());
         book.setAuthor2(authors.getValue());
 
-        book.setPublisher(findPublisher(doc));
+        // avoid because of full width chars
+        // book.setPublisher(findPublisher(doc));
         book.setImageURL(findImage(doc));
         book.setPages(findPages(doc));
         book = AmazonJapanBookCreator.setWeight(book);
@@ -315,6 +316,7 @@ public class KinoBookCreator implements BookCreator {
             ei.setName("Honto");
             book.getMiscellaneous().add(ei);
 
+            book.setPublisher(hontoBook.getPublisher());
             book.setAgeGroup(hontoBook.getAgeGroup());
             book.setPublishDateFormatted(hontoBook.getPublishDateFormatted());
             book.setBookSizeFormatted(hontoBook.getBookSizeFormatted());

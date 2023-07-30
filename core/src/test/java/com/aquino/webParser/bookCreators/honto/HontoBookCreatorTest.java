@@ -52,7 +52,13 @@ public class HontoBookCreatorTest {
         assertThat(book.getBookSizeFormatted(), is(nullValue()));
     }
 
-    
-
-    
+    @Test
+    public void createBookFromIsbnLive4() throws IOException {
+        Book book = bc.createBookFromIsbn("9784040645377");
+        
+        assertThat(book.getPublisher(), is("KADOKAWA"));
+        assertThat(book.getAgeGroup(), is("一般"));
+        assertThat(book.getPublishDateFormatted(), is("05/25/2023"));
+        assertThat(book.getBookSizeFormatted(), is(nullValue()));
+    }
 }
