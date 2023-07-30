@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class AmazonJapanBookCreator implements BookCreator {
 
     private static final String BOOK_PAGE_PREFIX = "https://www.amazon.co.jp";
