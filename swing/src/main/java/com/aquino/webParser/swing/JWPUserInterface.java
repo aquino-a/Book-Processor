@@ -130,16 +130,28 @@ public class JWPUserInterface extends JPanel {
     private final Action deleteState = Handlers.anonymousEventClass("", (event) -> {
         state.setText("");
     });
-    private final Action japaneseAction = Handlers.anonymousEventClass("Japanese", (event) -> {
+    private final Action japaneseKinoAction = Handlers.anonymousEventClass("Japanese - Kino", (event) -> {
         try {
             changeBookCreator(BookCreatorType.KinoHontoHonya);
             changeDataType(DataType.Isbn);
-            language.setText("Japanese");
+            language.setText("Japanese - Kino");
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     });
+
+    private final Action japaneseAmazonAction = Handlers.anonymousEventClass("Japanese - Amazon", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AmazonJapan);
+            changeDataType(DataType.Isbn);
+            language.setText("Japanese - Amazon");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    });
+    
     private final Action koreanAction = Handlers.anonymousEventClass("Korean", (event) -> {
         try {
             changeBookCreator(BookCreatorType.AladinApi);
@@ -206,7 +218,8 @@ public class JWPUserInterface extends JPanel {
         tools.add(new JMenuItem(autoFillTool));
         language = new JMenu("Language");
         language.add(new JMenuItem(koreanAction));
-        language.add(new JMenuItem(japaneseAction));
+        language.add(new JMenuItem(japaneseKinoAction));
+        language.add(new JMenuItem(japaneseAmazonAction));
 
 
         menuBar.add(file);

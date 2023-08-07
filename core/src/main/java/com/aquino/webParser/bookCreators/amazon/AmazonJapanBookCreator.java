@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Deprecated
 public class AmazonJapanBookCreator implements BookCreator {
 
     private static final String BOOK_PAGE_PREFIX = "https://www.amazon.co.jp";
@@ -433,14 +432,14 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         setHonyaDetails(book);
         chatGptService.setCategory(book);
-        SetHontoLink(book);
+        setHontoDetails(book);
         SetYahooLink(book);
         SetWorldCatLink(book);
-        SetKinoLink(book);
+        setKinoLink(book);
         return book;
     }
 
-    private void SetHontoLink(Book book) {
+    private void setHontoDetails(Book book) {
         if (hontoBookCreator == null) {
             return;
         }
@@ -449,6 +448,8 @@ public class AmazonJapanBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(45, hontoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Honto");
             book.getMiscellaneous().add(ei);
+
+            book.setAgeGroup(hontoBook.getAgeGroup());
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -503,7 +504,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
-    private void SetKinoLink(Book book) {
+    private void setKinoLink(Book book) {
         if (kinoBookCreator == null) {
             return;
         }

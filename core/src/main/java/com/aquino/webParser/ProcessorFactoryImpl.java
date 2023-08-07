@@ -57,6 +57,7 @@ public class ProcessorFactoryImpl {
     private Map<String, String> koreanLastNames;
     private BookWindowService bookWindowService;
     private OclcService oclcService;
+    private KinoBookCreator kinoBookCreator;
     private String aladinApiKey;
     private String openaiApiKey;
     private List<Category> categories;
@@ -76,15 +77,23 @@ public class ProcessorFactoryImpl {
                             createChatGptService());
                     break;
                 case KinoHontoHonya:
-                    var japaneseCreator = new KinoBookCreator(
-                            createWindowService(),
-                            createChatGptService(),
-                            new HontoBookCreator(),
-                            new HonyaClubBookCreator());
+                    var japaneseCreator = createKinoBookCreator();
                     japaneseCreator.setYahoo(new YahooBookCreator());
 
                     newCreator = japaneseCreator;
                     break;
+                case AmazonJapan: {
+                    AmazonJapanBookCreator amazonCreator = new AmazonJapanBookCreator(createWindowService(), createOclcService(),
+                            createChatGptService());
+                    amazonCreator.setHontoBookCreator(new HontoBookCreator());
+                    amazonCreator.setHonyaClubBookCreator(new HonyaClubBookCreator());
+                    amazonCreator.setYahooBookCreator(new YahooBookCreator());
+                    amazonCreator.setWorldCatBookCreator(new WorldCatBookCreator());
+                    amazonCreator.setKinoBookCreator(createKinoBookCreator());
+
+                    newCreator = amazonCreator;
+                    break;
+                }
                 default:
                     throw new UnsupportedOperationException(creatorType.toString());
             }
@@ -93,6 +102,18 @@ public class ProcessorFactoryImpl {
         }
 
         return bookCreatorHashMap.get(creatorType);
+    }
+
+    private KinoBookCreator createKinoBookCreator() throws IOException {
+        if (kinoBookCreator == null) {
+            kinoBookCreator = new KinoBookCreator(
+                    createWindowService(),
+                    createChatGptService(),
+                    new HontoBookCreator(),
+                    new HonyaClubBookCreator());
+        }
+
+        return kinoBookCreator;
     }
 
     public OclcService createOclcService() {
