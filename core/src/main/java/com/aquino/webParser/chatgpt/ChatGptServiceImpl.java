@@ -29,6 +29,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
+    private static final String KOREAN_TRANSLATION_PROMPT_FORMAT = "Translate the following Japanese text into Korean while maintaining the original spacing and word count. translation only:\n%s";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
     private static final String CATEGORY_FORMAT = "%s - %s";
 
@@ -76,6 +77,30 @@ public class ChatGptServiceImpl implements ChatGptService {
         }
 
         return summary;
+    }
+
+    @Override
+    public String getKoreanDescription(Book book) {
+        if (book == null || StringUtils.isBlank(book.getDescription())) {
+            LOGGER.log(Level.ERROR, "null book or null description");
+            return null;
+        }
+
+        var isbn = String.valueOf(book.getIsbn());
+        var koreanDescription = summaryRepository.getKoreanDescription(isbn);
+        if (koreanDescription != null) {
+            LOGGER.log(Level.INFO, String.format("Book(%s)'s native summary found in repository.", isbn));
+            return koreanDescription;
+        }
+
+
+        var content = getKoreanDescriptionContent(book.getDescription());
+        koreanDescription = getChatGptResponse(content);
+        if (!StringUtils.isBlank(koreanDescription)) {
+            summaryRepository.saveKoreanDescription(isbn, koreanDescription);
+        }
+
+        return koreanDescription;
     }
 
     @Override
@@ -129,7 +154,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         }
 
         try {
-            setFromChatGpt(book);            
+            setFromChatGpt(book);
         } catch (Exception e) {
             LOGGER.error(String.format("Problem setting category from chatgpt. (%s)", isbn), e);
             return book;
@@ -149,36 +174,37 @@ public class ChatGptServiceImpl implements ChatGptService {
         }
 
         var category2 = layer2Categories.stream()
-            .filter(c -> c.getCode().equals(category2Code))
-            .findFirst()
-            .get();
+                .filter(c -> c.getCode().equals(category2Code))
+                .findFirst()
+                .get();
         book.setCategory2(String.format(CATEGORY_FORMAT, category2Code, category2.getName()));
 
         var firstCategory = this.categories.stream()
-            .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(category2Code)))
-            .findFirst()
-            .get();
+                .filter(c -> c.getSubCategories().stream().anyMatch(c2 -> c2.getCode().equals(category2Code)))
+                .findFirst()
+                .get();
         book.setCategory(String.format(CATEGORY_FORMAT, firstCategory.getCode(), firstCategory.getName()));
 
         if (category2.getSubCategories() == null || category2.getSubCategories().isEmpty()) {
-            LOGGER.log(Level.INFO, String.format("Category (%s) doesn't have any sub categories.", category2.getName()));
+            LOGGER.log(Level.INFO,
+                    String.format("Category (%s) doesn't have any sub categories.", category2.getName()));
             book.setCategory3(StringUtils.EMPTY);
 
             return book;
         }
 
         List<Category> layer3Categories = category2
-            .getSubCategories()
-            .stream()
-            .collect(Collectors.toList());
+                .getSubCategories()
+                .stream()
+                .collect(Collectors.toList());
         var layer3Combined = combineCategories(layer3Categories.stream());
 
         var category3Code = getCategoryResponse(book, layer3Combined);
         var category3 = layer3Categories
-            .stream()
-            .filter(c -> c.getCode().equals(category3Code))
-            .findFirst()
-            .get();
+                .stream()
+                .filter(c -> c.getCode().equals(category3Code))
+                .findFirst()
+                .get();
 
         book.setCategory3(String.format(CATEGORY_FORMAT, category3Code, category3.getName()));
 
@@ -199,9 +225,9 @@ public class ChatGptServiceImpl implements ChatGptService {
 
     private String combineCategories(Stream<Category> categories) {
         return categories
-            .map(c -> String.format("%s (%s)", c.getName(), c.getCode()))
-            .reduce((x, y) -> String.format("%s, %s", x, y))
-            .get();
+                .map(c -> String.format("%s (%s)", c.getName(), c.getCode()))
+                .reduce((x, y) -> String.format("%s, %s", x, y))
+                .get();
     }
 
     private String getChatGptResponse(String textContent) {
@@ -247,6 +273,7 @@ public class ChatGptServiceImpl implements ChatGptService {
                     .ignoreContentType(true)
                     .method(Connection.Method.POST)
                     .requestBody(body)
+                    .timeout(1_000 * 60 * 2)
                     .execute()
                     .body();
         } catch (Exception ex) {
@@ -279,8 +306,12 @@ public class ChatGptServiceImpl implements ChatGptService {
     public void setCategories(List<Category> categories) {
         this.categories = categories;
         this.layer2Categories = categories
-        .stream()
-        .flatMap(c -> c.getSubCategories().stream())
-        .collect(Collectors.toList());
+                .stream()
+                .flatMap(c -> c.getSubCategories().stream())
+                .collect(Collectors.toList());
+    }
+    
+    private String getKoreanDescriptionContent(String description) {
+        return String.format(KOREAN_TRANSLATION_PROMPT_FORMAT, description);
     }
 }

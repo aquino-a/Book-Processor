@@ -19,6 +19,9 @@ public class SavedBook {
     @Column(name = "CATEGORY")
     private String category;
 
+    @Column(name = "KOREAN_DESCRIPTION")
+    private String koreanDescription;
+
     public String getSummary() {
         return summary;
     }
@@ -51,5 +54,11 @@ public class SavedBook {
         this.isbn = isbn;
     }
 
-    
+    public String getKoreanDescription() {
+        return koreanDescription;
+    }
+
+    public void setKoreanDescription(String koreanDescription) {
+        this.koreanDescription = koreanDescription;
+    }
 }
