@@ -19,6 +19,9 @@ public class SavedBook {
     @Column(name = "CATEGORY")
     private String category;
 
+    @Column(name = "NATIVE_SUMMARY")
+    private String nativeSummary;
+
     public String getSummary() {
         return summary;
     }
@@ -51,5 +54,11 @@ public class SavedBook {
         this.isbn = isbn;
     }
 
-    
+    public String getNativeSummary() {
+        return nativeSummary;
+    }
+
+    public void setNativeSummary(String nativeSummary) {
+        this.nativeSummary = nativeSummary;
+    }
 }
