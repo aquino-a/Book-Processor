@@ -29,7 +29,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
-    private static final String NATIVE_SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the following text using the same language:\n%s";
+    private static final String KOREAN_TRANSLATION_PROMPT_FORMAT = "Translate the following Japanese text into Korean while maintaining the original spacing and word count. translation only:\n%s";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
     private static final String CATEGORY_FORMAT = "%s - %s";
 
@@ -94,7 +94,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         }
 
 
-        var content = getNativeSummaryContent(book.getDescription());
+        var content = getKoreanDescriptionContent(book.getDescription());
         nativeSummary = getChatGptResponse(content);
         if (!StringUtils.isBlank(nativeSummary)) {
             summaryRepository.saveKoreanDescription(isbn, nativeSummary);
@@ -310,8 +310,8 @@ public class ChatGptServiceImpl implements ChatGptService {
                 .collect(Collectors.toList());
     }
     
-    private String getNativeSummaryContent(String description) {
-        return String.format(NATIVE_SUMMARY_PROMPT_FORMAT, description);
+    private String getKoreanDescriptionContent(String description) {
+        return String.format(KOREAN_TRANSLATION_PROMPT_FORMAT, description);
     }
 
 }
