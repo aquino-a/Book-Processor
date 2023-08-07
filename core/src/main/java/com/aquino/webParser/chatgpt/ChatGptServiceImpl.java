@@ -273,6 +273,7 @@ public class ChatGptServiceImpl implements ChatGptService {
                     .ignoreContentType(true)
                     .method(Connection.Method.POST)
                     .requestBody(body)
+                    .timeout(1_000 * 60 * 2)
                     .execute()
                     .body();
         } catch (Exception ex) {
