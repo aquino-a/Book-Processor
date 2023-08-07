@@ -17,6 +17,15 @@ public interface ChatGptService {
      */
     public String getSummary(Book book);
 
+
+    /**
+     * Takes text that describes a book and returns a summary of it in the same language.
+     * 
+     * @param book
+     * @return summary in native language.
+     */
+    public String getNativeSummary(Book book);
+
     /**
      * Translates book title into English.
      * 

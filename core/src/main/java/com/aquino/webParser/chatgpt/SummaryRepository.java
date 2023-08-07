@@ -26,4 +26,8 @@ public interface SummaryRepository {
     public String getCategory(String isbn);
 
     public void saveCategory(String isbn, String combinedCodes);
+
+    public String getNativeSummary(String isbn);
+
+    public void saveNativeSummary(String isbn, String nativeSummary);
 }
