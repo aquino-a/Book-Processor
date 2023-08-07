@@ -10,7 +10,7 @@ public class Book {
             imageURL, author, englishTitle, translator,
             publisher, author2, isbnString, description, category, category2, category3, authorOriginal,
             locationUrl, kIsbn, bookPageUrl, languageCode, currencyType, romanizedTitle = "",
-            authorBooks, author2Books, publisherBooks, summary, translatedTitle, ageGroup;
+            authorBooks, author2Books, publisherBooks, summary, translatedTitle, ageGroup, koreanDescription;
 
     private long isbn, oclc;
     private boolean titleExists;
@@ -381,5 +381,13 @@ public class Book {
 
     public void setAgeGroup(String ageGroup) {
         this.ageGroup = ageGroup;
+    }
+    
+    public String getKoreanDescription() {
+        return koreanDescription;
+    }
+
+    public void setKoreanDescription(String koreanDescription) {
+        this.koreanDescription = koreanDescription;
     }
 }
