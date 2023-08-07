@@ -74,6 +74,18 @@ public class SummaryRepositoryImpl implements SummaryRepository {
         save(isbn, combinedCodes, "CATEGORY");
     }
 
+    @Override
+    public String getKoreanDescription(String isbn) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getKoreanDescription'");
+    }
+
+    @Override
+    public void saveKoreanDescription(String isbn, String koreanDescription) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveKoreanDescription'");
+    }
+    
     private void save(String isbn, String value, String column) {
         Connection conn = getConnection();
         var updateStatement = String.format("UPDATE SUMMARY set %s = ? WHERE ISBN = ?", column);
