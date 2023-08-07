@@ -86,6 +86,7 @@ public class KinoBookCreator implements BookCreator {
         bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
         book.setTranslatedTitle(chatGptService.getTitle(book));
+        book.setKoreanDescription(chatGptService.getKoreanDescription(book));
         
         setYahooLink(book);
         setAmazonLink(book);

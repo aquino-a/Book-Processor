@@ -32,6 +32,7 @@ public class DescriptionWriter {
             bookDescriptionBuilder.appendln(originalTitle(book.getEnglishTitle()));
             bookDescriptionBuilder.appendln(originalAuthor(book.getAuthorOriginal()));
             bookDescriptionBuilder.appendln(book.getDescription());
+            bookDescriptionBuilder.appendln(book.getKoreanDescription());
             bookDescriptionBuilder.appendln(book.getSummary());
             bookDescriptionBuilder.appendln(book.getTranslator());
             bookDescriptionBuilder.appendNewLine();

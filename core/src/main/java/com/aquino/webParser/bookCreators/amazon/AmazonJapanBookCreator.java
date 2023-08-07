@@ -432,6 +432,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         setHonyaDetails(book);
         chatGptService.setCategory(book);
+        book.setKoreanDescription(chatGptService.getKoreanDescription(book));
         setHontoDetails(book);
         SetYahooLink(book);
         SetWorldCatLink(book);
