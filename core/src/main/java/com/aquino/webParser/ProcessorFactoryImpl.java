@@ -12,10 +12,12 @@ import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
+import com.aquino.webParser.chatgpt.HibernateSummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
 import com.aquino.webParser.model.Category;
 import com.aquino.webParser.model.Language;
+import com.aquino.webParser.model.SavedBook;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,6 +35,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class ProcessorFactoryImpl {
 
@@ -83,7 +89,9 @@ public class ProcessorFactoryImpl {
                     newCreator = japaneseCreator;
                     break;
                 case AmazonJapan: {
-                    AmazonJapanBookCreator amazonCreator = new AmazonJapanBookCreator(createWindowService(), createOclcService(),
+                    AmazonJapanBookCreator amazonCreator = new AmazonJapanBookCreator(
+                            createWindowService(),
+                            createOclcService(),
                             createChatGptService());
                     amazonCreator.setHontoBookCreator(new HontoBookCreator());
                     amazonCreator.setHonyaClubBookCreator(new HonyaClubBookCreator());
@@ -126,10 +134,14 @@ public class ProcessorFactoryImpl {
         var chatGptService = new ChatGptServiceImpl(
                 OBJECT_MAPPER,
                 getOpenAiApiKey(),
-                createSummaryRepository());
+                createHibernateSummaryRepository());
         chatGptService.setCategories(categories);
 
         return chatGptService;
+    }
+
+    private SummaryRepository createHibernateSummaryRepository() {
+        return new HibernateSummaryRepository(createSessionFactory());
     }
 
     private SummaryRepository createSummaryRepository() {
@@ -205,5 +217,24 @@ public class ProcessorFactoryImpl {
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 
         return mapper;
+    }
+
+    private static SessionFactory createSessionFactory() {
+        final var registry = new StandardServiceRegistryBuilder()
+                .configure() // configures settings from hibernate.cfg.xml
+                .build();
+
+        try {
+            var metadataSources = new MetadataSources(registry);
+            metadataSources.addAnnotatedClass(SavedBook.class);
+
+            return metadataSources
+                    .buildMetadata()
+                    .buildSessionFactory();
+        } catch (Exception e) {
+            StandardServiceRegistryBuilder
+                    .destroy(registry);
+            throw e;
+        }
     }
 }

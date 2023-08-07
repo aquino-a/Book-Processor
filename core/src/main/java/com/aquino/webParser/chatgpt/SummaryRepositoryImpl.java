@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author alex
  */
+@Deprecated
 public class SummaryRepositoryImpl implements SummaryRepository {
 
     private static final Logger LOGGER = LogManager.getLogger();
