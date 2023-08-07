@@ -89,20 +89,20 @@ public class HibernateSummaryRepository implements SummaryRepository {
     }
 
     @Override
-    public String getNativeSummary(String isbn) {
+    public String getKoreanDescription(String isbn) {
         var book = getBook(isbn);
         if (book == null) {
             return null;
         }
 
-        return book.getNativeSummary();
+        return book.getKoreanDescription();
     }
 
     @Override
-    public void saveNativeSummary(String isbn, String nativeSummary) {
+    public void saveKoreanDescription(String isbn, String nativeSummary) {
         var book = getBookToSave(isbn);
 
-        book.setNativeSummary(nativeSummary);
+        book.setKoreanDescription(nativeSummary);
         
         var session = getSession();
         session.merge(book);

@@ -27,7 +27,7 @@ public interface SummaryRepository {
 
     public void saveCategory(String isbn, String combinedCodes);
 
-    public String getNativeSummary(String isbn);
+    public String getKoreanDescription(String isbn);
 
-    public void saveNativeSummary(String isbn, String nativeSummary);
+    public void saveKoreanDescription(String isbn, String koreanDescription);
 }

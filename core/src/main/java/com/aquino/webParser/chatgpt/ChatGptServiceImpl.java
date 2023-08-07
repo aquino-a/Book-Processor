@@ -29,7 +29,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
-    private static final String NATIVE_SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text using the same language:\n%s";;
+    private static final String NATIVE_SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the following text using the same language:\n%s";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
     private static final String CATEGORY_FORMAT = "%s - %s";
 
@@ -80,14 +80,14 @@ public class ChatGptServiceImpl implements ChatGptService {
     }
 
     @Override
-    public String getNativeSummary(Book book) {
+    public String getKoreanDescription(Book book) {
         if (book == null || StringUtils.isBlank(book.getDescription())) {
             LOGGER.log(Level.ERROR, "null book or null description");
             return null;
         }
 
         var isbn = String.valueOf(book.getIsbn());
-        var nativeSummary = summaryRepository.getNativeSummary(isbn);
+        var nativeSummary = summaryRepository.getKoreanDescription(isbn);
         if (nativeSummary != null) {
             LOGGER.log(Level.INFO, String.format("Book(%s)'s native summary found in repository.", isbn));
             return nativeSummary;
@@ -97,7 +97,7 @@ public class ChatGptServiceImpl implements ChatGptService {
         var content = getNativeSummaryContent(book.getDescription());
         nativeSummary = getChatGptResponse(content);
         if (!StringUtils.isBlank(nativeSummary)) {
-            summaryRepository.saveNativeSummary(isbn, nativeSummary);
+            summaryRepository.saveKoreanDescription(isbn, nativeSummary);
         }
 
         return nativeSummary;

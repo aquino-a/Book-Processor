@@ -19,12 +19,12 @@ public interface ChatGptService {
 
 
     /**
-     * Takes text that describes a book and returns a summary of it in the same language.
+     * Translate book's description into Korean.
      * 
      * @param book
      * @return summary in native language.
      */
-    public String getNativeSummary(Book book);
+    public String getKoreanDescription(Book book);
 
     /**
      * Translates book title into English.
