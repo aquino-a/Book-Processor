@@ -35,7 +35,6 @@ public class AutoFill extends JFrame {
     private Map<Type, AutoFillStrategy> strategies;
     private JTabbedPane tabPane;
 
-
     public AutoFill(AutoFillService autoFillService) {
         this.autoFillService = autoFillService;
         init();
@@ -120,9 +119,9 @@ public class AutoFill extends JFrame {
 
     private void createStrategies() {
         strategies = Map.of(
-            Type.Author, new AuthorStrategy(autoFillService),
-            Type.Author2, new AuthorStrategy(autoFillService),
-            Type.Publisher, new PublisherStrategy(autoFillService));
+                Type.Author, new AuthorStrategy(autoFillService),
+                Type.Author2, new AuthorStrategy(autoFillService),
+                Type.Publisher, new PublisherStrategy(autoFillService));
 
         currentAutoFillStrategy = strategies.get(Type.Author);
     }
@@ -182,11 +181,11 @@ public class AutoFill extends JFrame {
 
     private Component CreateAuthorTable() {
         var rows = books
-            .stream()
-            .filter(b -> !b.author().isBlank())
-            .filter(b -> b.author().getId() < 1)
-            .map(b -> new Row<>(b, b.author()))
-            .collect(Collectors.toList());
+                .stream()
+                .filter(b -> !b.author().isBlank())
+                .filter(b -> b.author().getId() < 1)
+                .map(b -> new Row<>(b, b.author()))
+                .collect(Collectors.toList());
 
         var strategy = strategies.get(Type.Author);
         strategy.rows(rows);
@@ -203,18 +202,19 @@ public class AutoFill extends JFrame {
 
     private Component CreateAuthor2Table() {
         var rows = books
-            .stream()
-            .filter(b -> b.author2() != null)
-            .filter(b -> !b.author2().isBlank())
-            .filter(b -> !b.author2().getNativeFirstName().equals("1494"))
-            .filter(b -> b.author2().getId() < 1)
-            .map(b -> new Row<>(b, b.author2()))
-            .collect(Collectors.toList());
+                .stream()
+                .filter(b -> b.author2() != null)
+                .filter(b -> !b.author2().isBlank())
+                .filter(b -> !b.author2().getNativeFirstName().equals("1494"))
+                .filter(b -> b.author2().getId() < 1)
+                .map(b -> new Row<>(b, b.author2()))
+                .collect(Collectors.toList());
 
         var strategy = strategies.get(Type.Author2);
         strategy.rows(rows);
 
         var model = new AuthorTableModel(rows);
+        model.type(Type.Author2);
         var table = CreateTable();
         table.setModel(model);
         AuthorTableModel.setColumn(table);
@@ -226,12 +226,12 @@ public class AutoFill extends JFrame {
 
     private Component CreatePublisherTable() {
         var rows = books
-            .stream()
-            .filter(b -> b.publisher() != null)
-            .filter(b -> !StringUtils.isBlank(b.publisher().getNativeName()))
-            .filter(b -> b.publisher().getId() < 1)
-            .map(b -> new Row<>(b, b.publisher()))
-            .collect(Collectors.toList());
+                .stream()
+                .filter(b -> b.publisher() != null)
+                .filter(b -> !StringUtils.isBlank(b.publisher().getNativeName()))
+                .filter(b -> b.publisher().getId() < 1)
+                .map(b -> new Row<>(b, b.publisher()))
+                .collect(Collectors.toList());
 
         var strategy = strategies.get(Type.Publisher);
         strategy.rows(rows);
@@ -270,9 +270,9 @@ public class AutoFill extends JFrame {
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             workbook = Connect.openExistingWorkbook(file);
             books = autoFillService.readBooks(workbook)
-                .stream()
-                .filter(b -> b.isMissingIds())
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(b -> b.isMissingIds())
+                    .collect(Collectors.toList());
 
             if (books.size() > 0) {
                 this.setTitle(file.getName());
@@ -283,18 +283,18 @@ public class AutoFill extends JFrame {
             } else {
                 closeWorkbook();
                 JOptionPane.showMessageDialog(
-                    this,
-                    "No data to change",
-                    "No data",
-                    JOptionPane.ERROR_MESSAGE);
+                        this,
+                        "No data to change",
+                        "No data",
+                        JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             LOGGER.error("Open failed!", e);
             JOptionPane.showMessageDialog(
-                this,
-                String.format("Open failed: %s", e.getMessage()),
-                "Open Problem.",
-                JOptionPane.ERROR_MESSAGE);
+                    this,
+                    String.format("Open failed: %s", e.getMessage()),
+                    "Open Problem.",
+                    JOptionPane.ERROR_MESSAGE);
         } finally {
             this.setCursor(null);
         }
@@ -311,10 +311,10 @@ public class AutoFill extends JFrame {
         } catch (IllegalArgumentException | NullPointerException | IOException e) {
             LOGGER.error("save failed!", e);
             JOptionPane.showMessageDialog(
-                this,
-                String.format("Save failed: %s", e.getMessage()),
-                "Save Problem.",
-                JOptionPane.ERROR_MESSAGE);
+                    this,
+                    String.format("Save failed: %s", e.getMessage()),
+                    "Save Problem.",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -325,10 +325,10 @@ public class AutoFill extends JFrame {
         } catch (IllegalArgumentException | NullPointerException | IOException e) {
             LOGGER.error("Close failed!", e);
             JOptionPane.showMessageDialog(
-                this,
-                String.format("Close fail: %s", e.getMessage()),
-                "Close Problem.",
-                JOptionPane.ERROR_MESSAGE);
+                    this,
+                    String.format("Close fail: %s", e.getMessage()),
+                    "Close Problem.",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -340,7 +340,7 @@ public class AutoFill extends JFrame {
 
         try {
             var result = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
+                    "Are you sure you want to auto fill?", "Confirm", JOptionPane.OK_CANCEL_OPTION);
             if (result != JOptionPane.OK_OPTION) {
                 return;
             }
@@ -351,10 +351,10 @@ public class AutoFill extends JFrame {
         } catch (IllegalArgumentException | NullPointerException e) {
             LOGGER.error("Autofill failed!", e);
             JOptionPane.showMessageDialog(
-                this,
-                String.format("Auto Fill fail: %s", e.getMessage()),
-                "Auto Fill Problem.",
-                JOptionPane.ERROR_MESSAGE);
+                    this,
+                    String.format("Auto Fill fail: %s", e.getMessage()),
+                    "Auto Fill Problem.",
+                    JOptionPane.ERROR_MESSAGE);
         } finally {
             this.setCursor(null);
         }
@@ -397,10 +397,10 @@ public class AutoFill extends JFrame {
                     Desktop.getDesktop().browse(URI.create(link));
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(
-                        parent,
-                        String.format("Error occured opening link %s !", link),
-                        "Link Problem.",
-                        JOptionPane.ERROR_MESSAGE);
+                            parent,
+                            String.format("Error occured opening link %s !", link),
+                            "Link Problem.",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
