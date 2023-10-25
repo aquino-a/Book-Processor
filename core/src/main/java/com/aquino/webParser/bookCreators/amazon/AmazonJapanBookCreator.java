@@ -36,9 +36,9 @@ import java.util.regex.Pattern;
 
 public class AmazonJapanBookCreator implements BookCreator {
 
+    public static final String SEARCH_URL_FORMAT = "https://www.amazon.co.jp/s?k=%%22%s%%22&i=stripbooks&ref=nb_sb_noss";
     private static final String BOOK_PAGE_PREFIX = "https://www.amazon.co.jp";
     //    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
-    private static final String SEARCH_URL_FORMAT = "https://www.amazon.co.jp/s?k=%%22%s%%22&i=stripbooks&ref=nb_sb_noss";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String BOOK_SIZE_FORMAT = "%.1f x %.1f";
     private static final String TRANSLIT_FORMAT = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
