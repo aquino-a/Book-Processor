@@ -54,16 +54,18 @@ public class ManualAdd extends JFrame {
     }
 
     private void init() {
-        this.setLayout(new BorderLayout());
+        var pane = this.getContentPane();
+        pane.setLayout(new BorderLayout());
         this.setSize(600, 1000);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        rowPanel = new JPanel(new BoxLayout(rowPanel, BoxLayout.Y_AXIS));
+        rowPanel = new JPanel();
+        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.Y_AXIS));
         var pasteTextField = createPasteTextField();
 
-        this.add(pasteTextField, BorderLayout.NORTH);
-        this.add(rowPanel, BorderLayout.CENTER);
+        pane.add(pasteTextField, BorderLayout.NORTH);
+        pane.add(rowPanel, BorderLayout.CENTER);
     }
 
     private JTextArea createPasteTextField() {
