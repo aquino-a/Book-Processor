@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -96,7 +97,7 @@ public class ManualAdd extends JFrame {
         }
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        
+
         var document = sourceTextArea.getDocument();
 
         try {
@@ -105,14 +106,21 @@ public class ManualAdd extends JFrame {
 
             var book = new Book();
             book.setIsbn(Long.parseLong(isbn));
-            
+
             amazonJapanBookCreator.fillInBasicData(book, doc);
             amazonJapanBookCreator.fillInAllDetails(book);
+
+            if (book.isTitleExists()) {
+                JOptionPane.showMessageDialog(this, "Book exists in BooksWindow", "Done", JOptionPane.INFORMATION_MESSAGE);
+
+                return;
+            }
 
             var books = List.of(book);
             writer.writeBooks(books);
             descriptionWriter.writeBooks(books);
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error adding book.", "Done", JOptionPane.ERROR_MESSAGE);
             LOGGER.error("Problem adding book", e);
         } finally {
             this.setCursor(null);
