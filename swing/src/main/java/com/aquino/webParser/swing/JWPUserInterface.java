@@ -261,8 +261,7 @@ public class JWPUserInterface extends JPanel {
         saveAction.setEnabled(false);
         saveAsAction.setEnabled(false);
         addAction.setEnabled(false);
-
-
+        openManualAddAction.setEnabled(false);
     }
 
     private void openAutoFillTool() {
@@ -308,6 +307,7 @@ public class JWPUserInterface extends JPanel {
         openAction.setEnabled(true);
         newAction.setEnabled(true);
         addAction.setEnabled(true);
+        openManualAddAction.setEnabled(true);
     }
 
     private void askSaveFile() throws NullPointerException {
@@ -335,6 +335,7 @@ public class JWPUserInterface extends JPanel {
         openAction.setEnabled(false);
         newAction.setEnabled(false);
         addAction.setEnabled(false);
+        openManualAddAction.setEnabled(false);
     }
 
     private SwingWorker getAddWorker() {
