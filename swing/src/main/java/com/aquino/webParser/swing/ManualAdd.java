@@ -1,6 +1,7 @@
 package com.aquino.webParser.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
@@ -81,7 +83,8 @@ public class ManualAdd extends JFrame {
         panel.add(new JLabel(isbn));
 
         var sourceTextArea = new JTextArea();
-        panel.add(sourceTextArea);
+        var scrollPane = new JScrollPane(sourceTextArea);
+        panel.add(scrollPane);
         panel.add(new JButton(Handlers.anonymousEventClass("Add", (event) -> addBook(isbn, sourceTextArea))));
 
         rowPanel.add(panel);
@@ -91,6 +94,8 @@ public class ManualAdd extends JFrame {
         if (sourceTextArea == null || sourceTextArea.getDocument() == null) {
             return;
         }
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         
         var document = sourceTextArea.getDocument();
 
@@ -109,6 +114,8 @@ public class ManualAdd extends JFrame {
             descriptionWriter.writeBooks(books);
         } catch (Exception e) {
             LOGGER.error("Problem adding book", e);
+        } finally {
+            this.setCursor(null);
         }
     }
 
