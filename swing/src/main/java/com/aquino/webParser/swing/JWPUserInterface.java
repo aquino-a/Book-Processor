@@ -10,6 +10,7 @@ import com.aquino.webParser.ExcelWriter;
 import com.aquino.webParser.ProcessorFactoryImpl;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.bookCreators.BookCreatorType;
+import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
@@ -163,6 +164,22 @@ public class JWPUserInterface extends JPanel {
         }
     });
 
+    private final Action openManualAddAction = Handlers.anonymousEventClass("Manual - AmazonJapan", (event) -> {
+        try {
+            changeBookCreator(BookCreatorType.AmazonJapan);
+            changeDataType(DataType.Isbn);
+            language.setText("Japanese - Manual");
+
+            EventQueue.invokeLater(() -> {
+                var manualAdd = new ManualAdd(writer, desWriter, (AmazonJapanBookCreator) bookCreator);
+                manualAdd.setVisible(true);
+            });
+        }
+        catch (IOException e) {
+            LOGGER.error("Problem opening Amazon Manual Add", e);
+        }
+    });
+
     public JWPUserInterface(ProcessorFactoryImpl processorFactory, BookCreator defaultCreator) throws IOException {
         this.processorFactory = processorFactory;
         this.bookCreator = defaultCreator;
@@ -220,7 +237,7 @@ public class JWPUserInterface extends JPanel {
         language.add(new JMenuItem(koreanAction));
         language.add(new JMenuItem(japaneseKinoAction));
         language.add(new JMenuItem(japaneseAmazonAction));
-
+        language.add(new JMenuItem(openManualAddAction));
 
         menuBar.add(file);
         menuBar.add(tools);
@@ -244,8 +261,7 @@ public class JWPUserInterface extends JPanel {
         saveAction.setEnabled(false);
         saveAsAction.setEnabled(false);
         addAction.setEnabled(false);
-
-
+        openManualAddAction.setEnabled(false);
     }
 
     private void openAutoFillTool() {
@@ -291,6 +307,7 @@ public class JWPUserInterface extends JPanel {
         openAction.setEnabled(true);
         newAction.setEnabled(true);
         addAction.setEnabled(true);
+        openManualAddAction.setEnabled(true);
     }
 
     private void askSaveFile() throws NullPointerException {
@@ -318,6 +335,7 @@ public class JWPUserInterface extends JPanel {
         openAction.setEnabled(false);
         newAction.setEnabled(false);
         addAction.setEnabled(false);
+        openManualAddAction.setEnabled(false);
     }
 
     private SwingWorker getAddWorker() {
