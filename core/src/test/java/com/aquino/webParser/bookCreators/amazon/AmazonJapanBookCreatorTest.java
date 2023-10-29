@@ -2,6 +2,8 @@ package com.aquino.webParser.bookCreators.amazon;
 
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.BookWindowService;
+import com.aquino.webParser.bookCreators.DocumentCreator;
+import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreatorTest;
 import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.oclc.OclcService;
 import org.hamcrest.MatcherAssert;
@@ -20,6 +22,8 @@ import java.net.URISyntaxException;
 
 
 public class AmazonJapanBookCreatorTest {
+
+    private static final DocumentCreator DOCUMENT_CREATOR = new DocumentCreator(AmazonJapanBookCreatorTest.class);
 
     private AmazonJapanBookCreator bc;
     @Mock
@@ -101,5 +105,20 @@ public class AmazonJapanBookCreatorTest {
         assertThat(book.getImageURL(), startsWith("https://m.media-amazon.com/images/I/"));
         assertThat(book.getCategory(), is(not(emptyOrNullString())));
         assertThat(book.getDescription(), is(not(emptyOrNullString())));
+    }
+
+    @Test
+    public void createBookFromHtmlTest1() throws IOException, URISyntaxException {
+        var doc = DOCUMENT_CREATOR.createDocument("little-dog.html");
+
+        var book = new Book();
+        bc.fillInBasicData(book, doc);
+
+        assertEquals("Ingo Blum", book.getAuthor());
+        assertEquals("Independently published", book.getPublisher());
+        assertEquals("03/05/2021", book.getPublishDateFormatted());
+        assertEquals(32, book.getPages());
+        assertEquals("21.6 x 21.6", book.getBookSizeFormatted());
+        assertEquals("PB", book.getType());
     }
 }

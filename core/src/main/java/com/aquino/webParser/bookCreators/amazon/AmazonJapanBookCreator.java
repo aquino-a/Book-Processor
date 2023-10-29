@@ -38,16 +38,20 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     public static final String SEARCH_URL_FORMAT = "https://www.amazon.co.jp/s?k=%%22%s%%22&i=stripbooks&ref=nb_sb_noss";
     private static final String BOOK_PAGE_PREFIX = "https://www.amazon.co.jp";
-    //    private static final String searchUrlFormat = "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
+    // private static final String searchUrlFormat =
+    // "https://www.amazon.co.jp/s?i=stripbooks&rh=p_66%%3A%s&s=relevanceexprank&Adv-Srch-Books-Submit.x=40&Adv-Srch-Books-Submit.y=10&unfiltered=1&ref=sr_adv_b";
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String BOOK_SIZE_FORMAT = "%.1f x %.1f";
     private static final String TRANSLIT_FORMAT = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private static final DateTimeFormatter AMERICAN_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy");
     private static final Pattern IMAGE_URL_SCRIPT_PATTERN = Pattern.compile(
             "'imageGalleryData' : \\[\\{\"mainUrl\":\"(https://m\\.media\\-amazon\\.com/images/I/[A-Za-z0-9%\\-\\+]+\\.jpg)");
     private static final Pattern KEYWORD_PARAMETER_PATTERN = Pattern.compile("keywords=(?:\"|%22)(\\d+)(?:\"|%22)");
+    private static final Pattern PARENTHESES_PATTERN = Pattern.compile("\\(([A-Za-z]+ \\d{1,2}, ?\\d{2,4})\\)");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
 
     private final BookWindowService bookWindowService;
     private final OclcService oclcService;
@@ -69,7 +73,8 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     public static String RomanizeJapanese(String japText) throws IOException {
-        Connection c = Jsoup.connect(String.format(TRANSLIT_FORMAT, URLEncoder.encode(japText, StandardCharsets.UTF_8.toString())));
+        Connection c = Jsoup
+                .connect(String.format(TRANSLIT_FORMAT, URLEncoder.encode(japText, StandardCharsets.UTF_8.toString())));
         return c.ignoreContentType(true).execute().body().replaceAll("\"", "");
     }
 
@@ -96,10 +101,10 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         return book;
     }
-    
+
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
-        //data-component-id="8"
+        // data-component-id="8"
         Document doc = Connect.connectToURL(String.format(SEARCH_URL_FORMAT, isbn));
         if (doc == null) {
             throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
@@ -111,7 +116,9 @@ public class AmazonJapanBookCreator implements BookCreator {
                 .findFirst()
                 .orElseThrow(() -> createLinkNotFound(isbn));
 
-        var link = firstSection.getElementsByClass("a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold")
+        var link = firstSection
+                .getElementsByClass(
+                        "a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style a-text-bold")
                 .stream()
                 .filter(e -> !StringUtils.containsIgnoreCase(e.ownText(), "kindle"))
                 .findFirst()
@@ -155,10 +162,10 @@ public class AmazonJapanBookCreator implements BookCreator {
         return doc.getElementsByClass(linkClass)
                 .stream()
                 .filter(e -> e.wholeText().contains("単行本")
-                || e.wholeText().contains("大型本")
-                || e.wholeText().contains("文庫")
-                || e.wholeText().contains("ペーパーバック")
-                || e.wholeText().contains("新書"))
+                        || e.wholeText().contains("大型本")
+                        || e.wholeText().contains("文庫")
+                        || e.wholeText().contains("ペーパーバック")
+                        || e.wholeText().contains("新書"))
                 .findFirst()
                 .orElse(null);
     }
@@ -174,7 +181,7 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
-    //TODO handle original names
+    // TODO handle original names
     private Book parseAuthorDetails(Book book, Document doc) {
         try {
             Elements es = doc.getElementById("bylineInfo").getElementsByClass("author");
@@ -189,7 +196,7 @@ public class AmazonJapanBookCreator implements BookCreator {
                     } else {
                         book.setTranslator(findContributorName(e));
                     }
-                } else if (contributionType.contains("著")) {
+                } else if (contributionType.contains("著") || contributionType.contains("Author")) {
                     if (authorCount == 0) {
                         authorCount++;
                         book.setAuthor(findContributorName(e));
@@ -212,7 +219,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private void setDefaultAutorSection(Book book) {
-        //TODO MORE REQUIRED???
+        // TODO MORE REQUIRED???
         if (book.getAuthor() == null) {
             book.setAuthor("");
         }
@@ -234,7 +241,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private String findContributorName(Element e) {
-        //TODO better way to find using attribute value containing
+        // TODO better way to find using attribute value containing
         Element element = e.getElementsByClass("a-link-normal contributorNameID").first();
         if (notNullorEmpty(element)) {
             return element.ownText().trim();
@@ -253,7 +260,8 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private int parsePrice(Document doc) {
         try {
-            String priceSource = doc.getElementsByClass("a-size-base a-color-price a-color-price").first().text().trim();
+            String priceSource = doc.getElementsByClass("a-size-base a-color-price a-color-price").first().text()
+                    .trim();
             return NumberFormat.getInstance(Locale.JAPAN).parse(priceSource.replace("￥", "").trim()).intValue();
         } catch (NullPointerException | ParseException e) {
             LOGGER.warn(String.format("Couldn't parse price: %s", e.getMessage()));
@@ -271,13 +279,18 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private Book parseSecondDetailSection(Book book, Document doc) {
-        Elements es = doc.getElementById("detailBullets_feature_div").getElementsByTag("ul").first().getElementsByClass("a-list-item");
+        Elements es = doc.getElementById("detailBullets_feature_div").getElementsByTag("ul").first()
+                .getElementsByClass("a-list-item");
         for (Element e : es) {
             String whole = e.wholeText();
-            if (whole.contains("ページ")) {
+            if (whole.contains("ページ") || whole.contains("pages")) {
                 book.setPages(findPages(e.child(1).ownText()));
-            } else if (whole.contains("出版社")) {
+            } else if (whole.contains("出版社") || whole.contains("Publisher")) {
                 book.setPublisher(findPublisher(e.child(1).ownText().trim()));
+                if (whole.contains("Publisher")) {
+                    // american style publisher
+                    book.setPublishDateFormatted(parseAmericanDate(whole));
+                }
             } else if (whole.contains("発売日")) {
                 book.setPublishDateFormatted(findPublishedDateFormatted(e.child(1).ownText().trim()));
             } else if (whole.contains("梱包サイズ")
@@ -287,6 +300,9 @@ public class AmazonJapanBookCreator implements BookCreator {
                 book.setBookSizeFormatted(findBookSizeFormatted(e.child(1).ownText().trim()));
             } else if (whole.contains("ISBN-13")) {
                 book.setIsbn(findIsbn(e.child(1).ownText().trim()));
+            } else if (whole.contains("Dimensions")) {
+                // american size
+                book.setBookSizeFormatted(findInchBookSize(e.child(1).ownText().trim()));
             }
         }
         return book;
@@ -309,8 +325,14 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private int findPages(String pagesSource) {
         try {
-            return Integer.parseInt(pagesSource.substring(0, pagesSource.indexOf("ページ")));
-        } catch (NumberFormatException e) {
+            var matcher = NUMBER_PATTERN.matcher(pagesSource);
+            if (!matcher.find()) {
+                LOGGER.warn("Did not find pages");
+                return -1;
+            }
+
+            return Integer.parseInt(matcher.group(0));
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -326,7 +348,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     }
 
     private String findPublishedDateFormatted(String dateSource) {
-        //MM/DD/YYYY
+        // MM/DD/YYYY
         try {
             LocalDate date = LocalDate.parse(dateSource, DATE_SOURCE_FORMATTER);
             return date.format(DATE_TARGET_FORMATTER);
@@ -336,8 +358,25 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
     }
 
+    private String parseAmericanDate(String whole) {
+        try {
+            var matcher = PARENTHESES_PATTERN.matcher(whole);
+            if (!matcher.find()) {
+                return null;
+            }
+
+            var dateSource = matcher.group(1);
+            var date = LocalDate.parse(dateSource, AMERICAN_SOURCE_FORMATTER);
+
+            return date.format(DATE_TARGET_FORMATTER);
+        } catch (Exception e) {
+            LOGGER.error(String.format("Couldn't parse american publish date: %s", whole));
+            return null;
+        }
+    }
+
     private String findBookSizeFormatted(String sizeSource) {
-        //28.5 x 20.9 x 1.4 cm
+        // 28.5 x 20.9 x 1.4 cm
         String[] nums = sizeSource.split("[ x cm]");
         double[] arr = Arrays.stream(nums).filter(n -> NumberUtils.isCreatable(n))
                 .map(Double::valueOf)
@@ -345,6 +384,20 @@ public class AmazonJapanBookCreator implements BookCreator {
                 .limit(2)
                 .mapToDouble(Double::doubleValue)
                 .toArray();
+        return String.format(BOOK_SIZE_FORMAT, arr[0], arr[1]).replace(".0", "");
+    }
+
+    private String findInchBookSize(String sizeSource) {
+        // 8.5 x 0.08 x 8.5 inches
+        var nums = sizeSource.split("[ x inches]");
+        double[] arr = Arrays.stream(nums).filter(n -> NumberUtils.isCreatable(n))
+                .map(Double::valueOf)
+                .sorted(Comparator.reverseOrder())
+                .limit(2)
+                .mapToDouble(Double::doubleValue)
+                .map(d -> d * 2.54d)
+                .toArray();
+
         return String.format(BOOK_SIZE_FORMAT, arr[0], arr[1]).replace(".0", "");
     }
 
@@ -358,7 +411,8 @@ public class AmazonJapanBookCreator implements BookCreator {
 
     private String parseType(Document doc) {
         try {
-            for (Element e : doc.getElementById("title").getElementsByClass("a-size-medium a-color-secondary a-text-normal")) {
+            for (Element e : doc.getElementById("title")
+                    .getElementsByClass("a-size-medium a-color-secondary a-text-normal")) {
                 if (e.text().contains("ソフトカバー")) {
                     return "PB";
                 }
@@ -376,6 +430,10 @@ public class AmazonJapanBookCreator implements BookCreator {
             if (ps.wholeText().contains("文庫")) {
                 return "PB";
             }
+            if (ps.wholeText().contains("Paperback")) {
+                return "PB";
+            }
+
             return "";
         } catch (Exception e) {
             LOGGER.warn(String.format("Couldn't no book type found: %s", e.getMessage()));
@@ -421,14 +479,14 @@ public class AmazonJapanBookCreator implements BookCreator {
     public Book fillInAllDetails(Book book) {
         book.setTitleExists(bookWindowService.doesBookExist(String.valueOf(book.getIsbn())));
         if (book.isTitleExists()) {
-            //already in bookswindow so it wont be used.
+            // already in bookswindow so it wont be used.
             return book;
         }
 
         bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
         book.setTranslatedTitle(chatGptService.getTitle(book));
-        //        book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
+        // book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
         setHonyaDetails(book);
         chatGptService.setCategory(book);
@@ -564,8 +622,8 @@ public class AmazonJapanBookCreator implements BookCreator {
         }
         String isbn = String.valueOf(book.getIsbn());
         book.setTitleExists(bookWindowService.doesBookExist(isbn));
-        //todo all oclc is locked down. need to redo this
-        //book.setOclc(oclcService.findOclc(isbn));
+        // todo all oclc is locked down. need to redo this
+        // book.setOclc(oclcService.findOclc(isbn));
         book.setOclc(-1L);
     }
 
