@@ -88,7 +88,7 @@ public class KinoBookCreator implements BookCreator {
         book.setTranslatedTitle(chatGptService.getTitle(book));
         book.setKoreanDescription(chatGptService.getKoreanDescription(book));
         
-        setYahooLink(book);
+        setYahooDetails(book);
         setAmazonLink(book);
 
         return book;
@@ -328,7 +328,7 @@ public class KinoBookCreator implements BookCreator {
         }
     }
 
-    private void setYahooLink(Book book) {
+    private void setYahooDetails(Book book) {
         if (yahoo == null) {
             return;
         }
@@ -338,6 +338,11 @@ public class KinoBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(47, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Yahoo");
             book.getMiscellaneous().add(ei);
+
+            if (book.getAuthorId() == -1) {
+                yahoo.fillInAllDetails(yahooBook);
+                book.setAuthorBooks(yahooBook.getAuthorBooks());
+            }
         } catch (IOException e) {
             LOGGER.error("Problem setting Yahoo details.", e);
             return;
