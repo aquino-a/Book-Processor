@@ -80,15 +80,15 @@ public class KinoBookCreator implements BookCreator {
         setHontoDetails(book);
 
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
-        
+
         // 3.5 not accurate
         // chatGptService.setCategory(book);
         bookWindowService.findIds(book);
         book.setSummary(chatGptService.getSummary(book));
         book.setTranslatedTitle(chatGptService.getTitle(book));
         book.setKoreanDescription(chatGptService.getKoreanDescription(book));
-        
-        setYahooLink(book);
+
+        setYahooDetails(book);
         setAmazonLink(book);
 
         return book;
@@ -211,7 +211,7 @@ public class KinoBookCreator implements BookCreator {
 
         } catch (Exception e) {
             LOGGER.error("Couldn't get author", e);
-            return Map.entry( StringUtils.EMPTY,  StringUtils.EMPTY);
+            return Map.entry(StringUtils.EMPTY, StringUtils.EMPTY);
         }
     }
 
@@ -328,7 +328,7 @@ public class KinoBookCreator implements BookCreator {
         }
     }
 
-    private void setYahooLink(Book book) {
+    private void setYahooDetails(Book book) {
         if (yahoo == null) {
             return;
         }
@@ -338,6 +338,14 @@ public class KinoBookCreator implements BookCreator {
             ExtraInfo ei = new ExtraInfo(47, yahooBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
             ei.setName("Yahoo");
             book.getMiscellaneous().add(ei);
+
+            if (book.getAuthorId() == -1) {
+                yahoo.fillInAllDetails(yahooBook);
+                book.setAuthorBooks(yahooBook.getAuthorBooks());
+                if (yahooBook.getAuthor2Books() != null) {
+                    book.setAuthor2Books(yahooBook.getAuthor2Books());
+                }
+            }
         } catch (IOException e) {
             LOGGER.error("Problem setting Yahoo details.", e);
             return;
