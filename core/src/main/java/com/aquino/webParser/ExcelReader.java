@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -94,7 +93,8 @@ public class ExcelReader {
                     locationMap,
                     "author",
                     (b, id) -> b.setAuthorId(id),
-                    (b, v) -> b.setAuthor(v));
+                    (b, v) -> b.setAuthor(v),
+                    (b, v) -> b.setAuthorBooks(v));
         }
     }
 
@@ -104,7 +104,8 @@ public class ExcelReader {
                     locationMap,
                     "author2",
                     (b, id) -> b.setAuthor2Id(id),
-                    (b, v) -> b.setAuthor2(v));
+                    (b, v) -> b.setAuthor2(v),
+                    (b, v) -> b.setAuthor2Books(v));
         }
     }
 
@@ -114,7 +115,8 @@ public class ExcelReader {
                     locationMap,
                     "publisher",
                     (b, id) -> b.setPublisherId(id),
-                    (b, v) -> b.setPublisher(v));
+                    (b, v) -> b.setPublisher(v),
+                    (b, v) -> b.setPublisherBooks(v));
         }
     }
 
@@ -122,6 +124,7 @@ public class ExcelReader {
         private final String key;
         private final BiConsumer<Book, Integer> setId;
         private final BiConsumer<Book, String> setValue;
+        private final BiConsumer<Book, String> setBW;
         private final Map<String, Integer> locationMap;
 
         private final DataFormatter dataFormatter = new DataFormatter();
@@ -130,16 +133,19 @@ public class ExcelReader {
                 Map<String, Integer> locationMap,
                 String key,
                 BiConsumer<Book, Integer> setId,
-                BiConsumer<Book, String> setValue) {
+                BiConsumer<Book, String> setValue,
+                BiConsumer<Book, String> setBW) {
             this.locationMap = locationMap;
             this.key = key;
             this.setId = setId;
             this.setValue = setValue;
+            this.setBW = setBW;
         }
 
         public void SetProperty(XSSFRow row, Book book) {
             var valueCell = locationMap.get(key);
             var idCell = valueCell - 1;
+            var bwCell = valueCell + 1;
 
             try {
                 var id = getNum(row, idCell);
@@ -156,6 +162,16 @@ public class ExcelReader {
             } catch (Exception e) {
                 LOGGER.warn(
                         String.format("Problem with %s value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+            }
+
+            try {
+                var cell = row.getCell(bwCell);
+                var value = dataFormatter.formatCellValue(cell);
+
+                setBW.accept(book, value);
+            } catch (Exception e) {
+                LOGGER.warn(
+                        String.format("Problem with %s bw value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
             }
         }
 
