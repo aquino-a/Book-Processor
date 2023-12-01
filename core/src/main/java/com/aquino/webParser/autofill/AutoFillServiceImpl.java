@@ -119,8 +119,20 @@ public class AutoFillServiceImpl implements AutoFillService {
 
     private BookWindowIds getWithoutNoOclc(Book book) {
         var ids = new BookWindowIds();
-        ids.author(CreateAuthor(book.getAuthor()));
-        ids.author2(CreateAuthor(book.getAuthor2()));
+
+        var author = CreateAuthor(book.getAuthor());
+        var author2 = CreateAuthor(book.getAuthor2());
+
+        if (!StringUtils.isEmpty(book.getAuthorBooks())) {
+            AddManualEnglish(author, book.getAuthorBooks());
+        }
+
+        if (!StringUtils.isEmpty(book.getAuthor2Books())) {
+            AddManualEnglish(author2, book.getAuthor2Books());
+        }
+
+        ids.author(author);
+        ids.author2(author2);
         ids.publisher(CreatePublisher(book));
 
         return ids;
@@ -136,6 +148,27 @@ public class AutoFillServiceImpl implements AutoFillService {
     @Override
     public Author CreateAuthor(String name) {
         return currentAuthorStrategy.createAuthor(name);
+    }
+
+    /**
+     * Adds the manual entry ({@param authorBW}) as the English name.
+     * 
+     * @param author   the author created by the language author strategy.
+     * @param authorBW the manual entry from the excel.
+     * @return the given author
+     */
+    private Author AddManualEnglish(Author author, String authorBW) {
+        var parts = StringUtils.split(authorBW);
+
+        if (parts.length > 1) {
+            author.setEnglishFirstName(parts[0]);
+            author.setEnglishLastName(parts[1]);
+        } else {
+            author.setEnglishFirstName(authorBW);
+            author.setEnglishLastName(authorBW);
+        }
+
+        return author;
     }
 
     private Publisher CreatePublisher(Book book, Book wcBook) {
