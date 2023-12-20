@@ -239,6 +239,10 @@ public class JWPUserInterface extends JPanel {
         language.add(new JMenuItem(japaneseAmazonAction));
         language.add(new JMenuItem(openManualAddAction));
 
+        // oclc not supported now
+        scrapeOclc.setEnabled(false);
+        scrapeBestOclc.setEnabled(false);
+
         menuBar.add(file);
         menuBar.add(tools);
         menuBar.add(language);
