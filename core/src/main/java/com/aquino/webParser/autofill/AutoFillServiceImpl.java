@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 public class AutoFillServiceImpl implements AutoFillService {
 
-    private static final Predicate<String> ID_REGEX =
-            Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
+    private static final Predicate<String> ID_REGEX = Pattern.compile("^[0-9]+( [\u0100-\uFFFF\\w ]+)?$").asPredicate();
     private final BookCreator worldCatBookCreator;
     private final BookWindowService bookWindowService;
     private final Map<String, Integer> locationMap;
@@ -57,7 +56,6 @@ public class AutoFillServiceImpl implements AutoFillService {
             updater.UpdateBook(b.excelRow(), b.book());
         });
     }
-
 
     private boolean containsId(String text) {
         return ID_REGEX.test(text);
@@ -139,10 +137,15 @@ public class AutoFillServiceImpl implements AutoFillService {
     }
 
     private Publisher CreatePublisher(Book book) {
-        var author = new Publisher();
-        author.setLanguage(currentAuthorStrategy.getLanguage());
-        author.setNativeName(book.getPublisher());
-        return author;
+        var publisher = new Publisher();
+        publisher.setLanguage(currentAuthorStrategy.getLanguage());
+        publisher.setNativeName(book.getPublisher());
+
+        if (!StringUtils.isEmpty(book.getPublisherBooks())) {
+            publisher.setEnglishName(book.getPublisherBooks());
+        }
+
+        return publisher;
     }
 
     @Override
