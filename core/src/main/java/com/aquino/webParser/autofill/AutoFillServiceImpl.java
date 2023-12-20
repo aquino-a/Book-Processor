@@ -165,7 +165,7 @@ public class AutoFillServiceImpl implements AutoFillService {
 
         if (parts.length > 1) {
             author.setEnglishFirstName(parts[0]);
-            author.setEnglishLastName(parts[1]);
+            author.setEnglishLastName(StringUtils.substringAfter(authorBW, " "));
         } else {
             author.setEnglishFirstName(authorBW);
             author.setEnglishLastName(authorBW);
