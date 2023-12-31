@@ -43,6 +43,7 @@ public class AmazonJapanBookCreator implements BookCreator {
     private static final String kinoBookUrlFormat = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final String BOOK_SIZE_FORMAT = "%.1f x %.1f";
     private static final String TRANSLIT_FORMAT = "https://translate.yandex.net/translit/translit?text=%s&lang=ja";
+    private static final String GOOGLE_TRANSLATE_FORMAT = "https://translate.google.com/?hl=en&sl=ja&tl=en&text=%s&op=translate";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -495,6 +496,8 @@ public class AmazonJapanBookCreator implements BookCreator {
         SetYahooLink(book);
         SetWorldCatLink(book);
         setKinoLink(book);
+        setGoogleTranslateLink(book);
+
         return book;
     }
 
@@ -575,6 +578,20 @@ public class AmazonJapanBookCreator implements BookCreator {
         } catch (IOException e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    private void setGoogleTranslateLink(Book book) {
+        try {
+            var text = URLEncoder.encode(book.getDescription(), StandardCharsets.UTF_8);
+            var translateUrl = String.format(GOOGLE_TRANSLATE_FORMAT, text);
+
+            var ei = new ExtraInfo(49, translateUrl, ExtraInfo.Type.HyperLink);
+            ei.setName("Google Translate");
+
+            book.getMiscellaneous().add(ei);
+        } catch (Exception e) {
+            LOGGER.error("Problem setting google translate link.", e.getMessage());
         }
     }
 
