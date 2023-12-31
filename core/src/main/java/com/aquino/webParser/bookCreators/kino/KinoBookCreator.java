@@ -11,6 +11,8 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.ExtraInfo;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +33,8 @@ public class KinoBookCreator implements BookCreator {
     private static final String KINO_URL = "https://www.kinokuniya.co.jp";
     private static final String KINO_ISBN_URL = "https://www.kinokuniya.co.jp/f/dsg-01-%s";
     private static final Pattern PAGES_PATTERN = Pattern.compile("(?:ページ数)? ?(\\d+) ?p");
-
+    private static final String GOOGLE_TRANSLATE_FORMAT = "https://translate.google.com/?hl=en&sl=ja&tl=en&text=%s&op=translate";
+    
     private final BookWindowService bookWindowService;
     private final ChatGptService chatGptService;
     private final HonyaClubBookCreator honya;
@@ -90,6 +93,7 @@ public class KinoBookCreator implements BookCreator {
 
         setYahooDetails(book);
         setAmazonLink(book);
+        setGoogleTranslateLink(book);
 
         return book;
     }
@@ -103,6 +107,21 @@ public class KinoBookCreator implements BookCreator {
                 ExtraInfo.Type.HyperLink);
         ei.setName("Amazon");
         book.getMiscellaneous().add(ei);
+    }
+
+    
+    private void setGoogleTranslateLink(Book book) {
+        try {
+            var text = URLEncoder.encode(book.getDescription(), StandardCharsets.UTF_8);
+            var translateUrl = String.format(GOOGLE_TRANSLATE_FORMAT, text);
+
+            var ei = new ExtraInfo(49, translateUrl, ExtraInfo.Type.HyperLink);
+            ei.setName("Google Translate");
+
+            book.getMiscellaneous().add(ei);
+        } catch (Exception e) {
+            LOGGER.error("Problem setting google translate link.", e.getMessage());
+        }
     }
 
     @Override
