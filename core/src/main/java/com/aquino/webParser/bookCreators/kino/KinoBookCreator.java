@@ -112,7 +112,8 @@ public class KinoBookCreator implements BookCreator {
     
     private void setGoogleTranslateLink(Book book) {
         try {
-            var text = URLEncoder.encode(book.getDescription(), StandardCharsets.UTF_8);
+            var normalizedDescription = StringUtils.normalizeSpace(book.getDescription());
+            var text = URLEncoder.encode(normalizedDescription, StandardCharsets.UTF_8);
             var translateUrl = String.format(GOOGLE_TRANSLATE_FORMAT, text);
 
             var ei = new ExtraInfo(49, translateUrl, ExtraInfo.Type.HyperLink);
