@@ -164,8 +164,8 @@ public class AutoFillServiceImpl implements AutoFillService {
         var parts = StringUtils.split(authorBW);
 
         if (parts.length > 1) {
-            author.setEnglishFirstName(parts[0]);
-            author.setEnglishLastName(StringUtils.substringAfter(authorBW, " "));
+            author.setEnglishLastName(parts[0]);
+            author.setEnglishFirstName(StringUtils.substringAfter(authorBW, " "));
         } else {
             author.setEnglishFirstName(authorBW);
             author.setEnglishLastName(authorBW);

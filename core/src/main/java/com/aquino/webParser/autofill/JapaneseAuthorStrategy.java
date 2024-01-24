@@ -2,14 +2,12 @@ package com.aquino.webParser.autofill;
 
 import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -48,8 +46,8 @@ public class JapaneseAuthorStrategy implements AuthorStrategy {
 
             var names = splitName(romanized);
 
-            author.setEnglishFirstName(names.getLeft());
-            author.setEnglishLastName(names.getRight());
+            author.setEnglishLastName(names.getLeft());
+            author.setEnglishFirstName(names.getRight());
         } catch (Exception e) {
             //Don't set if fails.
             LOGGER.error(String.format("Failed to romanize: %s", name));

@@ -1,7 +1,6 @@
 package com.aquino.webParser.autofill;
 
 import com.aquino.webParser.model.Author;
-import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.Language;
 import com.aquino.webParser.romanization.Romanizer;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +50,7 @@ public class KoreanAuthorStrategy implements AuthorStrategy {
             ? koreanLastNames.get(first)
             : Romanizer.hangulToRoman(first);
 
-        author.setEnglishFirstName(first);
+        author.setEnglishLastName(first);
 
 
         if (name.length() > 1) {
@@ -60,7 +59,7 @@ public class KoreanAuthorStrategy implements AuthorStrategy {
                 .split(""))
                 .map(s -> StringUtils.capitalize(Romanizer.hangulToRoman(s)))
                 .collect(Collectors.joining(" "));
-            author.setEnglishLastName(last);
+            author.setEnglishFirstName(last);
         }
     }
 }
