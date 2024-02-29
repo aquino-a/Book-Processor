@@ -107,6 +107,61 @@ public class AladinBookCreator implements BookCreator {
         return book;
     }
 
+    @Override
+    public Book fillInAllDetails(Book book) {
+        if (!imageCheck(book.getImageURL())) {
+            book.setImageURL("Problem with image");
+        }
+
+        book.setDescription(parseDescription(book));
+        scrapeLazyAuthor(book);
+        book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
+        bookWindowService.findIds(book);
+        book.setSummary(chatGptService.getSummary(book));
+        book.setTranslatedTitle(chatGptService.getTitle(book));
+        chatGptService.setCategory(book);
+
+        return book;
+    }
+
+    String parseDescription(Book book) {
+        var map = new HashMap<String, String>();
+        map.put("Referer", book.getBookPageUrl());
+        Document doc = null;
+        if (book.getkIsbn() != null) {
+            doc = Connect.connectToURLwithHeaders(
+                createLazyDescriptionUrl(book.getkIsbn()), map);
+        }
+        else {
+            doc = Connect.connectToURLwithHeaders(
+                createLazyDescriptionUrl(book.getIsbnString()), map);
+        }
+        return findDescription(doc);
+    }
+
+    Book scrapeLazyAuthor(Book book) {
+        Map<String, String> map = new HashMap<>();
+        map.put("Referer", book.getBookPageUrl());
+
+        var doc = Connect.connectToURLwithHeaders(
+            createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
+        try {
+            addPrizes(book, doc);
+        } catch (Exception e) {
+            LOGGER.error(String.format(
+                "Failed to scrape prizes for %s",
+                    book.getTitle()));
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        if (book.getEnglishTitle() == "") {
+            book.setAuthorOriginal("");
+            return book;
+        }
+        book.setAuthorOriginal(findAuthorOriginal(doc));
+        return book;
+    }
+
     private Book parseIsbn(Book book, Document doc) {
         try {
             var isbnString = doc.getElementsByAttributeValueMatching("property", "og:barcode").attr("content");
@@ -140,21 +195,6 @@ public class AladinBookCreator implements BookCreator {
 
     private String parseTitle(Document doc) {
         return doc.getElementsByAttributeValueMatching("name", "twitter:title").attr("content");
-    }
-
-    private String parseDescription(Book book) {
-        var map = new HashMap<String, String>();
-        map.put("Referer", book.getBookPageUrl());
-        Document doc = null;
-        if (book.getkIsbn() != null) {
-            doc = Connect.connectToURLwithHeaders(
-                createLazyDescriptionUrl(book.getkIsbn()), map);
-        }
-        else {
-            doc = Connect.connectToURLwithHeaders(
-                createLazyDescriptionUrl(book.getIsbnString()), map);
-        }
-        return findDescription(doc);
     }
 
     private String createLazyDescriptionUrl(String details) {
@@ -322,50 +362,6 @@ public class AladinBookCreator implements BookCreator {
     private Book setWeight(Book book) {
         var pages = book.getPages();
         book.setWeight(pages % 300 > 1 ? (pages / 300) + 1 : pages / 300);
-        return book;
-    }
-
-    @Override
-    public Book fillInAllDetails(Book book) {
-        if (!imageCheck(book.getImageURL())) {
-            book.setImageURL("Problem with image");
-        }
-
-        book.setDescription(parseDescription(book));
-        scrapeLazyAuthor(book);
-        book.setRomanizedTitle(Romanizer.hangulToRoman(book.getTitle()));
-        bookWindowService.findIds(book);
-        book.setSummary(chatGptService.getSummary(book));
-        book.setTranslatedTitle(chatGptService.getTitle(book));
-        chatGptService.setCategory(book);
-//        if (book.getOclc() < 1) {
-//            book.setOclc(oclcService.findOclc(String.valueOf(book.getIsbn())));
-//        }
-
-        return book;
-
-    }
-
-    private Book scrapeLazyAuthor(Book book) {
-        Map<String, String> map = new HashMap<>();
-        map.put("Referer", book.getBookPageUrl());
-
-        var doc = Connect.connectToURLwithHeaders(
-            createLazyAuthorUrl(String.valueOf(book.getkIsbn())), map);
-        try {
-            addPrizes(book, doc);
-        } catch (Exception e) {
-            LOGGER.error(String.format(
-                "Failed to scrape prizes for %s",
-                    book.getTitle()));
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        if (book.getEnglishTitle() == "") {
-            book.setAuthorOriginal("");
-            return book;
-        }
-        book.setAuthorOriginal(findAuthorOriginal(doc));
         return book;
     }
 
