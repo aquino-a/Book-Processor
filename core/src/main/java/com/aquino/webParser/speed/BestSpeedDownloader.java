@@ -6,7 +6,6 @@ import java.time.temporal.TemporalAmount;
 import java.util.stream.Stream;
 
 import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 import com.aquino.webParser.bookCreators.aladin.web.AladinCategory;
@@ -97,13 +96,38 @@ public class BestSpeedDownloader extends AladinSpeedDownloader implements SpeedD
     }
 
     private String findTitle(Element element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findTitle'");
+        var firstSection = element.getElementsByClass("ss_book_list")
+                .first();
+
+        if (firstSection == null) {
+            return null;
+        }
+
+        var titleElement = firstSection.getElementsByClass("bo3")
+                .first();
+
+        if (titleElement == null) {
+            return null;
+        }
+
+        return titleElement.ownText();
     }
 
     private int findRank(Element element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findRank'");
-    }
+        var firstTd = element.getElementsByTag("tr")
+                .first()
+                .getElementsByTag("td")
+                .first();
 
+        if (firstTd == null) {
+            return -1;
+        }
+
+        var matcher = NUMBER_PATTERN.matcher(firstTd.ownText());
+        if (!matcher.find()) {
+            return -1;
+        }
+
+        return Integer.parseInt(matcher.group(1));
+    }
 }

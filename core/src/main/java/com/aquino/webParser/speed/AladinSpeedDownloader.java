@@ -11,6 +11,7 @@ import com.aquino.webParser.bookCreators.aladin.web.AladinCategory;
 abstract class AladinSpeedDownloader {
     private static final Pattern YEAR_MONTH_PATTERN = Pattern.compile("(\\d{4})년 ?(\\d{1,2})월", Pattern.MULTILINE);
     private static final Pattern KOREAN_PRICE_PATTERN = Pattern.compile("((?:\\d+,?)+)원", Pattern.MULTILINE);
+    static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
 
     private final LocalDate publishDateCutOff;
     private int pageCount = 20;
