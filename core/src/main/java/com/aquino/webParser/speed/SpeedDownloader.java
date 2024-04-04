@@ -1,7 +1,9 @@
 package com.aquino.webParser.speed;
 
+import java.io.IOException;
+
 public interface SpeedDownloader {
 
-    void download();
+    void download() throws IOException;
 
 }

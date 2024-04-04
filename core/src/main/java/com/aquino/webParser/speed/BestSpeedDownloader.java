@@ -3,6 +3,7 @@ package com.aquino.webParser.speed;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAmount;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.jsoup.Connection;
@@ -18,15 +19,25 @@ public class BestSpeedDownloader extends AladinSpeedDownloader implements SpeedD
 
     private final Connection connection;
 
-    public BestSpeedDownloader(Connection connection, TemporalAmount publishDateCutOff, AladinCategory category) {
+    private final Consumer<SpeedBook> consumer;
+
+    public BestSpeedDownloader(
+            Connection connection,
+            TemporalAmount publishDateCutOff,
+            AladinCategory category,
+            Consumer<SpeedBook> consumer) {
         super(publishDateCutOff);
         this.connection = connection;
         this.category = category;
+        this.consumer = consumer;
     }
 
     @Override
-    public void download() {
-
+    public void download() throws IOException {
+        for (int i = 1; i <= pageCount(); i++) {
+            download(i)
+                .forEach(consumer);
+        }
     }
 
     Stream<SpeedBook> download(int page) throws IOException {
@@ -37,7 +48,8 @@ public class BestSpeedDownloader extends AladinSpeedDownloader implements SpeedD
         return document.getElementsByClass("ss_book_box")
                 .stream()
                 .map(this::parseBook)
-                .filter(this::isNotOld);
+                .filter(this::isNotOld)
+                .filter(this::isNotExpensive);
     }
 
     SpeedBook parseBook(Element element) {
