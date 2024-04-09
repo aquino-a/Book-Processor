@@ -15,6 +15,7 @@ public class NewSpeedDownloader extends AladinSpeedDownloader {
             AladinCategory category,
             Consumer<SpeedBook> consumer) {
         super(connection, category, consumer);
+        this.pageCount(5);
     }
 
     @Override

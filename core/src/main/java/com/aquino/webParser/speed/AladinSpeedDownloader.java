@@ -2,6 +2,7 @@ package com.aquino.webParser.speed;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAmount;
 import java.util.function.Consumer;
@@ -32,6 +33,7 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
         this.consumer = consumer;
         this.connection = connection;
         this.category = category;
+        this.publishDateCutOff(Period.ofMonths(5));
     }
 
     abstract String searchUrl();
