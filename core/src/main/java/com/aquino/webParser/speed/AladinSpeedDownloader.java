@@ -34,6 +34,7 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
         this.connection = connection;
         this.category = category;
         this.publishDateCutOff(Period.ofMonths(5));
+        this.priceCutoff(50000);
     }
 
     abstract String searchUrl();
