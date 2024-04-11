@@ -2,6 +2,8 @@ package com.aquino.webParser.speed;
 
 import java.time.LocalDate;
 
+import com.aquino.webParser.bookCreators.aladin.web.AladinCategory;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -18,7 +20,16 @@ public class SpeedBook {
     private int price;
     private String title;
     private int rank;
+    private AladinCategory category;
     
+    public AladinCategory category() {
+        return category;
+    }
+
+    public void category(AladinCategory category) {
+        this.category = category;
+    }
+
     public String title() {
         return title;
     }

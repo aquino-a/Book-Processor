@@ -19,7 +19,6 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
     private static final Pattern KOREAN_PRICE_PATTERN = Pattern.compile("((?:\\d+,?)+)원", Pattern.MULTILINE);
     static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
 
-    private final AladinCategory category;
     private final Connection connection;
     private final Consumer<SpeedBook> consumer;
     private LocalDate publishDateCutOff;
@@ -28,11 +27,9 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
 
     public AladinSpeedDownloader(
             Connection connection,
-            AladinCategory category,
             Consumer<SpeedBook> consumer) {
         this.consumer = consumer;
         this.connection = connection;
-        this.category = category;
         this.publishDateCutOff(Period.ofMonths(5));
         this.priceCutoff(50000);
     }
@@ -40,9 +37,9 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
     abstract String searchUrl();
 
     @Override
-    public void download() throws IOException {
+    public void download(AladinCategory category) throws IOException {
         for (int i = 1; i <= pageCount(); i++) {
-            download(i)
+            download(category, i)
                     .forEach(consumer);
         }
     }
@@ -79,7 +76,7 @@ abstract class AladinSpeedDownloader implements SpeedDownloader {
                 .map(Integer::parseInt);
     }
 
-    Stream<SpeedBook> download(int page) throws IOException {
+    Stream<SpeedBook> download(AladinCategory category, int page) throws IOException {
         var url = String.format(searchUrl(), category.cid, page);
         var request = connection.newRequest(url);
         var document = request.get();
