@@ -3,6 +3,7 @@ package com.aquino.webParser.speed;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.aquino.webParser.bookCreators.BookCreator;
 
@@ -10,9 +11,9 @@ public class DetailDownloader {
 
     private final Consumer<SpeedBook> consumer;
     private final BookCreator bookCreator;
-    private final BookValidator validator;
+    private final Predicate<SpeedBook> validator;
 
-    public DetailDownloader(Consumer<SpeedBook> consumer, BookCreator bookCreator, BookValidator validator) {
+    public DetailDownloader(Consumer<SpeedBook> consumer, BookCreator bookCreator, Predicate<SpeedBook> validator) {
         this.consumer = consumer;
         this.bookCreator = bookCreator;
         this.validator = validator;
@@ -23,11 +24,10 @@ public class DetailDownloader {
         book.publishDate(LocalDate.parse(createdBook.getPublishDate()));
         // set more properties as needed.
 
-        if (!validator.isValid(book)) {
+        if (!validator.test(book)) {
             return;
         }
 
         consumer.accept(book);
     }
-
 }
