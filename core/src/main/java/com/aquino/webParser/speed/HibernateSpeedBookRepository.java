@@ -22,20 +22,22 @@ public class HibernateSpeedBookRepository implements SpeedBookRepository {
 
     @Override
     public CompletableFuture<Stream<SpeedBook>> getByCategory(AladinCategory category) {
+        var session = getSession();
+        session.createNamedQuery()
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getByCategory'");
     }
 
     @Override
     public void save(SpeedBook book) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        var session = getSession();
+        session.merge(book);
     }
 
     @Override
     public void update(SpeedBook book) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        var session = getSession();
+        session.merge(book);
     }
 
     private Session getSession() {

@@ -6,8 +6,10 @@ import com.aquino.webParser.bookCreators.aladin.web.AladinCategory;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQuery;
 
 @Entity(name = "Book")
+@NamedQuery(name="Book.OrderByRankThenRetreval", query = "select * from Book where :")
 public class SpeedBook {
 
     @Id
