@@ -285,7 +285,7 @@ public class ChatGptServiceImpl implements ChatGptService {
     private String getRequestBody(String text) throws JsonProcessingException {
         var root = objectMapper.createObjectNode();
 
-        root.put("model", "gpt-3.5-turbo");
+        root.put("model", "gpt-4o-mini");
 
         var messageArray = root.putArray("messages");
         var message = messageArray.addObject();
