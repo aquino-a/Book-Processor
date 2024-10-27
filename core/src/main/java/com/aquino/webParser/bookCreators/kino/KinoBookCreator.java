@@ -98,7 +98,7 @@ public class KinoBookCreator implements BookCreator {
         ExtraInfo ei = new ExtraInfo(
                 48,
                 String.format(
-                        "https://www.amazon.co.jp/s?k=%%22%s%%22&i=stripbooks&ref=nb_sb_noss",
+                        "https://www.amazon.co.jp/s?k=%s&i=stripbooks&ref=nb_sb_noss",
                         book.getIsbn()),
                 ExtraInfo.Type.HyperLink);
         ei.setName("Amazon");
