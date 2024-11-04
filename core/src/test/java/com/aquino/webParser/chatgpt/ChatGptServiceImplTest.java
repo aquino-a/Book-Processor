@@ -7,11 +7,20 @@ package com.aquino.webParser.chatgpt;
 import com.aquino.webParser.ProcessorFactoryImpl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
 import com.aquino.webParser.model.Book;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -19,7 +28,30 @@ import org.mockito.MockitoAnnotations;
  *
  * @author alex
  */
+@RunWith(Parameterized.class)
 public class ChatGptServiceImplTest {
+
+    private final AbstractAiService aiService;
+    
+
+    public ChatGptServiceImplTest(AbstractAiService aiService) {
+        this.aiService = aiService;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() throws IOException {
+        var summaryRepository = mock(SummaryRepository.class);
+        var factory = new ProcessorFactoryImpl();
+        
+        var chatKey = factory.getOpenAiApiKey();
+        var chat = new ChatGptServiceImpl(new ObjectMapper(), chatKey, summaryRepository);
+        chat.setCategories(factory.getCategories());
+
+        return Arrays.asList(new Object[][] {     
+                 { chat }
+           });
+    }
+
 
     private static final String TEST_DESCRIPTION = "「週刊文春ミステリーベスト10」&「MRC大賞2022」堂々ダブル受賞!\n"
             + "\n"
@@ -38,30 +70,12 @@ public class ChatGptServiceImplTest {
             + "ミステリが読みたい! 2023年版 国内篇(早川書房) 第6位\n" +
             "ダ・ヴィンチ BOOK OF THE YEAR 2022 小説部門(KADOKAWA) 第7位";
 
-    private ChatGptServiceImpl chat;
-
-    @Mock
-    SummaryRepository summaryRepository;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
-        var processorFact = new ProcessorFactoryImpl();
-        var key = processorFact.getOpenAiApiKey();
-
-        chat = new ChatGptServiceImpl(new ObjectMapper(), key, summaryRepository);
-
-        var factory = new ProcessorFactoryImpl();
-        chat.setCategories(factory.getCategories());
-    }
-
     @Test
     public void testGetSummary() {
         var book = new Book();
         book.setIsbn(12345L);
         book.setDescription(TEST_DESCRIPTION);
-        var summary = chat.getSummary(book);
+        var summary = aiService.getSummary(book);
 
         assertThat(summary, is(notNullValue()));
     }
@@ -71,7 +85,7 @@ public class ChatGptServiceImplTest {
         var book = new Book();
         book.setIsbn(12345L);
         book.setTitle("混ぜるだけサラダとさっと煮るだけスープ");
-        var title = chat.getTitle(book);
+        var title = aiService.getTitle(book);
 
         assertThat(title, is(notNullValue()));
     }
@@ -81,7 +95,7 @@ public class ChatGptServiceImplTest {
         var book = new Book();
         book.setIsbn(12345L);
         book.setDescription(TEST_DESCRIPTION);
-        chat.setCategory(book);
+        aiService.setCategory(book);
 
         assertThat(book.getCategory(), is(notNullValue()));
         assertThat(book.getCategory2(), is(notNullValue()));
@@ -100,7 +114,7 @@ public class ChatGptServiceImplTest {
                 "アートの歴史や可能性を詳細に活写、美大に進学した青年たちの情熱や奮闘を描く、今までになかった美術系青春漫画、早くも最新刊登場！！");
 
         book.setDescription(description);
-        var koreanDescription = chat.getKoreanDescription(book);
+        var koreanDescription = aiService.getKoreanDescription(book);
 
         assertThat(koreanDescription, is(notNullValue()));
     }
