@@ -42,13 +42,19 @@ public class ChatGptServiceImplTest {
     public static Collection<Object[]> data() throws IOException {
         var summaryRepository = mock(SummaryRepository.class);
         var factory = new ProcessorFactoryImpl();
-        
+        var objectMapper = new ObjectMapper();
+
         var chatKey = factory.getOpenAiApiKey();
-        var chat = new ChatGptServiceImpl(new ObjectMapper(), chatKey, summaryRepository);
+        var chat = new ChatGptServiceImpl(objectMapper, chatKey, summaryRepository);
         chat.setCategories(factory.getCategories());
 
+        var grokKey = factory.getGrokApiKey();
+        var grok = new GrokService(objectMapper, grokKey, summaryRepository);
+        grok.setCategories(factory.getCategories());
+
         return Arrays.asList(new Object[][] {     
-                 { chat }
+                 { chat },
+                 { grok }
            });
     }
 
