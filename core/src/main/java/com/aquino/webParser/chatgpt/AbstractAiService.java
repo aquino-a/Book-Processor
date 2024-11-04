@@ -28,9 +28,9 @@ public abstract class AbstractAiService implements ChatGptService {
     private static final Pattern NUMBER_PATTERN = Pattern.compile("(\\d+)");
     private static final String CATEGORY_FORMAT = "%s - %s";
 
+    protected final ObjectMapper objectMapper;
     private final SummaryRepository summaryRepository;
     private final String authorization;
-    private final ObjectMapper objectMapper;
 
     private List<Category> categories;
     private List<Category> layer2Categories;
@@ -57,7 +57,7 @@ public abstract class AbstractAiService implements ChatGptService {
     protected abstract String categoryPrompt();
     protected abstract String koreanTranslationPrompt();
     protected abstract String getResponseContent(JsonNode root);
-    protected abstract String getRequestBody(String text);
+    protected abstract String getRequestBody(String text) throws JsonProcessingException ;
 
     @Override
     public String getSummary(Book book) {
