@@ -66,6 +66,7 @@ public class ProcessorFactoryImpl {
     private KinoBookCreator kinoBookCreator;
     private String aladinApiKey;
     private String openaiApiKey;
+    private String grokApiKey;
     private List<Category> categories;
 
     public BookWindowService createWindowService() {
@@ -160,6 +161,12 @@ public class ProcessorFactoryImpl {
         return openaiApiKey;
     }
 
+    public String getGrokApiKey() throws IOException {
+        if (grokApiKey == null)
+            loadProperties();
+        return grokApiKey;
+    }
+
     public List<Category> getCategories() throws IOException {
         if (categories == null)
             loadProperties();
@@ -172,6 +179,7 @@ public class ProcessorFactoryImpl {
                 .getResourceAsStream("config.properties"));
         aladinApiKey = prop.getProperty("aladin.api.key");
         openaiApiKey = prop.getProperty("openai.api.key");
+        grokApiKey = prop.getProperty("grok.api.key");
         try (var stream = ProcessorFactoryImpl.class.getClassLoader()
                 .getResourceAsStream("categories.json")) {
             categories = OBJECT_MAPPER.readValue(stream, new TypeReference<List<Category>>() {
