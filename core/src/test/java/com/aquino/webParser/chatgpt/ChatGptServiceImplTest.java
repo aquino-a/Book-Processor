@@ -14,15 +14,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.aquino.webParser.model.Book;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 /**
  *
@@ -32,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 public class ChatGptServiceImplTest {
 
     private final AbstractAiService aiService;
-    
 
     public ChatGptServiceImplTest(AbstractAiService aiService) {
         this.aiService = aiService;
@@ -52,12 +47,11 @@ public class ChatGptServiceImplTest {
         var grok = new GrokService(objectMapper, grokKey, summaryRepository);
         grok.setCategories(factory.getCategories());
 
-        return Arrays.asList(new Object[][] {     
-                 { chat },
-                 { grok }
-           });
+        return Arrays.asList(new Object[][] {
+                { chat },
+                { grok }
+        });
     }
-
 
     private static final String TEST_DESCRIPTION = "「週刊文春ミステリーベスト10」&「MRC大賞2022」堂々ダブル受賞!\n"
             + "\n"
