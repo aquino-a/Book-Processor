@@ -134,7 +134,7 @@ public class ProcessorFactoryImpl {
     public ChatGptService createChatGptService() throws IOException {
         var grokService = new GrokService(
                 OBJECT_MAPPER,
-                getOpenAiApiKey(),
+                getGrokApiKey(),
                 createHibernateSummaryRepository());
         grokService.setCategories(categories);
 
