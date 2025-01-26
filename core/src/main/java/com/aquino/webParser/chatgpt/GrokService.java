@@ -62,7 +62,7 @@ public class GrokService extends AbstractAiService implements ChatGptService {
     protected String getRequestBody(String text) throws JsonProcessingException {
         var root = objectMapper.createObjectNode();
 
-        root.put("model", "grok-beta");
+        root.put("model", "grok-2-latest");
         root.put("stream", false);
         root.put("temperature", 0.1);
 
