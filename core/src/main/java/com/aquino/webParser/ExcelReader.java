@@ -160,7 +160,7 @@ public class ExcelReader {
             } catch (CellNotFoundException ce) {
                 LOGGER.error("Cell not found. Cell: {}, Key: {}, Row num: {}, ISBN: {}", idCell, key, row.getRowNum(), book.getIsbn());
             } catch (Exception e) {
-                LOGGER.error("Id Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}", idCell, key, book.getIsbn(), e.getMessage());
+                LOGGER.error("Id Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", idCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
 
             try {
@@ -169,7 +169,7 @@ public class ExcelReader {
 
                 setValue.accept(book, value);
             } catch (Exception e) {
-                LOGGER.error("Value Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}", valueCell, key, book.getIsbn(), e.getMessage());
+                LOGGER.error("Value Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", valueCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
 
             try {
@@ -178,7 +178,7 @@ public class ExcelReader {
 
                 setBW.accept(book, value);
             } catch (Exception e) {
-                LOGGER.error("BW Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}", bwCell, key, book.getIsbn(), e.getMessage());
+                LOGGER.error("BW Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", bwCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
         }
 
