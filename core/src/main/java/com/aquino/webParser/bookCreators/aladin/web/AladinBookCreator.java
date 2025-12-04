@@ -139,7 +139,8 @@ public class AladinBookCreator implements BookCreator {
     }
 
     private String parseTitle(Document doc) {
-        return doc.getElementsByAttributeValueMatching("name", "twitter:title").attr("content");
+        return doc.selectFirst("div.Ere_prod_titlewrap span.Ere_bo_title")
+            .ownText();
     }
 
     private String parseDescription(Book book) {
