@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -56,10 +57,15 @@ public class ExcelReader {
         var book = new Book();
 
         try {
-            book.setIsbn((long) row.getCell(locationMap.get("isbn")).getNumericCellValue());
+            var cell = row.getCell(locationMap.get("isbn"));
+            if (cell == null || !cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
+                return null;
+            }
+
+            var isbn = (long) cell.getNumericCellValue();
+            book.setIsbn(isbn);
         } catch (Exception e) {
-            LOGGER.warn(
-                    String.format("Problem with Isbn. Skipping Row. Row#: %d, %s", row.getRowNum(), e.getMessage()));
+            LOGGER.warn("Problem with Isbn. Skipping Row. Row#: {}, {}", row.getRowNum(), e.getMessage());
             return null;
         }
 
@@ -150,8 +156,11 @@ public class ExcelReader {
             try {
                 var id = getNum(row, idCell);
                 setId.accept(book, id);
+
+            } catch (CellNotFoundException ce) {
+                LOGGER.error("Cell not found. Cell: {}, Key: {}, Row num: {}, ISBN: {}", idCell, key, row.getRowNum(), book.getIsbn());
             } catch (Exception e) {
-                LOGGER.warn(String.format("Problem with %s id. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+                LOGGER.error("Id Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", idCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
 
             try {
@@ -160,8 +169,7 @@ public class ExcelReader {
 
                 setValue.accept(book, value);
             } catch (Exception e) {
-                LOGGER.warn(
-                        String.format("Problem with %s value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+                LOGGER.error("Value Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", valueCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
 
             try {
@@ -170,15 +178,14 @@ public class ExcelReader {
 
                 setBW.accept(book, value);
             } catch (Exception e) {
-                LOGGER.warn(
-                        String.format("Problem with %s bw value. Isbn: %d, %s", key, book.getIsbn(), e.getMessage()));
+                LOGGER.error("BW Cell. Cell: {}, Key: {}, Row num: {}, ISBN: {}, Message: {}", bwCell, key, row.getRowNum(), book.getIsbn(), e.getMessage());
             }
         }
 
         private int getNum(XSSFRow row, int cellNum) {
             var cell = row.getCell(cellNum);
             if (cell == null)
-                throw new NullPointerException("Not found");
+                throw new CellNotFoundException();
 
             var type = cell.getCellTypeEnum();
             switch (type) {
@@ -187,8 +194,13 @@ public class ExcelReader {
                 case NUMERIC:
                     return (int) cell.getNumericCellValue();
                 default:
-                    throw new NullPointerException("Wrong cell type");
+                    throw new IllegalArgumentException(
+                            String.format("Wrong cell type: %s", type));
             }
+        }
+
+        private class CellNotFoundException extends RuntimeException {
+
         }
     }
 }
