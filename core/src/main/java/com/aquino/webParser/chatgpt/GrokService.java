@@ -15,11 +15,15 @@ public class GrokService extends AbstractAiService implements ChatGptService {
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
     private static final String KOREAN_TRANSLATION_PROMPT_FORMAT = "Translate the following Japanese text into Korean while maintaining the original spacing and word count. translation only:\n%s";
 
+    private final String model;
+
     public GrokService(
             ObjectMapper objectMapper,
             String apiKey,
-            SummaryRepository summaryRepository) {
+            SummaryRepository summaryRepository,
+            String model) {
         super(objectMapper, apiKey, summaryRepository);
+        this.model = model;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class GrokService extends AbstractAiService implements ChatGptService {
     protected String getRequestBody(String text) throws JsonProcessingException {
         var root = objectMapper.createObjectNode();
 
-        root.put("model", "grok-2-latest");
+        root.put("model", model);
         root.put("stream", false);
         root.put("temperature", 0.1);
 
