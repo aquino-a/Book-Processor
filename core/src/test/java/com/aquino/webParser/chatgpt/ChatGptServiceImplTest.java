@@ -44,7 +44,7 @@ public class ChatGptServiceImplTest {
         chat.setCategories(factory.getCategories());
 
         var grokKey = factory.getGrokApiKey();
-        var grok = new GrokService(objectMapper, grokKey, summaryRepository, "grok-3-mini");
+        var grok = new GrokService(objectMapper, grokKey, summaryRepository, "grok-2-latest");
         grok.setCategories(factory.getCategories());
 
         return Arrays.asList(new Object[][] {
