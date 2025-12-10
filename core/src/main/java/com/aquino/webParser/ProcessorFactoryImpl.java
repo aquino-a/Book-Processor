@@ -68,6 +68,7 @@ public class ProcessorFactoryImpl {
     private String openaiApiKey;
     private String grokApiKey;
     private List<Category> categories;
+    private String grokApiModel;
 
     public BookWindowService createWindowService() {
         if (bookWindowService == null)
@@ -135,7 +136,8 @@ public class ProcessorFactoryImpl {
         var grokService = new GrokService(
                 OBJECT_MAPPER,
                 getGrokApiKey(),
-                createHibernateSummaryRepository());
+                createHibernateSummaryRepository(),
+                grokApiModel);
         grokService.setCategories(categories);
 
         return grokService;
@@ -180,6 +182,7 @@ public class ProcessorFactoryImpl {
         aladinApiKey = prop.getProperty("aladin.api.key");
         openaiApiKey = prop.getProperty("openai.api.key");
         grokApiKey = prop.getProperty("grok.api.key");
+        grokApiModel = prop.getProperty("grok.api.model", "grok-3-mini");
         try (var stream = ProcessorFactoryImpl.class.getClassLoader()
                 .getResourceAsStream("categories.json")) {
             categories = OBJECT_MAPPER.readValue(stream, new TypeReference<List<Category>>() {
