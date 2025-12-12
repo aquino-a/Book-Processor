@@ -132,8 +132,10 @@ public class ExcelWriter {
         row.createCell(38).setCellValue("Books");
         row.createCell(40).setCellValue(0);
         row.createCell(41).setCellValue(1);
+        row.createCell(42).setCellValue(1);
         row.createCell(43).setCellValue(1);
-        row.createCell(44).setCellValue(0);
+        row.createCell(44).setCellValue(1);
+        row.createCell(45).setCellValue(0);
         book.getMiscellaneous().forEach(ei -> {
             if(ei.getColumnNumber() <= 44){
                 return;
