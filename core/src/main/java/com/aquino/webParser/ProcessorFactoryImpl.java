@@ -11,7 +11,7 @@ import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.chatgpt.ChatGptService;
-import com.aquino.webParser.chatgpt.GrokService;
+import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
 import com.aquino.webParser.chatgpt.HibernateSummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
@@ -133,11 +133,17 @@ public class ProcessorFactoryImpl {
     }
 
     public ChatGptService createChatGptService() throws IOException {
-        var grokService = new GrokService(
+        // var grokService = new GrokService(
+        //         OBJECT_MAPPER,
+        //         getGrokApiKey(),
+        //         createHibernateSummaryRepository(),
+        //         grokApiModel);
+        // grokService.setCategories(categories);
+        
+        var grokService = new ChatGptServiceImpl(
                 OBJECT_MAPPER,
-                getGrokApiKey(),
-                createHibernateSummaryRepository(),
-                grokApiModel);
+                getOpenAiApiKey(),
+                createHibernateSummaryRepository());
         grokService.setCategories(categories);
 
         return grokService;
