@@ -12,6 +12,7 @@ import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
 import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
+import com.aquino.webParser.chatgpt.GrokService;
 import com.aquino.webParser.chatgpt.HibernateSummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
@@ -69,6 +70,11 @@ public class ProcessorFactoryImpl {
     private String grokApiKey;
     private List<Category> categories;
     private String grokApiModel;
+    private String openaiModel;
+
+    public ProcessorFactoryImpl() throws IOException {
+        loadProperties();
+    }
 
     public BookWindowService createWindowService() {
         if (bookWindowService == null)
@@ -126,24 +132,45 @@ public class ProcessorFactoryImpl {
         return kinoBookCreator;
     }
 
+    private ChatGptService createChatGptService() throws IOException {
+        return createChatGptService(AiServiceType.OpenAi);
+    }
+
     public OclcService createOclcService() {
         if (oclcService == null)
             oclcService = new OclcServiceImpl();
         return oclcService;
     }
 
-    public ChatGptService createChatGptService() throws IOException {
-        // var grokService = new GrokService(
-        //         OBJECT_MAPPER,
-        //         getGrokApiKey(),
-        //         createHibernateSummaryRepository(),
-        //         grokApiModel);
-        // grokService.setCategories(categories);
-        
+    public ChatGptService createChatGptService(AiServiceType type) throws IOException {
+        switch (type) {
+            case Grok:
+                return createGrokService();
+            case OpenAi:
+            default:
+                return createOpenAiService();
+        }
+    }
+
+    
+
+    private ChatGptService createOpenAiService() {
         var grokService = new ChatGptServiceImpl(
                 OBJECT_MAPPER,
-                getOpenAiApiKey(),
-                createHibernateSummaryRepository());
+                openaiApiKey,
+                createHibernateSummaryRepository(),
+                openaiModel);
+        grokService.setCategories(categories);
+
+        return grokService;
+    }
+
+    private ChatGptService createGrokService() {
+        var grokService = new GrokService(
+                OBJECT_MAPPER,
+                grokApiKey,
+                createHibernateSummaryRepository(),
+                grokApiModel);
         grokService.setCategories(categories);
 
         return grokService;
@@ -157,36 +184,13 @@ public class ProcessorFactoryImpl {
         return new SummaryRepositoryImpl("./summary");
     }
 
-    private String getAladinApiKey() throws IOException {
-        if (aladinApiKey == null)
-            loadProperties();
-        return aladinApiKey;
-    }
-
-    public String getOpenAiApiKey() throws IOException {
-        if (openaiApiKey == null)
-            loadProperties();
-        return openaiApiKey;
-    }
-
-    public String getGrokApiKey() throws IOException {
-        if (grokApiKey == null)
-            loadProperties();
-        return grokApiKey;
-    }
-
-    public List<Category> getCategories() throws IOException {
-        if (categories == null)
-            loadProperties();
-        return categories;
-    }
-
     private void loadProperties() throws IOException {
         Properties prop = new Properties();
         prop.load(ProcessorFactoryImpl.class.getClassLoader()
                 .getResourceAsStream("config.properties"));
         aladinApiKey = prop.getProperty("aladin.api.key");
         openaiApiKey = prop.getProperty("openai.api.key");
+        openaiModel = prop.getProperty("openai.api.model");
         grokApiKey = prop.getProperty("grok.api.key");
         grokApiModel = prop.getProperty("grok.api.model", "grok-3-mini");
         try (var stream = ProcessorFactoryImpl.class.getClassLoader()
@@ -253,5 +257,9 @@ public class ProcessorFactoryImpl {
                     .destroy(registry);
             throw e;
         }
+    }
+
+    public enum AiServiceType {
+        OpenAi, Grok
     }
 }

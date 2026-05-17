@@ -18,12 +18,16 @@ public class ChatGptServiceImpl extends AbstractAiService implements ChatGptServ
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
     private static final String KOREAN_TRANSLATION_PROMPT_FORMAT = "Translate the following Japanese text into Korean while maintaining the original spacing and word count. translation only:\n%s";
+    
+    private final String model;
 
     public ChatGptServiceImpl(
             ObjectMapper objectMapper,
             String apiKey,
-            SummaryRepository summaryRepository) {
+            SummaryRepository summaryRepository,
+            String model) {
         super(objectMapper, apiKey, summaryRepository);
+        this.model = model;
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ChatGptServiceImpl extends AbstractAiService implements ChatGptServ
     protected String getRequestBody(String text) throws JsonProcessingException {
         var root = objectMapper.createObjectNode();
 
-        root.put("model", "gpt-3.5-turbo");
+        root.put("model", model);
 
         var messageArray = root.putArray("messages");
         var message = messageArray.addObject();

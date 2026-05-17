@@ -5,6 +5,8 @@
 package com.aquino.webParser.chatgpt;
 
 import com.aquino.webParser.ProcessorFactoryImpl;
+import com.aquino.webParser.ProcessorFactoryImpl.AiServiceType;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -35,17 +37,10 @@ public class ChatGptServiceImplTest {
 
     @Parameters
     public static Collection<Object[]> data() throws IOException {
-        var summaryRepository = mock(SummaryRepository.class);
         var factory = new ProcessorFactoryImpl();
-        var objectMapper = new ObjectMapper();
 
-        var chatKey = factory.getOpenAiApiKey();
-        var chat = new ChatGptServiceImpl(objectMapper, chatKey, summaryRepository);
-        chat.setCategories(factory.getCategories());
-
-        var grokKey = factory.getGrokApiKey();
-        var grok = new GrokService(objectMapper, grokKey, summaryRepository, "grok-2-latest");
-        grok.setCategories(factory.getCategories());
+        var chat = factory.createChatGptService(AiServiceType.OpenAi);
+        var grok = factory.createChatGptService(AiServiceType.Grok);
 
         return Arrays.asList(new Object[][] {
                 { chat },
