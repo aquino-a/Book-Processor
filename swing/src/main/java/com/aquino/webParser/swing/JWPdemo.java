@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
  * @author alex
  */
 public class JWPdemo {
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args) throws URISyntaxException, IOException {
 
         ProcessorFactoryImpl processorFactory = new ProcessorFactoryImpl();
         java.awt.EventQueue.invokeLater(() ->
