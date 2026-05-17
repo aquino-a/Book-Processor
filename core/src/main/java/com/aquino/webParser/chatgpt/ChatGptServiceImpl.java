@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ChatGptServiceImpl extends AbstractAiService implements ChatGptService {
 
     private static final String COMPLETION_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String SUMMARY_PROMPT_FORMAT = "Give a concise summary, less than 100 words, of the book in the following text:\n%s";
+    private static final String SUMMARY_PROMPT_FORMAT = "I will give you book description. Write a concise summary of the book in English in less than 100 words. List out ALL awards / rankings it's received after the summary in this format 'Awards: -[<original award name>] <english award name>'.:\n%s";
     private static final String TITLE_PROMPT_FORMAT = "book title, translation only:\n%s";
     private static final String CATEGORY_PROMPT_FORMAT = "classify following text using %s, choose one number only:\n%s";
     private static final String KOREAN_TRANSLATION_PROMPT_FORMAT = "Translate the following Japanese text into Korean while maintaining the original spacing and word count. translation only:\n%s";

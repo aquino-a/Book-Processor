@@ -72,6 +72,8 @@ public class ChatGptServiceImplTest {
         book.setDescription(TEST_DESCRIPTION);
         var summary = aiService.getSummary(book);
 
+        System.out.println(summary);
+        System.out.println();
         assertThat(summary, is(notNullValue()));
     }
 
@@ -82,6 +84,8 @@ public class ChatGptServiceImplTest {
         book.setTitle("混ぜるだけサラダとさっと煮るだけスープ");
         var title = aiService.getTitle(book);
 
+        System.out.println(title);
+        System.out.println();
         assertThat(title, is(notNullValue()));
     }
 
@@ -92,6 +96,10 @@ public class ChatGptServiceImplTest {
         book.setDescription(TEST_DESCRIPTION);
         aiService.setCategory(book);
 
+        System.out.println(book.getCategory());
+        System.out.println(book.getCategory2());
+        System.out.println(book.getCategory3());
+        System.out.println();
         assertThat(book.getCategory(), is(notNullValue()));
         assertThat(book.getCategory2(), is(notNullValue()));
         assertThat(book.getCategory3(), is(notNullValue()));
@@ -111,6 +119,8 @@ public class ChatGptServiceImplTest {
         book.setDescription(description);
         var koreanDescription = aiService.getKoreanDescription(book);
 
+        System.out.println(koreanDescription);
+        System.out.println();
         assertThat(koreanDescription, is(notNullValue()));
     }
 }
