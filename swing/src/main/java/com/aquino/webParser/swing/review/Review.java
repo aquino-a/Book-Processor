@@ -1,4 +1,4 @@
-package com.aquino.webParser.swing.autocopy;
+package com.aquino.webParser.swing.review;
 
 import com.aquino.webParser.model.Book;
 
