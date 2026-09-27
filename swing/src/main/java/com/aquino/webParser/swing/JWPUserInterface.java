@@ -129,6 +129,11 @@ public class JWPUserInterface extends JPanel {
                 try {
                     var r = new Review();
                     var panel = r.getPanel();
+                    var b = new Book();
+
+                    b.setAuthor("TOOL_TIP_TEXT_KEY");
+
+                    r.setData(b);
                     var frame = new JFrame();
                     frame.add(panel);
                     frame.setVisible(true);

@@ -5,13 +5,11 @@ import com.aquino.webParser.model.Book;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
@@ -25,8 +23,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Locale;
 
 /**
@@ -43,48 +39,44 @@ public class Review {
     private static final String COVER_PLACEHOLDER = "Book cover";
     private static final String AWARDS_MARKER = "awards:";
 
-    private static final String[] LANGUAGE_CODES = {"", "JAP", "KOR"};
-    private static final String[] CURRENCIES = {"", "Yen", "Won"};
-    private static final String[] BINDINGS = {"", "PB", "HC"};
-
     private JPanel panel;
 
     private JLabel coverLabel;
-    private JTextField koreanTitleField;
-    private JTextField romanizedTitleField;
-    private JTextField originalTitleField;
-    private JTextField englishTitleField;
-    private JTextField translatedEnglishTitleField;
+    private JLabel koreanTitleLabel;
+    private JLabel romanizedTitleLabel;
+    private JLabel originalTitleLabel;
+    private JLabel englishTitleLabel;
+    private JLabel translatedEnglishTitleLabel;
 
-    private JTextField authorField;
-    private JTextField authorStoreField;
-    private JTextField authorBwField;
-    private JTextField author2Field;
-    private JTextField author2StoreField;
-    private JTextField author2BwField;
-    private JTextField publisherField;
-    private JTextField publisherStoreField;
-    private JTextField publisherBwField;
+    private JLabel authorLabel;
+    private JLabel authorStoreLabel;
+    private JLabel authorBwLabel;
+    private JLabel author2Label;
+    private JLabel author2StoreLabel;
+    private JLabel author2BwLabel;
+    private JLabel publisherLabel;
+    private JLabel publisherStoreLabel;
+    private JLabel publisherBwLabel;
 
-    private JTextField category1Field;
-    private JTextField category2Field;
-    private JTextField category3Field;
-    private JComboBox<String> languageCodeCombo;
-    private JTextField languageCode2Field;
-    private JTextField originalTitleLanguageField;
-    private JTextField publishedDateField;
-    private JComboBox<String> currencyCombo;
-    private JTextField costField;
+    private JLabel category1Label;
+    private JLabel category2Label;
+    private JLabel category3Label;
+    private JLabel languageCodeLabel;
+    private JLabel languageCode2Label;
+    private JLabel originalTitleLanguageLabel;
+    private JLabel publishedDateLabel;
+    private JLabel currencyLabel;
+    private JLabel costLabel;
 
     private JTextArea abstractEnglishArea;
     private JTextArea abstractNativeArea;
 
-    private JTextField groupField;
-    private JTextField sizeField;
-    private JComboBox<String> bindingCombo;
-    private JTextField pageField;
-    private JTextField weightField;
-    private JTextArea awardsArea;
+    private JLabel groupLabel;
+    private JLabel sizeLabel;
+    private JLabel bindingLabel;
+    private JLabel pageLabel;
+    private JLabel weightLabel;
+    private JLabel awardsLabel;
 
     private int coverRequest;
 
@@ -105,47 +97,43 @@ public class Review {
         coverLabel.setBackground(new Color(245, 245, 245));
         coverLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
-        koreanTitleField = new JTextField(28);
-        romanizedTitleField = new JTextField(28);
-        originalTitleField = new JTextField(28);
-        englishTitleField = new JTextField(28);
-        translatedEnglishTitleField = new JTextField(28);
+        koreanTitleLabel = valueLabel();
+        romanizedTitleLabel = valueLabel();
+        originalTitleLabel = valueLabel();
+        englishTitleLabel = valueLabel();
+        translatedEnglishTitleLabel = valueLabel();
 
-        authorField = new JTextField(18);
-        authorStoreField = new JTextField(18);
-        authorBwField = new JTextField(18);
-        author2Field = new JTextField(18);
-        author2StoreField = new JTextField(18);
-        author2BwField = new JTextField(18);
-        publisherField = new JTextField(18);
-        publisherStoreField = new JTextField(18);
-        publisherBwField = new JTextField(18);
+        authorLabel = valueLabel();
+        authorStoreLabel = valueLabel();
+        authorBwLabel = valueLabel();
+        author2Label = valueLabel();
+        author2StoreLabel = valueLabel();
+        author2BwLabel = valueLabel();
+        publisherLabel = valueLabel();
+        publisherStoreLabel = valueLabel();
+        publisherBwLabel = valueLabel();
 
-        category1Field = new JTextField(16);
-        category2Field = new JTextField(16);
-        category3Field = new JTextField(16);
-        languageCodeCombo = new JComboBox<>(LANGUAGE_CODES);
-        languageCodeCombo.setEditable(true);
-        languageCode2Field = new JTextField(16);
-        originalTitleLanguageField = new JTextField(16);
-        publishedDateField = new JTextField(16);
-        currencyCombo = new JComboBox<>(CURRENCIES);
-        currencyCombo.setEditable(true);
-        costField = new JTextField(16);
+        category1Label = valueLabel();
+        category2Label = valueLabel();
+        category3Label = valueLabel();
+        languageCodeLabel = valueLabel();
+        languageCode2Label = valueLabel();
+        originalTitleLanguageLabel = valueLabel();
+        publishedDateLabel = valueLabel();
+        currencyLabel = valueLabel();
+        costLabel = valueLabel();
 
         abstractEnglishArea = textArea(10);
         abstractNativeArea = textArea(10);
         var abstractEnglishScroll = new JScrollPane(abstractEnglishArea);
         var abstractNativeScroll = new JScrollPane(abstractNativeArea);
 
-        groupField = new JTextField(16);
-        sizeField = new JTextField(16);
-        bindingCombo = new JComboBox<>(BINDINGS);
-        bindingCombo.setEditable(true);
-        pageField = new JTextField(16);
-        weightField = new JTextField(16);
-        awardsArea = textArea(4);
-        var awardsScroll = new JScrollPane(awardsArea);
+        groupLabel = valueLabel();
+        sizeLabel = valueLabel();
+        bindingLabel = valueLabel();
+        pageLabel = valueLabel();
+        weightLabel = valueLabel();
+        awardsLabel = valueLabel();
 
         var form = new JPanel(new GridBagLayout());
         form.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
@@ -169,7 +157,7 @@ public class Review {
         constraints.gridy++;
         constraints.weighty = 1;
         constraints.insets = new Insets(0, 0, 0, 0);
-        form.add(physicalSection(awardsScroll), constraints);
+        form.add(physicalSection(), constraints);
 
         var scroll = new JScrollPane(form);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -191,56 +179,58 @@ public class Review {
 
         // englishTitle is both the sheet's English Title and the original
         // title of a translated book (the only title Aladin stores for that).
-        setField(koreanTitleField, data.getTitle());
-        setField(romanizedTitleField, data.getRomanizedTitle());
-        setField(originalTitleField, data.getEnglishTitle());
-        setField(englishTitleField, data.getEnglishTitle());
-        setField(translatedEnglishTitleField, data.getTranslatedTitle());
+        setLabel(koreanTitleLabel, data.getTitle());
+        setLabel(romanizedTitleLabel, data.getRomanizedTitle());
+        setLabel(originalTitleLabel, data.getEnglishTitle());
+        setLabel(englishTitleLabel, data.getEnglishTitle());
+        setLabel(translatedEnglishTitleLabel, data.getTranslatedTitle());
 
-        setField(authorField, data.getAuthor());
-        setField(authorStoreField, data.getAuthorBooks());
-        setField(authorBwField, idText(data.getAuthorId()));
-        setField(author2Field, data.getAuthor2());
-        setField(author2StoreField, data.getAuthor2Books());
-        setField(author2BwField, idText(data.getAuthor2Id()));
-        setField(publisherField, data.getPublisher());
-        setField(publisherStoreField, data.getPublisherBooks());
-        setField(publisherBwField, idText(data.getPublisherId()));
+        setLabel(authorLabel, data.getAuthor());
+        setLabel(authorStoreLabel, data.getAuthorBooks());
+        setLabel(authorBwLabel, idText(data.getAuthorId()));
+        setLabel(author2Label, data.getAuthor2());
+        setLabel(author2StoreLabel, data.getAuthor2Books());
+        setLabel(author2BwLabel, idText(data.getAuthor2Id()));
+        setLabel(publisherLabel, data.getPublisher());
+        setLabel(publisherStoreLabel, data.getPublisherBooks());
+        setLabel(publisherBwLabel, idText(data.getPublisherId()));
 
-        setField(category1Field, data.getCategory());
-        setField(category2Field, data.getCategory2());
-        setField(category3Field, data.getCategory3());
-        setCombo(languageCodeCombo, data.getLanguageCode(), LANGUAGE_CODES);
+        setLabel(category1Label, data.getCategory());
+        setLabel(category2Label, data.getCategory2());
+        setLabel(category3Label, data.getCategory3());
+        setLabel(languageCodeLabel, data.getLanguageCode());
         // Book stores a single language code. The sheet's second code has no property.
-        setField(languageCode2Field, "");
+        setLabel(languageCode2Label, "");
         // "Original title language" is a sheet column with no Book property.
-        setField(originalTitleLanguageField, "");
-        setField(publishedDateField, firstNonBlank(data.getPublishDateFormatted(), data.getPublishDate()));
-        setCombo(currencyCombo, data.getCurrencyType(), CURRENCIES);
-        setField(costField, costText(data));
+        setLabel(originalTitleLanguageLabel, "");
+        setLabel(publishedDateLabel, firstNonBlank(data.getPublishDateFormatted(), data.getPublishDate()));
+        setLabel(currencyLabel, data.getCurrencyType());
+        setLabel(costLabel, costText(data));
 
         var summary = data.getSummary();
         setArea(abstractEnglishArea, abstractEnglish(summary));
         setArea(abstractNativeArea, firstNonBlank(data.getDescription(), data.getKoreanDescription()));
 
-        setField(groupField, data.getAgeGroup());
-        setField(sizeField, firstNonBlank(data.getBookSizeFormatted(), data.getBookSize()));
-        setCombo(bindingCombo, data.getType(), BINDINGS);
-        setField(pageField, countText(data.getPages()));
-        setField(weightField, countText(data.getWeight()));
-        setArea(awardsArea, awards(summary));
+        setLabel(groupLabel, data.getAgeGroup());
+        setLabel(sizeLabel, firstNonBlank(data.getBookSizeFormatted(), data.getBookSize()));
+        setLabel(bindingLabel, data.getType());
+        setLabel(pageLabel, countText(data.getPages()));
+        setLabel(weightLabel, countText(data.getWeight()));
+        setLabel(awardsLabel, awards(summary));
 
         showCover(data.getImageURL());
+
+        panel.repaint();
     }
 
     private JPanel headerSection() {
         var sourceTitles = vertical(
-                labeled("Korean title", koreanTitleField),
-                labeled("Romanized", romanizedTitleField),
-                labeled("Original title for translated books", originalTitleField));
+                labeled("Korean title", koreanTitleLabel),
+                labeled("Romanized", romanizedTitleLabel),
+                labeled("Original title for translated books", originalTitleLabel));
         var englishTitles = vertical(
-                labeled("English title", englishTitleField),
-                labeled("English title (translated)", translatedEnglishTitleField),
+                labeled("English title", englishTitleLabel),
+                labeled("English title (translated)", translatedEnglishTitleLabel),
                 new JPanel());
         var titles = row(sourceTitles, englishTitles);
 
@@ -253,52 +243,60 @@ public class Review {
     private JPanel peopleSection() {
         return row(
                 vertical(
-                        labeled("Author", authorField),
-                        labeled("Author (store)", authorStoreField),
-                        labeled("Author (BW)", authorBwField)),
+                        labeled("Author", authorLabel),
+                        labeled("Author (store)", authorStoreLabel),
+                        labeled("Author (BW)", authorBwLabel)),
                 vertical(
-                        labeled("Author 2", author2Field),
-                        labeled("Author 2 (store)", author2StoreField),
-                        labeled("Author 2 (BW)", author2BwField)),
+                        labeled("Author 2", author2Label),
+                        labeled("Author 2 (store)", author2StoreLabel),
+                        labeled("Author 2 (BW)", author2BwLabel)),
                 vertical(
-                        labeled("Publisher", publisherField),
-                        labeled("Publisher (store)", publisherStoreField),
-                        labeled("Publisher (BW)", publisherBwField)));
+                        labeled("Publisher", publisherLabel),
+                        labeled("Publisher (store)", publisherStoreLabel),
+                        labeled("Publisher (BW)", publisherBwLabel)));
     }
 
     private JPanel metaSection() {
         return row(
                 vertical(
-                        labeled("Category 1", category1Field),
-                        labeled("Category 2", category2Field),
-                        labeled("Category 3", category3Field)),
+                        labeled("Category 1", category1Label),
+                        labeled("Category 2", category2Label),
+                        labeled("Category 3", category3Label)),
                 vertical(
-                        labeled("Language code", languageCodeCombo),
-                        labeled("Language code 2", languageCode2Field),
-                        labeled("Original title language", originalTitleLanguageField)),
+                        labeled("Language code", languageCodeLabel),
+                        labeled("Language code 2", languageCode2Label),
+                        labeled("Original title language", originalTitleLanguageLabel)),
                 vertical(
-                        labeled("Published date", publishedDateField),
-                        labeled("Currency", currencyCombo),
-                        labeled("Cost", costField)));
+                        labeled("Published date", publishedDateLabel),
+                        labeled("Currency", currencyLabel),
+                        labeled("Cost", costLabel)));
     }
 
-    private JPanel physicalSection(JScrollPane awardsScroll) {
+    private JPanel physicalSection() {
         return row(
                 vertical(
-                        labeled("Group", groupField),
-                        labeled("Size", sizeField),
-                        labeled("Binding", bindingCombo)),
+                        labeled("Group", groupLabel),
+                        labeled("Size", sizeLabel),
+                        labeled("Binding", bindingLabel)),
                 vertical(
-                        labeled("Page", pageField),
-                        labeled("Weight", weightField),
-                        labeled("Awards", awardsScroll)));
+                        labeled("Page", pageLabel),
+                        labeled("Weight", weightLabel),
+                        labeled("Awards", awardsLabel)));
     }
 
     private static JTextArea textArea(int rows) {
         var area = new JTextArea(rows, 30);
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
+        area.setEditable(false);
+        area.setCaretPosition(0);
         return area;
+    }
+
+    private static JLabel valueLabel() {
+        var label = new JLabel();
+        label.setVerticalAlignment(SwingConstants.TOP);
+        return label;
     }
 
     private static JPanel labeled(String caption, JComponent field) {
@@ -325,28 +323,15 @@ public class Review {
         return line;
     }
 
-    private static void setField(JTextField field, String value) {
-        field.setText(text(value));
-        field.setCaretPosition(0);
+    private static void setLabel(JLabel label, String value) {
+        var shown = text(value);
+        label.setText(shown);
+        label.setToolTipText(shown.isBlank() ? null : shown);
     }
 
     private static void setArea(JTextArea area, String value) {
         area.setText(text(value));
         area.setCaretPosition(0);
-    }
-
-    private static void setCombo(JComboBox<String> combo, String value, String[] defaults) {
-        var allowed = new HashSet<>(Arrays.asList(defaults));
-        for (int i = combo.getItemCount() - 1; i >= 0; i--) {
-            if (!allowed.contains(combo.getItemAt(i))) {
-                combo.removeItemAt(i);
-            }
-        }
-        var shown = text(value);
-        if (!allowed.contains(shown)) {
-            combo.addItem(shown);
-        }
-        combo.setSelectedItem(shown);
     }
 
     private void showCover(String imageUrl) {
