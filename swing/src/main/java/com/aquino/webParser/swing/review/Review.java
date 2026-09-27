@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -300,14 +301,35 @@ public class Review {
     }
 
     private static JPanel labeled(String caption, JComponent field) {
-        var box = new JPanel(new BorderLayout(0, 2));
-        box.add(new JLabel(caption), BorderLayout.NORTH);
-        box.add(field, BorderLayout.CENTER);
+        var box = new JPanel(new GridBagLayout());
+
+        var label = new JLabel(caption + ":");
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+        label.setFont(label.getFont().deriveFont(Font.BOLD));
+
+        var constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.weightx = 0;
+        constraints.insets = new Insets(0, 0, 0, 8);
+        box.add(label, constraints);
+
+        constraints.gridx = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        box.add(field, constraints);
         return box;
     }
 
     private static JPanel vertical(JComponent... components) {
         var column = new JPanel(new GridLayout(components.length, 1, 0, 6));
+        column.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(210, 210, 210)),
+                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         for (var component : components) {
             column.add(component);
         }
