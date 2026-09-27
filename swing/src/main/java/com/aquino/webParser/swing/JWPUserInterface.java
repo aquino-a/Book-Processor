@@ -14,6 +14,7 @@ import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
+import com.aquino.webParser.swing.autocopy.Review;
 import com.aquino.webParser.swing.autofill.AutoFill;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.logging.log4j.LogManager;
@@ -121,6 +122,29 @@ public class JWPUserInterface extends JPanel {
     private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) -> {
         openAutoFillTool();
     });
+    
+    private final Action review = Handlers.anonymousEventClass("Review", (event) -> {
+         EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    var r = new Review();
+                    var panel = r.getPanel();
+                    var frame = new JFrame();
+                    frame.add(panel);
+                    frame.setVisible(true);
+                }
+                catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                    JOptionPane.showMessageDialog(
+                        frame,
+                        "Error occured opening review",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    });
+
 
     private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
         getAddWorker().execute();
@@ -233,6 +257,7 @@ public class JWPUserInterface extends JPanel {
         tools.add(new JMenuItem(scrapeOclc));
         tools.add(new JMenuItem(scrapeBestOclc));
         tools.add(new JMenuItem(autoFillTool));
+        tools.add(new JMenuItem(review));
         language = new JMenu("Language");
         language.add(new JMenuItem(koreanAction));
         language.add(new JMenuItem(japaneseKinoAction));
