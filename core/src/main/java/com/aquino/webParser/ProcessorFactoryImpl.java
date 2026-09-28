@@ -18,9 +18,12 @@ import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
 import com.aquino.webParser.model.Category;
 import com.aquino.webParser.model.Language;
+import com.aquino.webParser.model.ReviewPosition;
 import com.aquino.webParser.model.SavedBook;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
+import com.aquino.webParser.review.ReviewService;
+import com.aquino.webParser.review.ReviewServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -212,6 +215,10 @@ public class ProcessorFactoryImpl {
         return autoFillService;
     }
 
+    public ReviewService GetReviewService() {
+        return new ReviewServiceImpl(createSessionFactory(), GetExcelMap());
+    }
+
     private Map<Language, AuthorStrategy> getAuthorStrategies() throws IOException, URISyntaxException {
         return Map.of(
                 Language.Korean, new KoreanAuthorStrategy(GetKoreanLastNames()),
@@ -248,6 +255,7 @@ public class ProcessorFactoryImpl {
         try {
             var metadataSources = new MetadataSources(registry);
             metadataSources.addAnnotatedClass(SavedBook.class);
+            metadataSources.addAnnotatedClass(ReviewPosition.class);
 
             return metadataSources
                     .buildMetadata()

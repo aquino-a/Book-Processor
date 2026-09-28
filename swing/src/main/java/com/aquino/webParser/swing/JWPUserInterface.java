@@ -16,6 +16,7 @@ import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.swing.autofill.AutoFill;
 import com.aquino.webParser.swing.review.Review;
+import com.aquino.webParser.swing.review.ReviewWindow;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +58,7 @@ public class JWPUserInterface extends JPanel {
     private JMenu language;
     private OclcProgress oclcProgress;
     private NewLineFilter newLineFilter;
-    private final ProcessorFactoryImpl processorFactory;
+    private ProcessorFactoryImpl processorFactory;
     private DataType dataType = DataType.BookPage;
     private BookCreator bookCreator;
 
@@ -124,28 +125,25 @@ public class JWPUserInterface extends JPanel {
     });
     
     private final Action review = Handlers.anonymousEventClass("Review", (event) -> {
-         EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    var r = new Review();
-                    var panel = r.getPanel();
-                    var b = new Book();
-
-                    b.setAuthor("TOOL_TIP_TEXT_KEY");
-
-                    r.setData(b);
-                    var frame = new JFrame();
-                    frame.add(panel);
-                    frame.setVisible(true);
+        EventQueue.invokeLater(() -> {
+            try {
+                var file = FileUtility.openFile(mainPanel);
+                if (file == null) {
+                    return;
                 }
-                catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-                    JOptionPane.showMessageDialog(
-                        frame,
-                        "Error occured opening review",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
+
+                var reviewService = processorFactory.GetReviewService();
+                var books = reviewService.loadBooks(file.getAbsolutePath());
+
+                var window = new ReviewWindow(new Review(), reviewService, file.getName(), books);
+                window.show();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+                JOptionPane.showMessageDialog(
+                    frame,
+                    "Error occurred opening review",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
         });
     });
