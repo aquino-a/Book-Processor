@@ -1,7 +1,7 @@
 package com.aquino.webParser.autofill;
 
 import com.aquino.webParser.BookWindowService;
-import com.aquino.webParser.ExcelReader;
+import com.aquino.webParser.AutoFillExcelReader;
 import com.aquino.webParser.ExcelUpdater;
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.*;
@@ -37,7 +37,7 @@ public class AutoFillServiceImpl implements AutoFillService {
 
     @Override
     public List<BookWindowIds> readBooks(XSSFWorkbook workbook) {
-        var reader = new ExcelReader(workbook);
+        var reader = new AutoFillExcelReader(workbook);
         reader.setLocationMap(locationMap);
         return reader.ReadBooks()
                 .stream()

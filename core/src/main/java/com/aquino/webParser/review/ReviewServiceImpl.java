@@ -1,6 +1,6 @@
 package com.aquino.webParser.review;
 
-import com.aquino.webParser.ExcelReader;
+import com.aquino.webParser.ReviewExcelReader;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,9 +25,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Book> loadBooks(String filePath) {
         try (var workbook = Connect.openExistingWorkbook(new File(filePath))) {
-            var reader = new ExcelReader(workbook);
+            var reader = new ReviewExcelReader(workbook);
             reader.setLocationMap(locationMap);
-            List<Pair<Integer, Book>> pairs = reader.ReadBooks();
+            List<Pair<Integer, Book>> pairs = reader.readBooks();
             return pairs.stream().map(Pair::getRight).collect(Collectors.toList());
         } catch (FileNotFoundException e) {
             throw new IllegalArgumentException("Excel file not found: " + filePath, e);
@@ -52,4 +52,3 @@ public class ReviewServiceImpl implements ReviewService {
         return repository.loadLastIsbn(fileName);
     }
 }
-
