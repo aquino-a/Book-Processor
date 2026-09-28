@@ -291,6 +291,7 @@ public class Review {
         area.setWrapStyleWord(true);
         area.setEditable(false);
         area.setCaretPosition(0);
+        area.setFocusable(false); 
         return area;
     }
 
