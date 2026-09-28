@@ -8,6 +8,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,11 +71,11 @@ public class ReviewWindow {
         var next = Handlers.anonymousEventClass("Next", (event) -> nextBook());
 
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke("LEFT"), "review.previous");
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "review.previous");
         root.getActionMap().put("review.previous", previous);
 
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-                .put(KeyStroke.getKeyStroke("RIGHT"), "review.next");
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "review.next");
         root.getActionMap().put("review.next", next);
     }
 
