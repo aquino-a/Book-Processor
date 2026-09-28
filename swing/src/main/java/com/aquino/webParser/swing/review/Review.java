@@ -24,7 +24,9 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.Map;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Review form for one {@link Book}.
@@ -39,6 +41,8 @@ public class Review {
     private static final int COVER_HEIGHT = 190;
     private static final String COVER_PLACEHOLDER = "Book cover";
     private static final String AWARDS_MARKER = "awards:";
+
+    private final Map<Long, ImageIcon> coverIconCache = new ConcurrentHashMap<>();
 
     private JPanel panel;
 
@@ -219,7 +223,7 @@ public class Review {
         setLabel(weightLabel, countText(data.getWeight()));
         setLabel(awardsLabel, awards(summary));
 
-        showCover(data.getImageURL());
+        showCover(data.getIsbn(), data.getImageURL());
 
         panel.repaint();
     }
@@ -357,12 +361,21 @@ public class Review {
         area.setCaretPosition(0);
     }
 
-    private void showCover(String imageUrl) {
+    private void showCover(long isbn, String imageUrl) {
         var request = ++coverRequest;
         coverLabel.setIcon(null);
         coverLabel.setText(COVER_PLACEHOLDER);
         if (imageUrl == null || imageUrl.isBlank()) {
             return;
+        }
+
+        if (isbn != 0) {
+            var cached = coverIconCache.get(isbn);
+            if (cached != null) {
+                coverLabel.setText(null);
+                coverLabel.setIcon(cached);
+                return;
+            }
         }
 
         new SwingWorker<Image, Void>() {
@@ -386,7 +399,11 @@ public class Review {
                         return;
                     }
                     coverLabel.setText(null);
-                    coverLabel.setIcon(new ImageIcon(image));
+                    var icon = new ImageIcon(image);
+                    coverLabel.setIcon(icon);
+                    if (isbn != 0) {
+                        coverIconCache.putIfAbsent(isbn, icon);
+                    }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 } catch (Exception ex) {
