@@ -2,13 +2,12 @@ package com.aquino.webParser.swing.review;
 
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.review.ReviewService;
+import com.aquino.webParser.swing.Handlers;
 
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,18 +65,8 @@ public class ReviewWindow {
     }
 
     private void installKeyBindings(JComponent root) {
-        var previous = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                previousBook();
-            }
-        };
-        var next = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                nextBook();
-            }
-        };
+        var previous = Handlers.anonymousEventClass("Previous", (event) -> previousBook());
+        var next = Handlers.anonymousEventClass("Next", (event) -> nextBook());
 
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke("LEFT"), "review.previous");
@@ -110,4 +99,3 @@ public class ReviewWindow {
         reviewService.saveCurrentPosition(fileName, String.valueOf(book.getIsbn()));
     }
 }
-
