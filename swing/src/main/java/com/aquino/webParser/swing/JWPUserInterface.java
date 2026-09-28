@@ -15,6 +15,8 @@ import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.DataType;
 import com.aquino.webParser.oclc.OCLCChecker;
 import com.aquino.webParser.swing.autofill.AutoFill;
+import com.aquino.webParser.swing.review.Review;
+import com.aquino.webParser.swing.review.ReviewWindow;
 import com.aquino.webParser.utilities.Connect;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +58,7 @@ public class JWPUserInterface extends JPanel {
     private JMenu language;
     private OclcProgress oclcProgress;
     private NewLineFilter newLineFilter;
-    private final ProcessorFactoryImpl processorFactory;
+    private ProcessorFactoryImpl processorFactory;
     private DataType dataType = DataType.BookPage;
     private BookCreator bookCreator;
 
@@ -121,6 +123,31 @@ public class JWPUserInterface extends JPanel {
     private final Action autoFillTool = Handlers.anonymousEventClass("Author, Publisher Auto Fill", (event) -> {
         openAutoFillTool();
     });
+    
+    private final Action review = Handlers.anonymousEventClass("Review", (event) -> {
+        EventQueue.invokeLater(() -> {
+            try {
+                var file = FileUtility.openFile(mainPanel);
+                if (file == null) {
+                    return;
+                }
+
+                var reviewService = processorFactory.GetReviewService();
+                var books = reviewService.loadBooks(file.getAbsolutePath());
+
+                var window = new ReviewWindow(new Review(), reviewService, file.getName(), books);
+                window.show();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+                JOptionPane.showMessageDialog(
+                    frame,
+                    "Error occurred opening review",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    });
+
 
     private final Action addAction = Handlers.anonymousEventClass("Add", (event) -> {
         getAddWorker().execute();
@@ -233,6 +260,7 @@ public class JWPUserInterface extends JPanel {
         tools.add(new JMenuItem(scrapeOclc));
         tools.add(new JMenuItem(scrapeBestOclc));
         tools.add(new JMenuItem(autoFillTool));
+        tools.add(new JMenuItem(review));
         language = new JMenu("Language");
         language.add(new JMenuItem(koreanAction));
         language.add(new JMenuItem(japaneseKinoAction));

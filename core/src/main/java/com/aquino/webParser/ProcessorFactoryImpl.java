@@ -18,9 +18,12 @@ import com.aquino.webParser.chatgpt.SummaryRepository;
 import com.aquino.webParser.chatgpt.SummaryRepositoryImpl;
 import com.aquino.webParser.model.Category;
 import com.aquino.webParser.model.Language;
+import com.aquino.webParser.model.ReviewPosition;
 import com.aquino.webParser.model.SavedBook;
 import com.aquino.webParser.oclc.OclcService;
 import com.aquino.webParser.oclc.OclcServiceImpl;
+import com.aquino.webParser.review.ReviewService;
+import com.aquino.webParser.review.ReviewServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,10 +52,38 @@ public class ProcessorFactoryImpl {
      */
     private static final Map<String, Integer> BOOK_PROPERTY_EXCEL_MAP = Stream.of(new Object[][] {
             { "isbn", 0 },
+            { "isbn2", 1 },
+            { "bookPageUrl", 2 },
             { "oclc", 3 },
+            { "englishTitle", 4 },
+            { "romanizedTitle", 6 },
+            { "title", 7 },
+            { "translatedTitle", 8 },
+            { "authorId", 9 },
             { "author", 10 },
+            { "authorBooks", 11 },
+            { "author2Id", 12 },
             { "author2", 13 },
-            { "publisher", 16 }
+            { "author2Books", 14 },
+            { "publisherId", 15 },
+            { "publisher", 16 },
+            { "publisherBooks", 17 },
+            { "category", 18 },
+            { "category2", 19 },
+            { "category3", 20 },
+            { "vendorName", 21 },
+            { "languageCode", 22 },
+            { "authorOriginal", 24 },
+            { "publishDateFormatted", 25 },
+            { "currencyType", 26 },
+            { "originalPriceNumber", 27 },
+            { "imageURL", 28 },
+            { "translator", 29 },
+            { "ageGroup", 31 },
+            { "bookSizeFormatted", 32 },
+            { "type", 33 },
+            { "pages", 34 },
+            { "weight", 37 }
     }).collect(Collectors.toMap(data -> (String) data[0], data -> (int) data[1]));
     private static final ObjectMapper OBJECT_MAPPER = createMapper();
 
@@ -212,6 +243,10 @@ public class ProcessorFactoryImpl {
         return autoFillService;
     }
 
+    public ReviewService GetReviewService() {
+        return new ReviewServiceImpl(createSessionFactory(), GetExcelMap());
+    }
+
     private Map<Language, AuthorStrategy> getAuthorStrategies() throws IOException, URISyntaxException {
         return Map.of(
                 Language.Korean, new KoreanAuthorStrategy(GetKoreanLastNames()),
@@ -248,6 +283,7 @@ public class ProcessorFactoryImpl {
         try {
             var metadataSources = new MetadataSources(registry);
             metadataSources.addAnnotatedClass(SavedBook.class);
+            metadataSources.addAnnotatedClass(ReviewPosition.class);
 
             return metadataSources
                     .buildMetadata()
