@@ -37,8 +37,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Review {
 
-    private static final int COVER_WIDTH = 140;
-    private static final int COVER_HEIGHT = 190;
+    private static final int COVER_WIDTH = 200;
+    private static final int COVER_HEIGHT = 280;
     private static final String COVER_PLACEHOLDER = "Book cover";
     private static final String AWARDS_MARKER = "awards:";
 
@@ -229,14 +229,13 @@ public class Review {
     }
 
     private JPanel headerSection() {
-        var sourceTitles = vertical(
+        var sourceTitles = stackNorth(
                 labeled("Korean title", koreanTitleLabel),
                 labeled("Romanized", romanizedTitleLabel),
                 labeled("Original title for translated books", originalTitleLabel));
-        var englishTitles = vertical(
+        var englishTitles = stackNorth(
                 labeled("English title", englishTitleLabel),
-                labeled("English title (translated)", translatedEnglishTitleLabel),
-                new JPanel());
+                labeled("English title (translated)", translatedEnglishTitleLabel));
         var titles = row(sourceTitles, englishTitles);
 
         var header = new JPanel(new BorderLayout(12, 0));
@@ -338,6 +337,32 @@ public class Review {
         for (var component : components) {
             column.add(component);
         }
+        return column;
+    }
+
+    private static JPanel stackNorth(JComponent... components) {
+        var column = new JPanel(new GridBagLayout());
+        column.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(210, 210, 210)),
+                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+
+        var constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+
+        for (int i = 0; i < components.length; i++) {
+            constraints.gridy = i;
+            constraints.weighty = 0;
+            constraints.insets = new Insets(0, 0, i == components.length - 1 ? 0 : 6, 0);
+            column.add(components[i], constraints);
+        }
+
+        constraints.gridy = components.length;
+        constraints.weighty = 1;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        column.add(new JPanel(), constraints);
         return column;
     }
 
