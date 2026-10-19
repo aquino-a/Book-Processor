@@ -1,6 +1,8 @@
 package com.aquino.webParser.bookCreators.yahoo;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
@@ -23,7 +25,6 @@ public class YahooBookCreatorTest {
     @Test
     public void testFillInDetailsLive() throws IOException {
         var book = new Book();
-        // book.setBookPageUrl("https://shopping.yahoo.co.jp/search?p=9784759823134&cid=&brandid=&kspec=&b=1");
         book.setBookPageUrl("https://store.shopping.yahoo.co.jp/honyaclubbook/9784759823134.html");
 
         bc.fillInAllDetails(book);
@@ -31,4 +32,16 @@ public class YahooBookCreatorTest {
         assertThat(book.getAuthorBooks(), is("マリアホ・イルストゥラホ / イルストゥラホ,マリアホ"));
         assertThat(book.getAuthor2Books(), is("鈴木沙織 / スズキ,サオリ"));
     }
+    
+    @Test
+    public void testFillInDetailsLive2() throws IOException {
+        var book = new Book();
+        book.setBookPageUrl("https://store.shopping.yahoo.co.jp/honyaclubbook/9784865373295.html");
+
+        bc.fillInAllDetails(book);
+
+        assertThat("Author 1", book.getAuthorBooks(), is("鉄人ノンフィクション編集部 / テツジン ノンフィクション ヘンシュウブ"));
+        assertNull("Author 2", book.getAuthor2Books());
+    }
+
 }
