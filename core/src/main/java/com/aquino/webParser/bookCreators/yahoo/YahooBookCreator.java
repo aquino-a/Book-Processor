@@ -21,10 +21,6 @@ import java.util.regex.Pattern;
 public class YahooBookCreator implements BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    // private static final String SEARCH_URL_FORMAT =
-    // "https://paypaymall.yahoo.co.jp/search?p=%s&cid=&brandid=&kspec=&b=1";
-    // private static final String SEARCH_URL_FORMAT =
-    // "https://search.yahoo.co.jp/commerce/catalog/detail?p=%s&fr=top_ga1_sa&ml=prop%%3Aec_ctlog%%3Bq%%3A%s%%3Bctlgid%%3A12455374027%%3Bbffstype%%3Aec_pdlist%%3Bfrtype%%3Aec_list-1-pdlist_ec_list-ttl%%3Bdestprf%%3A13%%3Bmtids%%3A1962_ctrl%%2C1882_5%%2C66_2%%2C2008_3%%2C10167_ctrl%%2C1948_2%%2C104_1%%2C2005_1%%3Bcvpk%%3A1962_1%%2C2008_2%%2C1948_3%%2C104_1%%2C2005_2";
     private static final String BOOK_URL_FORMAT = "https://store.shopping.yahoo.co.jp/honyaclubbook/%s.html";
 
     private static final Pattern AUTHOR_REGEX = Pattern.compile("著者名：([^<]+)");
@@ -89,7 +85,10 @@ public class YahooBookCreator implements BookCreator {
     private String[] getKataAuthors(String pBody) {
         Matcher km = KATAGANA_REGEX.matcher(pBody);
         if (km.find()) {
-            return km.group(1).split("[、,]");
+            return Arrays.asList(km.group(1).split("、"))
+                .stream()
+                .skip(1)
+                .toArray(String[]::new);
             // [アフレタ マチ, イルストゥラホ, マリアホ, スズキ, サオリ]
         }
 
