@@ -2,11 +2,14 @@ package com.aquino.webParser.bookCreators.yodobashi;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import com.aquino.webParser.bookCreators.BookCreator;
 import com.aquino.webParser.model.Book;
@@ -37,14 +40,47 @@ public class YodobashiBookCreator implements BookCreator {
     }
 
     @Override
-    public Book createBookFromBookPage(String bookPageUrl) throws IOException {
-        return null;
+    public Book fillInAllDetails(Book book) {
+        try {
+            var bookDoc = Jsoup.connect(book.getBookPageUrl())
+                    .get();
+
+            book.setOriginalPrice(parsePrice(bookDoc));
+            book.setDescription(parseDescription(bookDoc));
+            book.setCategory(parseCategory(bookDoc));
+
+        } catch (Exception e) {
+            LOGGER.warn("Problem getting Yododashi price, description and category.", e);
+        }
+
+        return book;
+    }
+
+    private String parseCategory(Document doc) {
+        return doc.select("div.breadcrumbs.js_ctlg_ageconfirm_permit")
+                .getFirst()
+                .children()
+                .stream()
+                .map(Element::text)
+                .collect(Collectors.joining(" > "));
+    }
+
+    private String parseDescription(Document doc) {
+        return doc.select("ul.pDescription")
+                .getFirst()
+                .text();
+    }
+
+    private String parsePrice(Document doc) {
+        // <meta content="1650" itemprop="price"/>
+        return doc.select("meta[itemprop=price]")
+                .getFirst()
+                .attr("content");
     }
 
     @Override
-    public Book fillInAllDetails(Book book) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fillInAllDetails'");
+    public Book createBookFromBookPage(String bookPageUrl) throws IOException {
+        return null;
     }
 
     @Override
