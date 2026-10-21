@@ -64,9 +64,7 @@ public class YodobashiBookCreator implements BookCreator {
     }
 
     private String parseCategory(Document doc) {
-        return doc.select("div.breadcrumbs.js_ctlg_ageconfirm_permit")
-                .getFirst()
-                .children()
+        return doc.select("div.breadcrumbs.js_ctlg_ageconfirm_permit span[itemprop=name]")
                 .stream()
                 .map(Element::text)
                 .collect(Collectors.joining(" > "));
