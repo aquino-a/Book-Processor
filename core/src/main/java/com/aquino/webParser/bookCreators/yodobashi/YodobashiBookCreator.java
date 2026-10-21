@@ -71,7 +71,7 @@ public class YodobashiBookCreator implements BookCreator {
     }
 
     private String parseDescription(Document doc) {
-        return doc.select("ul.pDescription")
+        return doc.select("div#productSet1Box")
                 .getFirst()
                 .text();
     }
