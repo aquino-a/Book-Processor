@@ -10,6 +10,7 @@ import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.kino.KinoBookCreator;
 import com.aquino.webParser.bookCreators.worldcat.WorldCatBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.bookCreators.yodobashi.YodobashiBookCreator;
 import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.chatgpt.ChatGptServiceImpl;
 import com.aquino.webParser.chatgpt.GrokService;
@@ -27,6 +28,11 @@ import com.aquino.webParser.review.ReviewServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.zhkl0228.impersonator.ImpersonatorApi;
+import com.github.zhkl0228.impersonator.ImpersonatorFactory;
+
+import okhttp3.OkHttpClient;
+import okhttp3.OkHttpClientFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -123,7 +129,6 @@ public class ProcessorFactoryImpl {
                     break;
                 case KinoHontoHonya:
                     var japaneseCreator = createKinoBookCreator();
-                    japaneseCreator.setYahoo(new YahooBookCreator());
 
                     newCreator = japaneseCreator;
                     break;
@@ -153,11 +158,18 @@ public class ProcessorFactoryImpl {
 
     private KinoBookCreator createKinoBookCreator() throws IOException {
         if (kinoBookCreator == null) {
+
             kinoBookCreator = new KinoBookCreator(
                     createWindowService(),
                     createChatGptService(),
                     new HontoBookCreator(),
                     new HonyaClubBookCreator());
+            kinoBookCreator.setYahoo(new YahooBookCreator());
+
+            ImpersonatorApi api = ImpersonatorFactory.macChrome();
+            OkHttpClient client = OkHttpClientFactory.create(api)
+                    .newHttpClient();
+            kinoBookCreator.setYododashi(new YodobashiBookCreator(client));
         }
 
         return kinoBookCreator;
@@ -182,8 +194,6 @@ public class ProcessorFactoryImpl {
                 return createOpenAiService();
         }
     }
-
-    
 
     private ChatGptService createOpenAiService() {
         var grokService = new ChatGptServiceImpl(
