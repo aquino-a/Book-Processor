@@ -44,5 +44,7 @@ public class YodobashiBookCreatorTest {
         "第４章　殺人の迷宮　海外編（英１７歳大学生、アン・ノブレット殺害事件；米フロリダ州、ウォーカー一家殺害事件　ほか） " + //
         "第５章　残された謎（ハリウッド女優セルマ・トッド不審死事件；フィンランド・イムヤルビＵＦＯ遭遇事件　ほか）"));
         assertThat(book.getBookSize(), is("B6, 19cm"));
+        assertThat(book.getPublisher(), is("鉄人社"));
+        assertThat(book.getPublishDateFormatted(), is("08/26/2026"));
     }
 }
