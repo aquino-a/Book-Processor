@@ -80,6 +80,7 @@ public class KinoBookCreator implements BookCreator {
             LOGGER.warn("Book already exists in bookswindow. [{}]", book.getIsbn());
             return book;
         }
+
         setHontoDetails(book);
         setYododashiDetails(book);
 
@@ -371,6 +372,9 @@ public class KinoBookCreator implements BookCreator {
             book.setCategory(yodoBook.getCategory());
             book.setOriginalPriceNumber(yodoBook.getOriginalPriceNumber());
             book.setDescription(yodoBook.getDescription());
+            book.setBookSizeFormatted(book.getBookSize());
+            book.setPublisher(yodoBook.getPublisher());
+            book.setPublishDateFormatted(yodoBook.getPublishDateFormatted());
         } catch (Exception e) {
             LOGGER.error("Problem setting Yododashi details.", e);
             return;

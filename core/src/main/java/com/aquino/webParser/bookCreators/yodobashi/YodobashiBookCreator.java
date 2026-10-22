@@ -1,6 +1,8 @@
 package com.aquino.webParser.bookCreators.yodobashi;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +28,11 @@ public class YodobashiBookCreator implements BookCreator {
 
     private static final Pattern SIZE_1_REGEX = Pattern.compile("判型：(.+)");
     private static final Pattern SIZE_2_REGEX = Pattern.compile("縦：(.+)");
+    private static final Pattern PUBLISHER_REGEX = Pattern.compile("出版社名：(.+)");
+    private static final Pattern PUBLISH_DATE_REGEX = Pattern.compile("発行年月日：(.+)");
+
+    private static final DateTimeFormatter DATE_SOURCE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final DateTimeFormatter DATE_TARGET_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final OkHttpClient client;
 
@@ -61,7 +68,10 @@ public class YodobashiBookCreator implements BookCreator {
             book.setDescription(parseDescription(bookDoc));
             book.setCategory(parseCategory(bookDoc));
             book.setBookSize(parseSize(bookDoc));
+            book.setPublisher(parsePublisher(bookDoc));
+            book.setPublishDateFormatted(parsePublishDate(bookDoc));
 
+            // book.setAgeGroup(findAgeGroup(bookDoc));
         } catch (Exception e) {
             LOGGER.warn("Problem getting Yododashi price, description and category.", e);
         }
@@ -69,12 +79,37 @@ public class YodobashiBookCreator implements BookCreator {
         return book;
     }
 
-    private String parseSize(Document doc) {
-        var rows = doc.select("div.specBox td div")
-                .stream()
-                .map(Element::text)
-                .toList();
+    private String parsePublishDate(Document bookDoc) {
+        var rows = getSpecRows(bookDoc);
+        try {
+            var unformattedDate = rows.stream()
+                    .map(PUBLISH_DATE_REGEX::matcher)
+                    .filter(Matcher::find)
+                    .map(m -> m.group(1))
+                    .findFirst()
+                    .orElse(null);
+            var date = LocalDate.parse(unformattedDate, DATE_SOURCE_FORMATTER);
 
+            return date.format(DATE_TARGET_FORMATTER);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't get publish date", e);
+            return null;
+        }
+    }
+
+    private String parsePublisher(Document bookDoc) {
+        var rows = getSpecRows(bookDoc);
+
+        return rows.stream()
+                .map(PUBLISHER_REGEX::matcher)
+                .filter(Matcher::find)
+                .map(m -> m.group(1))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String parseSize(Document doc) {
+        var rows = getSpecRows(doc);
         var size1 = rows.stream()
                 .map(SIZE_1_REGEX::matcher)
                 .filter(Matcher::find)
@@ -90,6 +125,13 @@ public class YodobashiBookCreator implements BookCreator {
                 .orElse(null);
 
         return String.format("%s, %s", size1, size2);
+    }
+
+    private List<String> getSpecRows(Document bookDoc) {
+        return bookDoc.select("div.specBox td div")
+                .stream()
+                .map(Element::text)
+                .toList();
     }
 
     private String parseCategory(Document doc) {
