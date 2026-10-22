@@ -81,7 +81,6 @@ public class KinoBookCreator implements BookCreator {
             return book;
         }
 
-        setHontoDetails(book);
         setYododashiDetails(book);
 
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
@@ -372,7 +371,7 @@ public class KinoBookCreator implements BookCreator {
             book.setCategory(yodoBook.getCategory());
             book.setOriginalPriceNumber(yodoBook.getOriginalPriceNumber());
             book.setDescription(yodoBook.getDescription());
-            book.setBookSizeFormatted(book.getBookSize());
+            book.setBookSizeFormatted(yodoBook.getBookSize());
             book.setPublisher(yodoBook.getPublisher());
             book.setPublishDateFormatted(yodoBook.getPublishDateFormatted());
         } catch (Exception e) {

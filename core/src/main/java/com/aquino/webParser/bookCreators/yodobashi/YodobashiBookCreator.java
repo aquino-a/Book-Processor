@@ -65,6 +65,7 @@ public class YodobashiBookCreator implements BookCreator {
             var bookDoc = getDoc(book.getBookPageUrl());
 
             book.setOriginalPrice(parsePrice(bookDoc));
+            book.setOriginalPriceNumber(Integer.parseInt(book.getOriginalPrice()));
             book.setDescription(parseDescription(bookDoc));
             book.setCategory(parseCategory(bookDoc));
             book.setBookSize(parseSize(bookDoc));
