@@ -90,5 +90,10 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.zhkl0228</groupId>
+            <artifactId>impersonator-okhttp</artifactId>
+            <version>1.11.0</version>
+        </dependency>
     </dependencies>
 </project>

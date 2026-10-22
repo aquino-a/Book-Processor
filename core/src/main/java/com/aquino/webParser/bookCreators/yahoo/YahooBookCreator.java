@@ -11,19 +11,27 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class YahooBookCreator implements BookCreator {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String SEARCH_URL_FORMAT = "https://paypaymall.yahoo.co.jp/search?p=%s&cid=&brandid=&kspec=&b=1";
+    private static final String BOOK_URL_FORMAT = "https://store.shopping.yahoo.co.jp/honyaclubbook/%s.html";
+
+    private static final Pattern AUTHOR_REGEX = Pattern.compile("著者名：([^<]+)");
+    private static final Pattern KATAGANA_REGEX = Pattern.compile("キーワード：([^<]+)");
+    private static final String COMBINE_FORMAT = "%s / %s";
 
     @Override
     public Book createBookFromIsbn(String isbn) throws IOException {
-        Document doc = Connect.connectToURL(String.format(SEARCH_URL_FORMAT, isbn));
+        Document doc = Connect.connectToURL(String.format(BOOK_URL_FORMAT, isbn));
         if (doc == null)
-            throw new IOException(String.format("Search Document wasn't loaded: %s", isbn));
+            throw new IOException(String.format("Yahoo Book Page wasn't loaded: %s", isbn));
         Book book = new Book();
         book.setBookPageUrl(doc.location());
         return book;
@@ -37,39 +45,23 @@ public class YahooBookCreator implements BookCreator {
     @Override
     public Book fillInAllDetails(Book book) {
         try {
-            var searchDoc = Jsoup.connect(book.getBookPageUrl())
+            var bookDoc = Jsoup.connect(book.getBookPageUrl())
                     .get();
 
-            var bookUrl = searchDoc.getElementsByClass("LoopList__item")
-                    .stream()
-                    .filter(e -> e.text().contains("Honya"))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("No Honya Club book page."))
-                    .getElementsByClass("SearchResult_SearchResult__detailsContainerLink__0hDP4")
-                    .first()
-                    .attr("href");
+            var p = bookDoc.select("div.styles_itemInfoDetail__Dt_sv [data-testid='information'] p")
+                    .getFirst();
+            var pBody = p.outerHtml();
 
-            var bookDoc = Jsoup.connect(bookUrl)
-                    .get();
+            var hanjaAuthors = getHanjaAuthors(pBody);
+            var kataganaAuthors = getKataAuthors(pBody);
 
-            var kataganaLine = bookDoc.getElementsByClass("mdItemDescription")
-                    .first()
-                    .child(0)
-                    .textNodes()
-                    .stream()
-                    .reduce((a, b) -> b)
-                    .orElseThrow(() -> new Exception("No lines in description."))
-                    .text();
+            if (hanjaAuthors.length > 0) {
+                book.setAuthorBooks(getAuthorName(hanjaAuthors, kataganaAuthors, 0));
+            }
 
-            var parts = StringUtils.split(kataganaLine, '、');
-
-            if (parts.length > 1) {
-                book.setAuthorBooks(parts[1]);
-            } 
-            
-            if (parts.length > 2) {
+            if (hanjaAuthors.length > 1) {
                 if (book.getAuthor2Id() < 0) {
-                    book.setAuthor2Books(parts[2]);
+                    book.setAuthor2Books(getAuthorName(hanjaAuthors, kataganaAuthors, 1));
                 } else {
                     LOGGER.warn("Author 2 id is greater than -1. Not setting katagana for 2nd author.");
                 }
@@ -79,6 +71,40 @@ public class YahooBookCreator implements BookCreator {
         }
 
         return book;
+    }
+
+    private String getAuthorName(String[] name1, String[] name2, int index) {
+        var name = name1[index];
+        if (index < name2.length) {
+            name = String.format(COMBINE_FORMAT, name, name2[index]);
+        }
+
+        return name;
+    }
+
+    private String[] getKataAuthors(String pBody) {
+        Matcher km = KATAGANA_REGEX.matcher(pBody);
+        if (km.find()) {
+            return Arrays.asList(km.group(1).split("、"))
+                .stream()
+                .skip(1)
+                .toArray(String[]::new);
+            // [アフレタ マチ, イルストゥラホ, マリアホ, スズキ, サオリ]
+        }
+
+        LOGGER.warn("No katagana found for authors: {}", pBody);
+        return new String[0];
+    }
+
+    private String[] getHanjaAuthors(String pBody) {
+        var am = AUTHOR_REGEX.matcher(pBody);
+        if (am.find()) {
+            return am.group(1).split("、");
+            // [マリアホ・イルストゥラホ, 鈴木沙織]
+        }
+
+        LOGGER.warn("No Hanja authors found: {}", pBody);
+        return new String[0];
     }
 
     @Override

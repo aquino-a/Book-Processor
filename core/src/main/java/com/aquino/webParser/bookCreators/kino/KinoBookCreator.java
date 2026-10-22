@@ -6,6 +6,7 @@ import com.aquino.webParser.bookCreators.amazon.AmazonJapanBookCreator;
 import com.aquino.webParser.bookCreators.honto.HontoBookCreator;
 import com.aquino.webParser.bookCreators.honya.HonyaClubBookCreator;
 import com.aquino.webParser.bookCreators.yahoo.YahooBookCreator;
+import com.aquino.webParser.bookCreators.yodobashi.YodobashiBookCreator;
 import com.aquino.webParser.chatgpt.ChatGptService;
 import com.aquino.webParser.model.Book;
 import com.aquino.webParser.model.ExtraInfo;
@@ -34,10 +35,12 @@ public class KinoBookCreator implements BookCreator {
 
     private final BookWindowService bookWindowService;
     private final ChatGptService chatGptService;
+    // Blocked in usa
     private final HonyaClubBookCreator honya;
     private final HontoBookCreator honto;
 
     private YahooBookCreator yahoo;
+    private YodobashiBookCreator yodoDashi;
 
     private Map<String, String> cookies;
 
@@ -74,10 +77,11 @@ public class KinoBookCreator implements BookCreator {
         book.setTitleExists(bookWindowService.doesBookExist(String.valueOf(book.getIsbn())));
         if (book.isTitleExists()) {
             // already in bookswindow so it wont be used.
+            LOGGER.warn("Book already exists in bookswindow. [{}]", book.getIsbn());
             return book;
         }
-        setHonyaDetails(book);
-        setHontoDetails(book);
+
+        setYododashiDetails(book);
 
         book.setRomanizedTitle(lookupRomanizedTitle(book.getTitle()));
 
@@ -352,6 +356,30 @@ public class KinoBookCreator implements BookCreator {
         }
     }
 
+    private void setYododashiDetails(Book book) {
+        if (yodoDashi == null) {
+            return;
+        }
+
+        try {
+            var yodoBook = yodoDashi.createBookFromIsbn(String.valueOf(book.getIsbn()));
+            yodoDashi.fillInAllDetails(yodoBook);
+            var ei = new ExtraInfo(49, yodoBook.getBookPageUrl(), ExtraInfo.Type.HyperLink);
+            ei.setName("Yododashi");
+            book.getMiscellaneous().add(ei);
+
+            book.setCategory(yodoBook.getCategory());
+            book.setOriginalPriceNumber(yodoBook.getOriginalPriceNumber());
+            book.setDescription(yodoBook.getDescription());
+            book.setBookSizeFormatted(yodoBook.getBookSize());
+            book.setPublisher(yodoBook.getPublisher());
+            book.setPublishDateFormatted(yodoBook.getPublishDateFormatted());
+        } catch (Exception e) {
+            LOGGER.error("Problem setting Yododashi details.", e);
+            return;
+        }
+    }
+
     private Document getDoc(String bookPageUrl) throws IOException {
         if (cookies == null) {
             cookies = getCookies();
@@ -376,5 +404,13 @@ public class KinoBookCreator implements BookCreator {
 
     public void setYahoo(YahooBookCreator yahoo) {
         this.yahoo = yahoo;
+    }
+
+    public void setYododashi(YodobashiBookCreator yodobashiBookCreator) {
+        this.yodoDashi = yodobashiBookCreator;
+    }
+
+    public YodobashiBookCreator getYodoDashi() {
+        return yodoDashi;
     }
 }
