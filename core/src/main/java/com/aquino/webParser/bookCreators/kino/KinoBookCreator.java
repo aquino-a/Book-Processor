@@ -35,6 +35,7 @@ public class KinoBookCreator implements BookCreator {
 
     private final BookWindowService bookWindowService;
     private final ChatGptService chatGptService;
+    // Blocked in usa
     private final HonyaClubBookCreator honya;
     private final HontoBookCreator honto;
 
@@ -76,9 +77,9 @@ public class KinoBookCreator implements BookCreator {
         book.setTitleExists(bookWindowService.doesBookExist(String.valueOf(book.getIsbn())));
         if (book.isTitleExists()) {
             // already in bookswindow so it wont be used.
+            LOGGER.warn("Book already exists in bookswindow. [{}]", book.getIsbn());
             return book;
         }
-        setHonyaDetails(book);
         setHontoDetails(book);
         setYododashiDetails(book);
 
